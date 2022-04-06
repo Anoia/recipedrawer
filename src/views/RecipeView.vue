@@ -3,7 +3,7 @@
 import { useQuery } from '@vue/apollo-composable'
 import gql from 'graphql-tag'
 import { getRecipeQuery, parseGetRecipeQueryResult } from '../gql/queries'
-import { EditableRecipe } from 'src/types/Recipe'
+import { EditableRecipe } from '../types/recipe'
 import { Ref, ref, ComputedRef, computed } from 'vue'
 
 const props = defineProps({

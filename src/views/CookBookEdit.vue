@@ -4,8 +4,10 @@ import { useQuery, useMutation } from '@vue/apollo-composable'
 import gql from 'graphql-tag'
 import { computed, ComputedRef, watch, ref, Ref, nextTick, onMounted } from 'vue'
 import IngredientSelectorVue from '../components/IngredientSelector.vue'
-import { Unit, Ingredient, Step, EditableRecipe, emptyRecipe } from '../types/Recipe'
-import { getRecipeQuery, parseGetRecipeQueryResult } from '../gql/queries'
+import { Unit, Ingredient, Step, EditableRecipe, emptyRecipe } from '../types/recipe'
+import { getRecipeQuery, parseGetRecipeQueryResult, createRecipeMutation, editRecipeMutation } from '../gql/queries'
+
+import { TrashIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/vue/outline'
 
 const props = defineProps({
     id: String
@@ -68,19 +70,7 @@ function resizeAllTextAreas() {
 }
 
 
-const { mutate: newMutatename } = useMutation(gql`
-  mutation edit ($rid: Int!, $nin: [Int!]!, $inputtest: [recipe_ingredients_insert_input!]!, $description: String, $name: String , $steps: jsonb, $image: String = "") {
-    update_recipes_by_pk(pk_columns: {id: $rid}, _set: {image: $image, name: $name, description: $description, steps: $steps}) {
-        id
-    }
-    insert_recipe_ingredients(objects: $inputtest, on_conflict: {constraint: recipe_ingredients_pkey, update_columns: [amount, unit]}) {
-        affected_rows
-    }
-    delete_recipe_ingredients(where: {recipe_id: {_eq: $rid}, ingredient_id: {_nin: $nin}}) {
-        affected_rows
-    }
-  }
-`, () => ({
+const { mutate: newMutatename } = useMutation(editRecipeMutation, () => ({
     variables: {
         rid: props.id,
         nin: recipeToEdit.value?.recipeIngredients.map(i => i.id),
@@ -98,24 +88,10 @@ const { mutate: newMutatename } = useMutation(gql`
     },
 }))
 
-const { mutate: mutateCreate } = useMutation(gql`
-mutation create_recipe($description: String, $name: String, $steps: jsonb, $data: [recipe_ingredients_insert_input!]!) {
-  insert_recipes_one(object: {description: $description, name: $name, steps: $steps, recipe_ingredients: {data: $data}}) {
-    id
-    description
-    name
-    steps
-    recipe_ingredients {
-      amount
-      ingredient_id
-      unit
-    }
-  }
-}
-`, () => ({
+const { mutate: mutateCreate } = useMutation(createRecipeMutation, () => ({
     variables: {
         description: recipeToEdit.value?.description,
-        name:recipeToEdit.value?.name,
+        name: recipeToEdit.value?.name,
         steps: recipeToEdit.value?.steps,
         data: recipeToEdit.value?.recipeIngredients.map(i => {
             return {

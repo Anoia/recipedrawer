@@ -11,7 +11,7 @@ import {
 } from '@headlessui/vue'
 
 import { CheckIcon, SelectorIcon } from '@heroicons/vue/solid'
-import {Unit} from '../types/Recipe'
+import {Unit} from '../types/recipe'
 
 
 const props = defineProps<{ addIngredient: (name: string, id: string, amount: number, unit: Unit) => void }>()
