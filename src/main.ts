@@ -2,6 +2,7 @@ import { createApp,provide, h } from 'vue'
 import { DefaultApolloClient } from '@vue/apollo-composable'
 import App from './App.vue'
 import './index.css'
+import { persistCache, LocalStorageWrapper } from 'apollo3-cache-persist';
 
 
 // Router
@@ -16,6 +17,12 @@ const httpLink = createHttpLink({
 })
 // Cache implementation
 const cache = new InMemoryCache()
+
+await persistCache({
+  cache,
+  storage: new LocalStorageWrapper(window.localStorage),
+});
+
 // Create the apollo client
 const apolloClient = new ApolloClient({
   link: httpLink,

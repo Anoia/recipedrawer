@@ -11,6 +11,7 @@
     "@apollo/client": "^3.5.8",
     "@auth0/auth0-spa-js": "^1.19.2",
     "@vue/apollo-composable": "^4.0.0-alpha.16",
+    "apollo3-cache-persist": "^0.14.0",
     "graphql": "^16.3.0",
     "graphql-tag": "^2.12.6",
     "vue": "^3.2.31",
