@@ -1,10 +1,6 @@
 
 <template>
     <div>
-        <header class="flex bg-slate-500 items-center">
-            <h1 class="px-10 my-7 font-serif text-3xl text-white grow drop-shadow-md">Cookbook</h1>
-            <p class="px-10 text-white grow-0 right-1">Browse | Search | Create</p>
-        </header>
 
         <div class="container mx-auto max-w-4xl">
             <div class="flex flex-row">
