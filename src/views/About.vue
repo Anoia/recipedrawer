@@ -4,13 +4,9 @@
     class="min-h-full mt-10 flex flex-col items-center justify-center px-4 py-12 sm:px-6 lg:py-16 lg:px-8"
   >
     <h2
-      class="text-3xl text-center font-extrabold leading-9 tracking-tight text-gray-900 sm:text-4xl sm:leading-10"
+      class="text-3xl text-center font-bold  text-gray-900 sm:text-4xl sm:leading-10"
     >
       About Page
-      <div class="my-3"></div>
-      <span class="text-slate-600"
-        >Vite + Vue 3 + Typescript + Tailwind 3 + Vue Rounter 4</span
-      >
     </h2>
     <div class="flex mt-8 lg:flex-shrink-0 lg:mt-12">
       <div class="inline-flex rounded-md shadow">

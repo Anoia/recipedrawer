@@ -21,6 +21,8 @@ const login = () => loginWithRedirect();
         <router-link to="/browse" class="mx-2 grow-0">Browse</router-link>
         <p>|</p>
         <router-link to="/create" class="mx-2 grow-0">Create</router-link>
+        <p>|</p>
+        <router-link to="/about" class="mx-2 grow-0">About</router-link>
 
         <span v-if="isAuthenticated" class="flex mx-5 items-center">
             <span class="flex flex-col items-end">

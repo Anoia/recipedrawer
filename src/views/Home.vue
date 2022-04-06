@@ -7,7 +7,6 @@ const count = ref(0)
 
 <template>
   <div class="flex min-h-full flex-col items-center justify-center">
-    <img alt="Vue logo" src="../assets/logo.png" class="mt-10" />
     <button
       @click="count++"
       class="rounded-md border bg-emerald-600 py-1 px-3 text-sm font-medium text-white hover:bg-emerald-500"
