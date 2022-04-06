@@ -101,18 +101,52 @@ const { mutate: mutateCreate } = useMutation(createRecipeMutation, () => ({
                 amount: i.amount
             }
         })
-        }
+    }
 }))
 
 function clickHandler() {
-
     if (props.id) {
         newMutatename()
     } else {
         mutateCreate()
     }
+}
+
+function removeIngredient(i: Ingredient) {
+    if (recipeToEdit.value?.recipeIngredients.includes(i)) {
+        recipeToEdit.value?.recipeIngredients.splice(recipeToEdit.value.recipeIngredients.indexOf(i), 1)
+    }
+}
+
+function moveStep(s: Step, direction: number) {
+    if (recipeToEdit.value?.steps.includes(s)) {
+        let currentIndex = recipeToEdit.value.steps.indexOf(s)
+        let newIndex = currentIndex + direction
+
+        if (newIndex >= 0 && newIndex < recipeToEdit.value.steps.length) {
+            recipeToEdit.value.steps.splice(currentIndex, 1)
+            recipeToEdit.value.steps.splice(newIndex, 0, s)
+        }
+        resetStepIds()
+    }
 
 
+}
+
+function removeStep(s: Step) {
+    if (recipeToEdit.value?.steps.includes(s)) {
+        recipeToEdit.value?.steps.splice(recipeToEdit.value.steps.indexOf(s), 1)
+    }
+    resetStepIds()
+}
+
+function resetStepIds() {
+    if (recipeToEdit.value != undefined) {
+        recipeToEdit.value.steps = recipeToEdit.value.steps.map((el, i) => {
+            el.id = `${i + 1}`
+            return el
+        })
+    }
 }
 
 </script>
@@ -144,11 +178,23 @@ function clickHandler() {
             <div class="flex flex-col sm:flex-row">
                 <div class="basis-1/3 m-5 border-slate-400">
                     <h3 class="text-xl my-2 px-2 py-1 bg-slate-300">Ingredients</h3>
-                    <ul class="my-3 space-y-1">
+                    <ul class="my-3">
                         <li
                             v-for="i in recipeToEdit?.recipeIngredients"
-                            class="border-b-[1px] last:border-b-0 p-1 border-slate-300"
-                        >{{ i.amount }} {{ i.unit.short_name }} {{ i.name }}</li>
+                            class="border-b-[1px] last:border-b-0 p-2 border-slate-300 hover:bg-slate-100 group"
+                        >
+                            <div class="flex">
+                                <span
+                                    class="grow"
+                                >{{ i.amount }} {{ i.unit.short_name }} {{ i.name }}</span>
+                                <button
+                                    class="grow-0 px-1 hidden group-hover:inline"
+                                    @click="removeIngredient(i)"
+                                >
+                                    <TrashIcon class="h-4 w-4 text-slate-500" />
+                                </button>
+                            </div>
+                        </li>
                         <li>
                             <IngredientSelectorVue
                                 :add-ingredient="(name, id, amount, unit) => recipeToEdit?.recipeIngredients.push({
@@ -163,15 +209,29 @@ function clickHandler() {
                 </div>
                 <div class="basis-2/3 m-5">
                     <h3 class="text-xl my-2 px-2 py-1 bg-slate-300">Directions</h3>
-                    <div v-for="(step, i) in recipeToEdit?.steps" class="flex my-5">
+                    <div v-for="(step, i) in recipeToEdit?.steps" class="flex my-5 group">
                         <span class="text-3xl p-1 pr-4 text-slate-500">{{ step.id }}</span>
                         <textarea
                             :ref="el => { stepRefs[i] = el }"
                             type="text"
                             v-model="step.content"
                             @input="testEvent"
-                            class="h-8 overflow-hidden resize-none grow border-2 border-white focus:border-slate-400 hover:focus:border-solid focus:ring-0 hover:border-dashed hover:border-slate-400"
+                            class="overflow-hidden resize-none grow border-2 border-white focus:border-slate-400 hover:focus:border-solid focus:ring-0 hover:border-dashed hover:border-slate-400"
                         />
+                        <div class="w-5">
+                            <button class="mx-2 mb-1 hidden group-hover:block">
+                                <ChevronUpIcon class="h-4 w-4 text-slate-500" @click="moveStep(step, -1)" />
+                            </button>
+                            <button class="mx-2 my-1 hidden group-hover:block">
+                                <ChevronDownIcon class="h-4 w-4 text-slate-500"  @click="moveStep(step, 1)" />
+                            </button>
+                            <button
+                                class="mx-2 mt-1 hidden group-hover:block"
+                                @click="removeStep(step)"
+                            >
+                                <TrashIcon class="h-4 w-4 text-slate-500" />
+                            </button>
+                        </div>
                     </div>
                     <div class="flex my-5">
                         <button @click="addNewStep">add new</button>
