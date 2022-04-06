@@ -37,7 +37,8 @@ const { result } = useQuery(gql`
 
 <template>
     <div>
-        <div class="container mx-auto max-w-4xl">
+        <p v-if="!result">Loading..</p>
+        <div  v-if="result" class="container mx-auto max-w-4xl">
             <div class="flex flex-row">
                 <img class="m-5 max-w-[200px]" src="https://via.placeholder.com/200" />
                 <div class="flex flex-col flex-grow m-5">
