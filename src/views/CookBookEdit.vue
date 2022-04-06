@@ -4,6 +4,8 @@ import { useQuery } from '@vue/apollo-composable'
 import gql from 'graphql-tag'
 import { computed, ComputedRef, watch, ref, Ref, nextTick, onMounted } from 'vue'
 import IngredientSelectorVue from '../components/IngredientSelector.vue'
+import {Unit} from '../components/IngredientSelector.vue'
+
 
 const props = defineProps({
     id: String
@@ -13,8 +15,7 @@ interface Ingredient {
     id: string,
     name: string,
     amount: number,
-    unitShort: string,
-    unitLong: string
+    unit:Unit
 }
 
 interface Step {
@@ -46,6 +47,7 @@ const { result, loading, error } = useQuery(gql`
                 name
               }
               unitByUnit {
+                id
                 long_name
                 short_name
               }
@@ -56,9 +58,16 @@ const { result, loading, error } = useQuery(gql`
     id: props.id
 })
 
-watch([result, loading], async ([newResult, newLoading], [oldResult, oldloading]) => {
+onMounted(() => handleInit(result.value, loading.value))
+
+watch([result, loading], async ([newResult, newLoading]) => {
     console.log(`watching, ${newResult} ${newLoading}`)
-    if (props.id && newResult) {
+    handleInit(newResult, newLoading)
+})
+
+
+function handleInit(newResult:any, newLoading:boolean) {
+        if (props.id && newResult) {
         let r = newResult.recipes_by_pk
         recipeToEdit.value = {
             name: r.name,
@@ -71,8 +80,7 @@ watch([result, loading], async ([newResult, newLoading], [oldResult, oldloading]
                     id: item.ingredient.id,
                     name: item.ingredient.name,
                     amount: item.amount,
-                    unitShort: item.unitByUnit.short_name,
-                    unitLong: item.unitByUnit.long_name
+                    unit:item.unitByUnit
                 }
             })
         }
@@ -87,8 +95,7 @@ watch([result, loading], async ([newResult, newLoading], [oldResult, oldloading]
         nextTick(() => resizeAllTextAreas())
 
     }
-})
-
+}
 
 const recipeToEdit: Ref<EditableRecipe | undefined> = ref(undefined)
 
@@ -151,15 +158,14 @@ function resizeAllTextAreas() {
                         <li
                             v-for="i in recipeToEdit?.recipeIngredients"
                             class="border-b-[1px] last:border-b-0 p-1 border-slate-300"
-                        >{{ i.amount }} {{ i.unitShort }} {{ i.name }}</li>
+                        >{{ i.amount }} {{ i.unit.short_name }} {{ i.name }}</li>
                         <li>
                             <IngredientSelectorVue
                                 :add-ingredient="(name, id, amount, unit) => recipeToEdit?.recipeIngredients.push({
                                     name: name,
                                     id: id,
                                     amount: amount,
-                                    unitLong: unit,
-                                    unitShort: unit
+                                    unit:unit
                                 })"
                             ></IngredientSelectorVue>
                         </li>

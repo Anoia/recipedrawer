@@ -12,27 +12,30 @@ import {
 
 import { CheckIcon, SelectorIcon } from '@heroicons/vue/solid'
 
-const props = defineProps<{ addIngredient: (name: string, id: string, amount: number, unit: string) => void }>()
+export interface Unit {
+    id: number,
+    long_name: string,
+    short_name:string
+}
+
+const props = defineProps<{ addIngredient: (name: string, id: string, amount: number, unit: Unit) => void }>()
 
 const amount = ref(1)
 
 const inputRef = ref<HTMLInputElement | null>(null)
 
-const units = [
-  { id: 1, name: "Gramm" },
-  { id: 2, name: "Liter" },
-  { id: 3, name: "Stück" },
-  { id: 4, name: "Stück" },
-  { id: 5, name: "Stück" },
-]
-
-const selectedUnit = ref(units[0])
+const selectedUnit = ref<Unit>({id:1, long_name:"l", short_name:"s"})
 
 const { result, loading } = useQuery(gql`
-    query get_ingredients {
+    query get_ingredients_and_units {
       ingredients {
         name
         id
+      }
+      units {
+        id
+        long_name
+        short_name
       }
     }
   `)
@@ -40,22 +43,20 @@ const { result, loading } = useQuery(gql`
 watch(loading, async (newLoading, oldloading) => {
   if (!newLoading && oldloading) {
     nextTick(() => {
-      console.log('testing mounted input 2')
-      console.log(inputRef.value)
       inputRef.value?.focus();
       inputRef.value?.select();
-
+      selectedUnit.value = result.value.units[0]
     })
   }
 })
 
-function doSelect(i:any) {
-  props.addIngredient(i.name, i.id, amount.value, selectedUnit.value.name)
+function doSelect(i: any) {
+  props.addIngredient(i.name, i.id, amount.value, selectedUnit.value)
   amount.value = 1
   nextTick(() => {
 
-  inputRef.value?.focus();
-  inputRef.value?.select();
+    inputRef.value?.focus();
+    inputRef.value?.select();
   })
 }
 </script>
@@ -69,7 +70,7 @@ function doSelect(i:any) {
           <ListboxButton
             class="relative w-full py-2 pl-3 pr-10 text-left bg-white rounded-lg shadow-md cursor-default focus:outline-none focus-visible:ring-2 focus-visible:ring-opacity-75 focus-visible:ring-white focus-visible:ring-offset-orange-300 focus-visible:ring-offset-2 focus-visible:border-indigo-500 sm:text-sm"
           >
-            <span class="block truncate">{{ selectedUnit.name }}</span>
+            <span class="block truncate">{{ selectedUnit.long_name }}</span>
             <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
               <SelectorIcon class="w-5 h-5 text-gray-900" />
             </span>
@@ -80,7 +81,7 @@ function doSelect(i:any) {
             <ListboxOption
               as="div"
               v-slot="{ active, selected }"
-              v-for="unit in units"
+              v-for="unit in result.units"
               :key="unit.id"
               :value="unit"
             >
@@ -101,7 +102,7 @@ function doSelect(i:any) {
                     selected ? 'font-medium' : 'font-normal',
                     'block ',
                   ]"
-                >{{ unit.name }}</span>
+                >{{ unit.long_name }}</span>
               </li>
             </ListboxOption>
           </ListboxOptions>
