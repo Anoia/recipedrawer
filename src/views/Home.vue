@@ -11,7 +11,9 @@ const { result } = useQuery(gql`
           name
         }
       }
-    `)
+    `, {
+  fetchPolicy: 'cache-and-network',
+})
 
 </script>
 

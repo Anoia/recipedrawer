@@ -27,6 +27,14 @@ await persistCache({
 const apolloClient = new ApolloClient({
   link: httpLink,
   cache,
+  defaultOptions: {
+    watchQuery: {
+      fetchPolicy: 'cache-and-network'
+    },
+    query: {
+      fetchPolicy: 'cache-first'
+    }
+  }
 })
 
 const app = createApp({

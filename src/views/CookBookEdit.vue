@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { useQuery } from '@vue/apollo-composable'
+import { useQuery, useMutation } from '@vue/apollo-composable'
 import gql from 'graphql-tag'
 import { computed, ComputedRef, watch, ref, Ref, nextTick, onMounted } from 'vue'
 import IngredientSelectorVue from '../components/IngredientSelector.vue'
@@ -130,6 +130,40 @@ function resizeAllTextAreas() {
     }
 }
 
+
+const { mutate } = useMutation(gql`
+  mutation edit ($rid: Int!, $nin: [Int!]!, $inputtest: [recipe_ingredients_insert_input!]!, $description: String, $name: String , $steps: jsonb, $image: String = "") {
+    update_recipes_by_pk(pk_columns: {id: $rid}, _set: {image: $image, name: $name, description: $description, steps: $steps}) {
+        id
+    }
+    insert_recipe_ingredients(objects: $inputtest, on_conflict: {constraint: recipe_ingredients_pkey, update_columns: [amount, unit]}) {
+        affected_rows
+    }
+    delete_recipe_ingredients(where: {recipe_id: {_eq: $rid}, ingredient_id: {_nin: $nin}}) {
+        affected_rows
+    }
+  }
+`, () => ({
+  variables: {
+    rid: props.id,
+    nin:recipeToEdit.value?.recipeIngredients.map(i=> i.id),
+    inputtest:recipeToEdit.value?.recipeIngredients.map(i=> {return {
+        ingredient_id: i.id,
+        recipe_id: props.id, 
+        unit:i.unit.id,
+        amount: i.amount
+    }}),
+    description: recipeToEdit.value?.description,
+    name: recipeToEdit.value?.name,
+    steps: recipeToEdit.value?.steps
+  },
+}))
+
+function clickHandler(){
+    mutate()
+
+}
+
 </script>
 
 <template>
@@ -187,6 +221,9 @@ function resizeAllTextAreas() {
                         <button @click="addNewStep">add new</button>
                     </div>
                 </div>
+            </div>
+            <div>
+                <button @click="clickHandler">KLICK</button>
             </div>
         </div>
     </div>
