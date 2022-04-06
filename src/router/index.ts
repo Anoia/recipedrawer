@@ -29,14 +29,14 @@ const routes = [
     props: true,
   },
   {
-    path: '/cookbookedit/:id',
-    meta: { title: 'CookBookEdit' },
+    path: '/edit/:id',
+    meta: { title: 'Edit Recipe' },
     component: CookBookEdit,
     props: true,
   },
   {
-    path: '/cookbookedit',
-    meta: { title: 'CookBookEdit' },
+    path: '/create',
+    meta: { title: 'Create new Recipe' },
     component: CookBookEdit
   },
   {

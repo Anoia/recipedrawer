@@ -68,7 +68,7 @@ const recipeToView: ComputedRef<EditableRecipe | undefined> = computed(() =>
             </div>
             <div class="flex-row">
                 <router-link
-                    :to="'/cookbookedit/' + props.id"
+                    :to="'/edit/' + props.id"
                     class="hover:underline m-10 float-right text-slate-500"
                 >Edit Recipe</router-link>
             </div>

@@ -26,8 +26,8 @@ export type EditableRecipe = {
 
 export const emptyRecipe:EditableRecipe  = 
    {
-        name: "new name",
-        description: "new desc",
+        name: "",
+        description: "",
         steps: [],
         recipeIngredients: []
     }
