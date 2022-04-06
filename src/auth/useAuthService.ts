@@ -56,6 +56,8 @@ const getIdTokenClaims = (o?: GetIdTokenClaimsOptions) => auth0Client.getIdToken
 
 const getTokenSilently = (o?: GetTokenSilentlyOptions) => auth0Client.getTokenSilently(o); 
 
+const checkSession = (o?: GetTokenSilentlyOptions) => auth0Client.checkSession(o); 
+
 const getTokenWithPopup = (o?: GetTokenWithPopupOptions) => auth0Client.getTokenWithPopup(o);
 
 const logout = (o?: LogoutOptions) => auth0Client.logout(o);
@@ -99,6 +101,7 @@ export const useAuth = () => {
         getTokenWithPopup,
         loginWithRedirect,
         logout,
-        initializeAuth
+        initializeAuth,
+        checkSession
     }
 }

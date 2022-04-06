@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
-
+import { watch, inject } from 'vue'
 import { useAuth } from '../auth/useAuthService'
+import { DefaultApolloClient, } from '@vue/apollo-composable'
+import { ApolloClient, NormalizedCacheObject, createHttpLink } from '@apollo/client/core';
 
-const { loginWithRedirect, logout, isAuthenticated, loading, user } = useAuth();
+const { loginWithRedirect, logout, isAuthenticated, user, getTokenSilently, checkSession } = useAuth();
 const { push } = useRouter();
 
 const logoutAndRedirect = () => {
@@ -12,6 +14,22 @@ const logoutAndRedirect = () => {
 }
 
 const login = () => loginWithRedirect();
+
+const actualClient = inject(DefaultApolloClient) as ApolloClient<NormalizedCacheObject>
+
+watch(isAuthenticated, (newAuth, oldAuth) => {
+    if (newAuth && !oldAuth) {
+        getTokenSilently().then(token => {
+            const httpLink = createHttpLink({
+                uri: import.meta.env.VITE_APP_GRAPHQL_HTTP as string,
+                headers: {
+                    authorization: "Bearer " + token
+                },
+            })
+            actualClient.setLink(httpLink)
+        })
+    }
+})
 
 </script>
 
