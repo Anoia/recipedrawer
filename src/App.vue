@@ -22,6 +22,7 @@ onMounted(() => {
   <main>
     <NavBarVue></NavBarVue>
     <router-view />
+     <footer class="flex bg-slate-500 items-center text-white h-32 mt-32"></footer>
   </main>
 </template>
 
