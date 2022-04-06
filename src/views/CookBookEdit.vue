@@ -1,22 +1,146 @@
+<script setup lang="ts">
+
+import { useQuery } from '@vue/apollo-composable'
+import gql from 'graphql-tag'
+import { computed, ComputedRef, watch, ref, Ref, nextTick, onMounted } from 'vue'
+import IngredientSelectorVue from '../components/IngredientSelector.vue'
+
+const props = defineProps({
+    id: String
+})
+
+interface Ingredient {
+    id: string,
+    name: string,
+    amount: number,
+    unitShort: string,
+    unitLong: string
+}
+
+interface Step {
+    id: string,
+    content: string
+}
+
+interface EditableRecipe {
+    name: string,
+    description: string,
+    steps: Step[],
+    recipeIngredients: Ingredient[]
+}
+
+const { result, loading, error } = useQuery(gql`
+        query get_recipe($id: Int!) {
+          recipes_by_pk(id: $id) {
+            id
+            name
+            description
+            steps
+            user {
+              name
+            }
+            recipe_ingredients {
+              amount
+              ingredient {
+                id
+                name
+              }
+              unitByUnit {
+                long_name
+                short_name
+              }
+            }
+          }
+        }
+      `, {
+    id: props.id
+})
+
+watch([result, loading], async ([newResult, newLoading], [oldResult, oldloading]) => {
+    console.log(`watching, ${newResult} ${newLoading}`)
+    if (props.id && newResult) {
+        let r = newResult.recipes_by_pk
+        recipeToEdit.value = {
+            name: r.name,
+            description: r.description,
+            steps: r.steps.map((s: any) => {
+                return { id: s.id, content: s.content }
+            }),
+            recipeIngredients: r.recipe_ingredients.map((item: any) => {
+                return {
+                    id: item.ingredient.id,
+                    name: item.ingredient.name,
+                    amount: item.amount,
+                    unitShort: item.unitByUnit.short_name,
+                    unitLong: item.unitByUnit.long_name
+                }
+            })
+        }
+        nextTick(() => resizeAllTextAreas())
+    } else if (!props.id || !newLoading) {
+        recipeToEdit.value = {
+            name: "new name",
+            description: "new desc",
+            steps: [],
+            recipeIngredients: []
+        }
+        nextTick(() => resizeAllTextAreas())
+
+    }
+})
+
+
+const recipeToEdit: Ref<EditableRecipe | undefined> = ref(undefined)
+
+
+const stepRefs = ref<any[]>([])
+
+
+function addNewStep() {
+    const newId = (recipeToEdit?.value?.steps.length) ?? 0
+    console.log("NEW ID: " + newId)
+    recipeToEdit?.value?.steps.push({ id: (recipeToEdit?.value?.steps.length + 1)?.toString(10), content: "newcontent" })
+
+    nextTick(() => {
+        let newStep = stepRefs.value[newId]
+        resizeTextArea(newStep)
+        newStep.focus()
+    })
+}
+
+function resizeTextArea(elem: any) {
+    elem.style.height = "auto";
+    elem.style.height = `${elem.scrollHeight}px`;
+}
+
+function testEvent(event: any) {
+    resizeTextArea(event.target)
+}
+
+function resizeAllTextAreas() {
+    for (let s of stepRefs.value) {
+        resizeTextArea(s)
+    }
+}
+
+</script>
 
 <template>
     <div>
-
-        <div class="container mx-auto max-w-4xl">
+        <p v-if="error">Error: {{ error }}</p>
+        <p v-if="!recipeToEdit">Loading..</p>
+        <div v-if="recipeToEdit" class="container mx-auto max-w-4xl">
             <div class="flex flex-row">
                 <img class="m-5 max-w-[200px]" src="https://via.placeholder.com/200" />
-                <div class="flex flex-col m-5">
-
-                    <label class="block my-10">
-                        <span class="text-gray-700">Title</span>
-                        <input
-                            type="text"
-                            class="mt-0 block w-full text-3xl font-bold text-slate-800 grow px-0.5 border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-black"
-                            placeholder=""
-                        />
-                    </label>
-
-                    <p class="relative bottom-0 grow-0 text-slate-500 text-right">written by Anoia</p>
+                <div class="flex flex-col flex-grow m-5">
+                    <input
+                        type="text"
+                        v-model="recipeToEdit.name"
+                        placeholder="Recipe title"
+                        class="mt-10 text-3xl font-bold focus:ring-0  text-slate-800 border-2 border-white focus:border-slate-400 hover:focus:border-solid hover:border-dashed hover:border-slate-400"
+                    />
+                    <input type="text" placeholder="description" class="grow my-3 focus:ring-0  text-slate-800 border-2 border-white focus:border-slate-400 hover:focus:border-solid hover:border-dashed hover:border-slate-400" v-model="recipeToEdit.description" />
+                    <p class="relative bottom-0 grow-0 text-slate-500 text-right">written by me</p>
                 </div>
             </div>
 
@@ -24,35 +148,37 @@
                 <div class="basis-1/3 m-5 border-slate-400">
                     <h3 class="text-xl my-2 px-2 py-1 bg-slate-300">Ingredients</h3>
                     <ul class="my-3 space-y-1">
-                        <li class="border-b-[1px] p-1 border-slate-300">600g Kürbis</li>
-                        <li class="border-b-[1px] p-1 border-slate-300">300g Karotte</li>
-                        <li class="p-1">200ml Kokosmilch</li>
+                        <li
+                            v-for="i in recipeToEdit?.recipeIngredients"
+                            class="border-b-[1px] last:border-b-0 p-1 border-slate-300"
+                        >{{ i.amount }} {{ i.unitShort }} {{ i.name }}</li>
+                        <li>
+                            <IngredientSelectorVue
+                                :add-ingredient="(name, id, amount, unit) => recipeToEdit?.recipeIngredients.push({
+                                    name: name,
+                                    id: id,
+                                    amount: amount,
+                                    unitLong: unit,
+                                    unitShort: unit
+                                })"
+                            ></IngredientSelectorVue>
+                        </li>
                     </ul>
                 </div>
                 <div class="basis-2/3 m-5">
                     <h3 class="text-xl my-2 px-2 py-1 bg-slate-300">Directions</h3>
-                    <div class="flex my-5">
-                        <span class="text-3xl p-1 pr-4 text-slate-500">1</span>
-                 <label class="
-                    w-full">
-                <textarea
-                  class="
-                    mt-0
-                    block
-                    w-full
-                    overflow-auto
-                    resize-y
-                    px-0.5
-                    border-0 border-b-2 border-gray-200
-                    focus:ring-0 focus:border-black
-                  "
-                  rows="2"
-                ></textarea>
-              </label>
+                    <div v-for="(step, i) in recipeToEdit?.steps" class="flex my-5">
+                        <span class="text-3xl p-1 pr-4 text-slate-500">{{ step.id }}</span>
+                        <textarea
+                            :ref="el => { stepRefs[i] = el }"
+                            type="text"
+                            v-model="step.content"
+                            @input="testEvent"
+                            class="h-8 overflow-hidden resize-none grow border-2 border-white focus:border-slate-400 hover:focus:border-solid focus:ring-0 hover:border-dashed hover:border-slate-400"
+                        />
                     </div>
                     <div class="flex my-5">
-                        <span class="text-3xl p-1 pr-4 text-slate-500">2</span>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Labore et dolore magna aliqua.adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Labore et dolore magna aliqua.</p>
+                        <button @click="addNewStep">add new</button>
                     </div>
                 </div>
             </div>

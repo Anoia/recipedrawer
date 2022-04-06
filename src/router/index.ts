@@ -29,9 +29,15 @@ const routes = [
     props: true,
   },
   {
-    path: '/cookbookedit',
+    path: '/cookbookedit/:id',
     meta: { title: 'CookBookEdit' },
     component: CookBookEdit,
+    props: true,
+  },
+  {
+    path: '/cookbookedit',
+    meta: { title: 'CookBookEdit' },
+    component: CookBookEdit
   },
   {
     path: '/:page',
