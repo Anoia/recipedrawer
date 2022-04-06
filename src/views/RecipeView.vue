@@ -38,7 +38,7 @@ const { result } = useQuery(gql`
 <template>
     <div>
         <p v-if="!result">Loading..</p>
-        <div  v-if="result" class="container mx-auto max-w-4xl">
+        <div v-if="result" class="container mx-auto max-w-4xl">
             <div class="flex flex-row">
                 <img class="m-5 max-w-[200px]" src="https://via.placeholder.com/200" />
                 <div class="flex flex-col flex-grow m-5">
@@ -59,9 +59,11 @@ const { result } = useQuery(gql`
             <div class="flex flex-col sm:flex-row">
                 <div class="basis-1/3 m-5 border-slate-400">
                     <h3 class="text-xl my-2 px-2 py-1 bg-slate-300">Ingredients</h3>
-                    <ul  class="my-3 space-y-1">
-                        <li v-for="i in result?.recipes_by_pk.recipe_ingredients" class="border-b-[1px] last:border-b-0 p-1 border-slate-300"> {{i.amount}} {{i.unitByUnit.short_name}} {{i.ingredient.name}}</li>
-
+                    <ul class="my-3 space-y-1">
+                        <li
+                            v-for="i in result?.recipes_by_pk.recipe_ingredients"
+                            class="border-b-[1px] last:border-b-0 p-1 border-slate-300"
+                        >{{ i.amount }} {{ i.unitByUnit.short_name }} {{ i.ingredient.name }}</li>
                     </ul>
                 </div>
                 <div class="basis-2/3 m-5">
@@ -73,6 +75,12 @@ const { result } = useQuery(gql`
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="flex-row">
+                <router-link
+                    :to="'/cookbookedit/' + props.id"
+                    class="hover:underline m-10 float-right text-slate-500"
+                >Edit Recipe</router-link>
             </div>
         </div>
     </div>
