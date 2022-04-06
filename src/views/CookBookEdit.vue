@@ -4,57 +4,16 @@ import { useQuery, useMutation } from '@vue/apollo-composable'
 import gql from 'graphql-tag'
 import { computed, ComputedRef, watch, ref, Ref, nextTick, onMounted } from 'vue'
 import IngredientSelectorVue from '../components/IngredientSelector.vue'
-import {Unit} from '../components/IngredientSelector.vue'
-
+import { Unit, Ingredient, Step, EditableRecipe, emptyRecipe } from '../types/Recipe'
+import { getRecipeQuery, parseGetRecipeQueryResult } from '../gql/queries'
 
 const props = defineProps({
     id: String
 })
 
-interface Ingredient {
-    id: string,
-    name: string,
-    amount: number,
-    unit:Unit
-}
 
-interface Step {
-    id: string,
-    content: string
-}
 
-interface EditableRecipe {
-    name: string,
-    description: string,
-    steps: Step[],
-    recipeIngredients: Ingredient[]
-}
-
-const { result, loading, error } = useQuery(gql`
-        query get_recipe($id: Int!) {
-          recipes_by_pk(id: $id) {
-            id
-            name
-            description
-            steps
-            user {
-              name
-            }
-            recipe_ingredients {
-              amount
-              ingredient {
-                id
-                name
-              }
-              unitByUnit {
-                id
-                long_name
-                short_name
-              }
-            }
-          }
-        }
-      `, {
+const { result, loading, error } = useQuery(getRecipeQuery, {
     id: props.id
 })
 
@@ -66,35 +25,13 @@ watch([result, loading], async ([newResult, newLoading]) => {
 })
 
 
-function handleInit(newResult:any, newLoading:boolean) {
-        if (props.id && newResult) {
-        let r = newResult.recipes_by_pk
-        recipeToEdit.value = {
-            name: r.name,
-            description: r.description,
-            steps: r.steps.map((s: any) => {
-                return { id: s.id, content: s.content }
-            }),
-            recipeIngredients: r.recipe_ingredients.map((item: any) => {
-                return {
-                    id: item.ingredient.id,
-                    name: item.ingredient.name,
-                    amount: item.amount,
-                    unit:item.unitByUnit
-                }
-            })
-        }
-        nextTick(() => resizeAllTextAreas())
+function handleInit(newResult: any, newLoading: boolean) {
+    if (props.id && newResult) {
+        recipeToEdit.value = parseGetRecipeQueryResult(newResult)
     } else if (!props.id || !newLoading) {
-        recipeToEdit.value = {
-            name: "new name",
-            description: "new desc",
-            steps: [],
-            recipeIngredients: []
-        }
-        nextTick(() => resizeAllTextAreas())
-
+        recipeToEdit.value = emptyRecipe
     }
+    nextTick(() => resizeAllTextAreas())
 }
 
 const recipeToEdit: Ref<EditableRecipe | undefined> = ref(undefined)
@@ -131,7 +68,7 @@ function resizeAllTextAreas() {
 }
 
 
-const { mutate } = useMutation(gql`
+const { mutate: newMutatename } = useMutation(gql`
   mutation edit ($rid: Int!, $nin: [Int!]!, $inputtest: [recipe_ingredients_insert_input!]!, $description: String, $name: String , $steps: jsonb, $image: String = "") {
     update_recipes_by_pk(pk_columns: {id: $rid}, _set: {image: $image, name: $name, description: $description, steps: $steps}) {
         id
@@ -144,23 +81,61 @@ const { mutate } = useMutation(gql`
     }
   }
 `, () => ({
-  variables: {
-    rid: props.id,
-    nin:recipeToEdit.value?.recipeIngredients.map(i=> i.id),
-    inputtest:recipeToEdit.value?.recipeIngredients.map(i=> {return {
-        ingredient_id: i.id,
-        recipe_id: props.id, 
-        unit:i.unit.id,
-        amount: i.amount
-    }}),
-    description: recipeToEdit.value?.description,
-    name: recipeToEdit.value?.name,
-    steps: recipeToEdit.value?.steps
-  },
+    variables: {
+        rid: props.id,
+        nin: recipeToEdit.value?.recipeIngredients.map(i => i.id),
+        inputtest: recipeToEdit.value?.recipeIngredients.map(i => {
+            return {
+                ingredient_id: i.id,
+                recipe_id: props.id,
+                unit: i.unit.id,
+                amount: i.amount
+            }
+        }),
+        description: recipeToEdit.value?.description,
+        name: recipeToEdit.value?.name,
+        steps: recipeToEdit.value?.steps
+    },
 }))
 
-function clickHandler(){
-    mutate()
+const { mutate: mutateCreate } = useMutation(gql`
+mutation create_recipe($description: String, $name: String, $steps: jsonb, $data: [recipe_ingredients_insert_input!]!) {
+  insert_recipes_one(object: {description: $description, name: $name, steps: $steps, recipe_ingredients: {data: $data}}) {
+    id
+    description
+    name
+    steps
+    recipe_ingredients {
+      amount
+      ingredient_id
+      unit
+    }
+  }
+}
+`, () => ({
+    variables: {
+        description: recipeToEdit.value?.description,
+        name:recipeToEdit.value?.name,
+        steps: recipeToEdit.value?.steps,
+        data: recipeToEdit.value?.recipeIngredients.map(i => {
+            return {
+                ingredient_id: i.id,
+                recipe_id: props.id,
+                unit: i.unit.id,
+                amount: i.amount
+            }
+        })
+        }
+}))
+
+function clickHandler() {
+
+    if (props.id) {
+        newMutatename()
+    } else {
+        mutateCreate()
+    }
+
 
 }
 
@@ -178,9 +153,14 @@ function clickHandler(){
                         type="text"
                         v-model="recipeToEdit.name"
                         placeholder="Recipe title"
-                        class="mt-10 text-3xl font-bold focus:ring-0  text-slate-800 border-2 border-white focus:border-slate-400 hover:focus:border-solid hover:border-dashed hover:border-slate-400"
+                        class="mt-10 text-3xl font-bold focus:ring-0 text-slate-800 border-2 border-white focus:border-slate-400 hover:focus:border-solid hover:border-dashed hover:border-slate-400"
                     />
-                    <input type="text" placeholder="description" class="grow my-3 focus:ring-0  text-slate-800 border-2 border-white focus:border-slate-400 hover:focus:border-solid hover:border-dashed hover:border-slate-400" v-model="recipeToEdit.description" />
+                    <input
+                        type="text"
+                        placeholder="description"
+                        class="grow my-3 focus:ring-0 text-slate-800 border-2 border-white focus:border-slate-400 hover:focus:border-solid hover:border-dashed hover:border-slate-400"
+                        v-model="recipeToEdit.description"
+                    />
                     <p class="relative bottom-0 grow-0 text-slate-500 text-right">written by me</p>
                 </div>
             </div>
@@ -199,7 +179,7 @@ function clickHandler(){
                                     name: name,
                                     id: id,
                                     amount: amount,
-                                    unit:unit
+                                    unit: unit
                                 })"
                             ></IngredientSelectorVue>
                         </li>
