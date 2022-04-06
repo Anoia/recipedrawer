@@ -1,6 +1,12 @@
+<script setup lang="ts">
+const props = defineProps({
+  id: String
+})
+</script>
+
 <template>
     <div>
-
+        <p>Recipe number {{id}}</p>
         <div class="container mx-auto max-w-4xl">
             <div class="flex flex-row">
                 <img class="m-5 max-w-[200px]" src="https://via.placeholder.com/200" />

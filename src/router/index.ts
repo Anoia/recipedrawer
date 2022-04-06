@@ -3,7 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 //Routes
 import Home from '../views/Home.vue'
 import About from '../views/About.vue'
-import CookBook from '../views/CookBook.vue'
+import RecipeView from '../views/RecipeView.vue'
 import CookBookEdit from '../views/CookBookEdit.vue'
 import NotFound from '../views/NotFound.vue'
 
@@ -23,9 +23,10 @@ const routes = [
     // component: () => import('../views/About.vue')
   },
   {
-    path: '/cookbook',
-    meta: { title: 'CookBook' },
-    component: CookBook,
+    path: '/recipe/:id',
+    meta: { title: 'RecipeView' },
+    component: RecipeView,
+    props: true,
   },
   {
     path: '/cookbookedit',

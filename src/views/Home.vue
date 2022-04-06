@@ -1,8 +1,22 @@
 <script setup lang="ts">
 import HelloWorld from '../components/HelloWorld.vue'
+import { useQuery } from '@vue/apollo-composable'
+import { watch } from 'vue'
+import gql from 'graphql-tag'
 import { ref } from 'vue'
 
 const count = ref(0)
+
+const { result } = useQuery(gql`
+      query getRecipes {
+        recipes {
+          description
+          id
+          name
+        }
+      }
+    `)
+
 </script>
 
 <template>
@@ -21,6 +35,14 @@ const count = ref(0)
         to="/cookbook"
         class="inline-flex items-center justify-center rounded-md border border-transparent bg-slate-600 px-4 py-2 text-base font-medium leading-6 text-white transition duration-150 ease-in-out hover:bg-slate-500 focus:outline-none"
       >CookBook</router-link>
+    </div>
+    <div>
+      <p v-if="!result">LOADING</p>
+      <ul v-if="result">
+        <li v-for="recipe of result.recipes" :key="recipe.id">
+          <router-link :to="'/recipe/'+ recipe.id">{{ recipe.name }} {{ recipe.description }}</router-link>
+        </li>
+      </ul>
     </div>
   </div>
 </template>

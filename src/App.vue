@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { useAuth } from './auth/useAuthService'
-
 import NavBarVue from './components/NavBar.vue';
-
 
 // You can import 'loading' here and show a global loader if that's more convenient 
 const { initializeAuth } = useAuth();
@@ -16,6 +14,25 @@ onMounted(() => {
   })
 }
 );
+
+import { ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client/core'
+
+// HTTP connection to the API
+const httpLink = createHttpLink({
+  // You should use an absolute URL here
+  uri: import.meta.env.VITE_APP_GRAPHQL_HTTP as string,
+})
+
+// Cache implementation
+const cache = new InMemoryCache()
+
+// Create the apollo client
+const apolloClient = new ApolloClient({
+  link: httpLink,
+  cache,
+})
+
+
 </script>
 
 <template>
