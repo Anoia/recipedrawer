@@ -10,6 +10,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
     (e: 'selectItem', item: any): void
+    (e: 'notFound', name: string): void
 }>()
 
 const inputId = props.id || `autocomplete_input_${(Math.random() * 1000).toFixed()}`
@@ -65,6 +66,8 @@ function onArrowUp() {
 function selectCurrentSelection() {
     if (currentSelection.value) {
         selectItem(currentSelection.value)
+    }else if (filteredItems.value.length == 0){
+        notFound()
     }
 }
 
@@ -73,6 +76,14 @@ function selectItem(item: any) {
     currentSelectionIndex.value = 0
     document.getElementById(inputId)?.blur();
     emit('selectItem', item)
+    inputTest.value = ""
+}
+
+function notFound() {
+    let name = inputTest.value
+    currentSelectionIndex.value = 0
+    document.getElementById(inputId)?.blur();
+    emit('notFound', name)
     inputTest.value = ""
 }
 
@@ -101,7 +112,6 @@ function scrollSelectionIntoView() {
             v-if="isListVisible"
             class="absolute w-full max-h-24 bg-white overflow-y-auto z-10 border-2 border-slate-600"
         >
-       
             <ul>
                 <li
                     v-for="(i, index) in filteredItems"
@@ -109,9 +119,14 @@ function scrollSelectionIntoView() {
                     :class="{ 'bg-slate-400': currentSelectionIndex == index }"
                     @mouseenter="currentSelectionIndex = index"
                     @mousedown.prevent
-				    @click="selectItem(i)"
+                    @click="selectItem(i)"
                 >{{ props.projection(i) }}</li>
-                <li v-if="filteredItems.length == 0" class="bg-slate-400 font-normal">add new</li>
+                <li
+                    v-if="filteredItems.length == 0"
+                    class="bg-slate-400 font-normal"
+                    @mousedown.prevent
+                    @click="notFound"
+                >add new</li>
             </ul>
         </div>
     </div>

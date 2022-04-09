@@ -11,7 +11,8 @@ import {
 } from '@headlessui/vue'
 
 import { CheckIcon, SelectorIcon } from '@heroicons/vue/solid'
-import {Unit} from '../types/recipe'
+import { Unit } from '../types/recipe'
+import IngredientCreation from './IngredientCreation.vue'
 
 
 const props = defineProps<{ addIngredient: (name: string, id: string, amount: number, unit: Unit) => void }>()
@@ -20,7 +21,7 @@ const amount = ref(1)
 
 const inputRef = ref<HTMLInputElement | null>(null)
 
-const selectedUnit = ref<Unit>({id:1, long_name:"l", short_name:"s"})
+const selectedUnit = ref<Unit>({ id: 1, long_name: "l", short_name: "s" })
 
 const { result, loading } = useQuery(gql`
     query get_ingredients_and_units {
@@ -57,9 +58,26 @@ function doSelect(i: any) {
     inputRef.value?.select();
   })
 }
+
+function addNewIngredient(name: string) {
+
+  console.log(`ADDING NEW INGREDIENT ${name}`)
+  newIngredientName.value=name
+  showCreateIngredientDialog.value=true
+}
+function hideDialog(){
+  showCreateIngredientDialog.value = false
+}
+
+const newIngredientName = ref("")
+const showCreateIngredientDialog = ref(false)
+
 </script>
 
 <template>
+
+<IngredientCreation :open="showCreateIngredientDialog" :input="newIngredientName" @close="hideDialog" @created="doSelect"/>
+
   <div class="flex" v-if="!loading">
     <input type="text" class="w-10" placeholder="1" v-model="amount" ref="inputRef" />
     <div class>
@@ -113,6 +131,8 @@ function doSelect(i: any) {
       :items="result.ingredients"
       :projection="(i: any) => i.name"
       @select-item="doSelect"
+      @not-found="addNewIngredient"
     ></AutocompleteInputVue>
   </div>
+
 </template>

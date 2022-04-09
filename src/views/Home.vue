@@ -12,7 +12,7 @@ const { result } = useQuery(gql`
           image
         }
       }
-    `, {
+    `,null, {
   fetchPolicy: 'cache-and-network',
 })
 
