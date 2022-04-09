@@ -2,12 +2,13 @@
 
 import { useQuery, useMutation } from '@vue/apollo-composable'
 import gql from 'graphql-tag'
-import { computed, ComputedRef, watch, ref, Ref, nextTick, onMounted } from 'vue'
+import { computed, ComputedRef, watch, ref, Ref, nextTick, onMounted, reactive } from 'vue'
 import IngredientSelectorVue from '../components/IngredientSelector.vue'
-import { Unit, Ingredient, Step, EditableRecipe, emptyRecipe } from '../types/recipe'
+import { Unit, Ingredient, Step, EditableRecipe, emptyRecipe, getImageUrl } from '../types/recipe'
 import { getRecipeQuery, parseGetRecipeQueryResult, createRecipeMutation, editRecipeMutation } from '../gql/queries'
 
 import { TrashIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/vue/outline'
+import axios from "axios"
 
 const props = defineProps({
     id: String
@@ -38,6 +39,11 @@ function handleInit(newResult: any, newLoading: boolean) {
 
 const recipeToEdit: Ref<EditableRecipe | undefined> = ref(undefined)
 
+const imageUrl = computed(() => {
+    if (recipeToEdit.value) {
+        return getImageUrl(recipeToEdit.value.image, 200, 200)
+    } else return 'https://via.placeholder.com/200'
+})
 
 const stepRefs = ref<any[]>([])
 
@@ -84,7 +90,8 @@ const { mutate: newMutatename } = useMutation(editRecipeMutation, () => ({
         }),
         description: recipeToEdit.value?.description,
         name: recipeToEdit.value?.name,
-        steps: recipeToEdit.value?.steps
+        steps: recipeToEdit.value?.steps,
+        image: recipeToEdit.value?.image
     },
 }))
 
@@ -149,6 +156,43 @@ function resetStepIds() {
     }
 }
 
+const selectedFileToUpload = ref("")
+
+const displayUploadBtn = computed(() => { if (selectedFileToUpload.value && selectedFileToUpload.value != "") return true; else return false })
+
+function onFileSelected(event: any) {
+    selectedFileToUpload.value = event.target.files[0]
+}
+
+function uploadFile() {
+
+    let file = selectedFileToUpload.value
+    let formData = new FormData()
+
+    console.log(file);
+
+    formData.append("file", file)
+    formData.append("upload_preset", "cookbook_recipe")
+
+    axios({
+        url: "https://api.cloudinary.com/v1_1/ddqdrc3ak/image/upload",  // todo config
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: formData
+    })
+        .then((res) => {
+            console.log(res);
+            if(recipeToEdit.value){
+                recipeToEdit.value.image = res?.data?.public_id ?? ""
+            }
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+}
+
 </script>
 
 <template>
@@ -157,8 +201,13 @@ function resetStepIds() {
         <p v-if="!recipeToEdit">Loading..</p>
         <div v-if="recipeToEdit" class="container mx-auto max-w-4xl">
             <div class="flex flex-row">
-                <img class="m-5 max-w-[200px]" src="https://via.placeholder.com/200" />
-                <div class="flex flex-col flex-grow m-5">
+                <div class="flex flex-col items-stretch">
+                    <img class="m-5 max-w-[200px]" :src="imageUrl" />
+
+                    <input type="file" @change="onFileSelected" />
+                    <button v-if="displayUploadBtn" @click="uploadFile">Upload</button>
+                </div>
+                <div class="flex flex-col flex-grow mx-5 mt-5">
                     <input
                         type="text"
                         v-model="recipeToEdit.name"
@@ -168,9 +217,10 @@ function resetStepIds() {
                     <input
                         type="text"
                         placeholder="description"
-                        class="grow my-3 focus:ring-0 text-slate-800 border-2 border-white focus:border-slate-400 hover:focus:border-solid hover:border-dashed hover:border-slate-400"
+                        class="grow-0 my-3 focus:ring-0 text-slate-800 border-2 border-white focus:border-slate-400 hover:focus:border-solid hover:border-dashed hover:border-slate-400"
                         v-model="recipeToEdit.description"
                     />
+                    <div class="grow"></div>
                     <p class="relative bottom-0 grow-0 text-slate-500 text-right">written by me</p>
                 </div>
             </div>
@@ -220,10 +270,16 @@ function resetStepIds() {
                         />
                         <div class="w-5">
                             <button class="mx-2 mb-1 hidden group-hover:block">
-                                <ChevronUpIcon class="h-4 w-4 text-slate-500" @click="moveStep(step, -1)" />
+                                <ChevronUpIcon
+                                    class="h-4 w-4 text-slate-500"
+                                    @click="moveStep(step, -1)"
+                                />
                             </button>
                             <button class="mx-2 my-1 hidden group-hover:block">
-                                <ChevronDownIcon class="h-4 w-4 text-slate-500"  @click="moveStep(step, 1)" />
+                                <ChevronDownIcon
+                                    class="h-4 w-4 text-slate-500"
+                                    @click="moveStep(step, 1)"
+                                />
                             </button>
                             <button
                                 class="mx-2 mt-1 hidden group-hover:block"
