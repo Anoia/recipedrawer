@@ -3,7 +3,7 @@ import { DefaultApolloClient } from '@vue/apollo-composable'
 import App from './App.vue'
 import './index.css'
 import { persistCache, LocalStorageWrapper } from 'apollo3-cache-persist';
-
+import {Cloudinary} from '@cloudinary/url-gen';
 
 // Router
 import { Router } from './router';
@@ -37,9 +37,19 @@ const apolloClient = new ApolloClient({
   }
 })
 
+const cloudinary = new Cloudinary({
+  cloud: {
+    cloudName: 'ddqdrc3ak'
+  },
+  url: {
+    secure: true
+  }
+});
+
 const app = createApp({
     setup () {
-      provide(DefaultApolloClient, apolloClient)
+      provide(DefaultApolloClient, apolloClient),
+      provide("cloudinary", cloudinary)
     },
   
     render: () => h(App),

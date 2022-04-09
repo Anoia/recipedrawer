@@ -3,7 +3,7 @@
 import { useQuery } from '@vue/apollo-composable'
 import gql from 'graphql-tag'
 import { getRecipeQuery, parseGetRecipeQueryResult } from '../gql/queries'
-import { EditableRecipe } from '../types/recipe'
+import { EditableRecipe, getImageUrl } from '../types/recipe'
 import { Ref, ref, ComputedRef, computed } from 'vue'
 
 const props = defineProps({
@@ -11,7 +11,9 @@ const props = defineProps({
 })
 
 const { result } = useQuery(getRecipeQuery, {
-    id: props.id
+    id: props.id, 
+  fetchPolicy: 'cache-and-network',
+
 })
 
 
@@ -23,6 +25,12 @@ const recipeToView: ComputedRef<EditableRecipe | undefined> = computed(() =>
     }}
 )
 
+const imageUrl = computed(() => {
+    if(recipeToView.value){
+       return getImageUrl(recipeToView.value.image, 200, 200) 
+    }else return 'https://via.placeholder.com/200'
+})
+
 </script>
 
 <template>
@@ -30,7 +38,7 @@ const recipeToView: ComputedRef<EditableRecipe | undefined> = computed(() =>
         <p v-if="!recipeToView">Loading..</p>
         <div v-if="recipeToView" class="container mx-auto max-w-4xl">
             <div class="flex flex-row">
-                <img class="m-5 max-w-[200px]" src="https://via.placeholder.com/200" />
+                <img class="m-5 max-w-[200px]" :src="imageUrl" />
                 <div class="flex flex-col flex-grow m-5">
                     <h2
                         class="mt-10 text-3xl font-bold text-slate-800"

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useQuery } from '@vue/apollo-composable'
-
+import { getImageUrl } from '../types/recipe'
 import gql from 'graphql-tag'
 
 const { result } = useQuery(gql`
@@ -9,6 +9,7 @@ const { result } = useQuery(gql`
           description
           id
           name
+          image
         }
       }
     `, {
@@ -28,7 +29,7 @@ const { result } = useQuery(gql`
           class="flex items-center m-5 space-x-5"
           :to="'/recipe/' + recipe.id"
         >
-          <img class="max-w-[100px]" src="https://via.placeholder.com/100" />
+          <img class="max-w-[100px]" :src="getImageUrl(recipe.image, 100, 100)" />
           <span>
             <h3 class="text-2xl">{{ recipe.name }}</h3>
             <p class="text-l">{{ recipe.description }}</p>

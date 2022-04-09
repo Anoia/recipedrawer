@@ -14,6 +14,11 @@ const routes = [
     component: Home,
   },
   {
+    path: '/browse',
+    meta: { title: 'Browse Recipes' },
+    component: Home,
+  },
+  {
     path: '/about',
     meta: { title: 'About' },
     component: About,
@@ -24,7 +29,7 @@ const routes = [
   },
   {
     path: '/recipe/:id',
-    meta: { title: 'RecipeView' },
+    meta: { title: 'View Recipe' },
     component: RecipeView,
     props: true,
   },

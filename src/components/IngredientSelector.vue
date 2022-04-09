@@ -34,7 +34,9 @@ const { result, loading } = useQuery(gql`
         short_name
       }
     }
-  `)
+  `, {
+  fetchPolicy: 'cache-and-network',
+})
 
 watch(loading, async (newLoading, oldloading) => {
   if (!newLoading && oldloading) {

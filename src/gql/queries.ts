@@ -7,6 +7,7 @@ export const getRecipeQuery = gql`
       id
       name
       description
+      image
       steps
       user {
         name
@@ -32,6 +33,7 @@ export function parseGetRecipeQueryResult(result: any): EditableRecipe {
   return {
     name: recipe.name,
     description: recipe.description,
+    image: recipe.image,
     steps: recipe.steps.map((s: any) => {
       return { id: s.id, content: s.content }
     }),
