@@ -7,7 +7,7 @@ import IngredientSelectorVue from '../components/IngredientSelector.vue'
 import { Unit, Ingredient, Step, EditableRecipe, emptyRecipe, getImageUrl } from '../types/recipe'
 import { getRecipeQuery, parseGetRecipeQueryResult, createRecipeMutation, editRecipeMutation } from '../gql/queries'
 
-import { TrashIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/vue/outline'
+import { TrashIcon, ChevronUpIcon, ChevronDownIcon, PlusIcon } from '@heroicons/vue/outline'
 import axios from "axios"
 
 const props = defineProps({
@@ -50,8 +50,7 @@ const stepRefs = ref<any[]>([])
 
 function addNewStep() {
     const newId = (recipeToEdit?.value?.steps.length) ?? 0
-    console.log("NEW ID: " + newId)
-    recipeToEdit?.value?.steps.push({ id: (recipeToEdit?.value?.steps.length + 1)?.toString(10), content: "newcontent" })
+    recipeToEdit?.value?.steps.push({ id: (recipeToEdit?.value?.steps.length + 1)?.toString(10), content: "" })
 
     nextTick(() => {
         let newStep = stepRefs.value[newId]
@@ -184,7 +183,7 @@ function uploadFile() {
     })
         .then((res) => {
             console.log(res);
-            if(recipeToEdit.value){
+            if (recipeToEdit.value) {
                 recipeToEdit.value.image = res?.data?.public_id ?? ""
             }
         })
@@ -266,6 +265,7 @@ function uploadFile() {
                             type="text"
                             v-model="step.content"
                             @input="testEvent"
+                            placeholder="..."
                             class="overflow-hidden resize-none grow border-2 border-white focus:border-slate-400 hover:focus:border-solid focus:ring-0 hover:border-dashed hover:border-slate-400"
                         />
                         <div class="w-5">
@@ -289,13 +289,18 @@ function uploadFile() {
                             </button>
                         </div>
                     </div>
-                    <div class="flex my-5">
-                        <button @click="addNewStep">add new</button>
+                    <div class="flex my-5 justify-center">
+                        <button @click="addNewStep">
+                            <PlusIcon class="h-8 w-8 hover:h-9 hover:w-9 text-slate-500" />
+                        </button>
                     </div>
                 </div>
             </div>
-            <div>
-                <button @click="clickHandler">KLICK</button>
+            <div class="flex justify-end">
+                <button
+                    @click="clickHandler"
+                    class="bg-slate-500 hover:bg-slate-600 text-white p-3 w-40 m-10"
+                >Save</button>
             </div>
         </div>
     </div>
