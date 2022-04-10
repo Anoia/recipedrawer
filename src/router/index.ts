@@ -4,6 +4,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Home from '../views/Home.vue'
 import About from '../views/About.vue'
 import RecipeView from '../views/RecipeView.vue'
+import UserProfile from '../views/UserProfile.vue'
 import CookBookEdit from '../views/CookBookEdit.vue'
 import NotFound from '../views/NotFound.vue'
 
@@ -43,6 +44,12 @@ const routes = [
     path: '/create',
     meta: { title: 'Create new Recipe' },
     component: CookBookEdit
+  },
+  {
+    path: '/user/:username',
+    meta: { title: 'View User' },
+    component: UserProfile,
+    props: true,
   },
   {
     path: '/:page',

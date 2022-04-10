@@ -20,6 +20,7 @@ const actualClient = inject(DefaultApolloClient) as ApolloClient<NormalizedCache
 watch(isAuthenticated, (newAuth, oldAuth) => {
     if (newAuth && !oldAuth) {
         getTokenSilently().then(token => {
+        console.log(user.value)
             const httpLink = createHttpLink({
                 uri: import.meta.env.VITE_APP_GRAPHQL_HTTP as string,
                 headers: {
@@ -45,7 +46,7 @@ watch(isAuthenticated, (newAuth, oldAuth) => {
         <span v-if="isAuthenticated" class="flex mx-5 items-center">
             <span class="flex flex-col items-end">
                 <p>Moin</p>
-                <p>{{ user?.nickname }}!</p>
+                <p>{{ user?.["https://recipedrawer.herokuapp.com/username"] }}!</p>
                 <button
                     class="underline font-normal text-sm hover:text-slate-200"
                     @click="logoutAndRedirect"
