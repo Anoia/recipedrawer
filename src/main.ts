@@ -18,6 +18,7 @@ const httpLink = createHttpLink({
 // Cache implementation
 const cache = new InMemoryCache()
 
+
 // await persistCache({
 //   cache,
 //   storage: new LocalStorageWrapper(window.localStorage),
