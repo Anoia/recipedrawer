@@ -5,6 +5,7 @@ import gql from 'graphql-tag'
 import { getRecipeQuery, parseGetRecipeQueryResult } from '../gql/queries'
 import { EditableRecipe, getImageUrl } from '../types/recipe'
 import { Ref, ref, ComputedRef, computed } from 'vue'
+import { useAuth } from '../auth/useAuthService'
 
 const props = defineProps({
     id: String
@@ -30,6 +31,8 @@ const imageUrl = computed(() => {
        return getImageUrl(recipeToView.value.image, 200, 200) 
     }else return 'https://via.placeholder.com/200'
 })
+
+const {user:loggedInUser} = useAuth();
 
 </script>
 
@@ -74,7 +77,7 @@ const imageUrl = computed(() => {
                     </div>
                 </div>
             </div>
-            <div class="flex-row">
+            <div v-if="result?.recipes_by_pk.user.name == loggedInUser?.['https://recipedrawer.herokuapp.com/username']" class="flex-row">
                 <router-link
                     :to="'/edit/' + props.id"
                     class="hover:underline m-10 float-right text-slate-500"
