@@ -62,10 +62,10 @@ function doSelect(i: any) {
 function addNewIngredient(name: string) {
 
   console.log(`ADDING NEW INGREDIENT ${name}`)
-  newIngredientName.value=name
-  showCreateIngredientDialog.value=true
+  newIngredientName.value = name
+  showCreateIngredientDialog.value = true
 }
-function hideDialog(){
+function hideDialog() {
   showCreateIngredientDialog.value = false
 }
 
@@ -75,8 +75,12 @@ const showCreateIngredientDialog = ref(false)
 </script>
 
 <template>
-
-<IngredientCreation :open="showCreateIngredientDialog" :input="newIngredientName" @close="hideDialog" @created="doSelect"/>
+  <IngredientCreation
+    :open="showCreateIngredientDialog"
+    :input="newIngredientName"
+    @close="hideDialog"
+    @created="doSelect"
+  />
 
   <div class="flex" v-if="!loading">
     <input type="text" class="w-10" placeholder="1" v-model="amount" ref="inputRef" />
@@ -134,5 +138,4 @@ const showCreateIngredientDialog = ref(false)
       @not-found="addNewIngredient"
     ></AutocompleteInputVue>
   </div>
-
 </template>

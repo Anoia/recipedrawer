@@ -20,10 +20,20 @@ watch(() => props.open, (newValue: boolean) => {
 
 const ingredientName = ref(props.input)
 
+const inputField = ref(null)
 
 function setClosed() {
     emit('close')
 }
+
+function setIsOpen(value: any) {
+    console.log("SET IS OPEN" + value)
+
+    if (!value) {
+        setClosed()
+    }
+}
+
 
 function create() {
     console.log(`creating ${ingredientName.value}`)
@@ -61,22 +71,29 @@ onDone(result => {
 
 
 <template>
-    <Dialog :open="props.open" @close="setClosed" class="fixed inset-0 z-10 overflow-y-auto">
-        <div class="flex items-center justify-center min-h-screen">
+    <Dialog
+        :open="props.open"
+        :initialFocus="inputField"
+        @close="setIsOpen"
+        class="fixed inset-x-0 top-36 z-10 overflow-y-auto p-0 w-1/4 min-w-fit"
+    >
+        <div>
             <DialogOverlay class="fixed inset-0 bg-black opacity-30" />
 
-            <div class="relative max-w-sm mx-auto bg-white rounded">
-                <DialogTitle>Create new Ingredient</DialogTitle>
-                <DialogDescription>Please enter the ingredient name</DialogDescription>
-                <!-- 
-        <p>
-          Are you sure you want to deactivate your account? All of your data will be
-          permanently removed. This action cannot be undone.
-                </p>-->
-                <input type="text" placeholder="Name" v-model="ingredientName" />
-                <br />
-                <button @click="create">Create</button>
-                <button @click="setClosed">Cancel</button>
+            <div class="relative w-full mx-auto bg-white rounded p-10 flex flex-col">
+                <DialogTitle class="my-3 text-2xl font-bold text-slate-700">Create new Ingredient</DialogTitle>
+                <DialogDescription class="my-1">Please enter the ingredient name:</DialogDescription>
+                <input type="text" ref="inputField" placeholder="Name" v-model="ingredientName" />
+                <div class="flex flex-row my-5 space-x-5">
+                    <button
+                        @click="setClosed"
+                        class="text-white bg-slate-300 hover:bg-slate-400 basis-1/2"
+                    >Cancel</button>
+                    <button
+                        @click="create"
+                        class="text-white bg-slate-500 hover:bg-slate-600 p-3 basis-1/2"
+                    >Create</button>
+                </div>
             </div>
         </div>
     </Dialog>
