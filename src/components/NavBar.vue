@@ -9,7 +9,7 @@ const { loginWithRedirect, logout, isAuthenticated, user, getTokenSilently, chec
 const { push } = useRouter();
 
 const logoutAndRedirect = () => {
-    logout();
+    logout({returnTo: window.location.origin});
     push({ path: "/" });
 }
 
