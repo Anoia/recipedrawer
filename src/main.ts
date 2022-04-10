@@ -18,10 +18,10 @@ const httpLink = createHttpLink({
 // Cache implementation
 const cache = new InMemoryCache()
 
-await persistCache({
-  cache,
-  storage: new LocalStorageWrapper(window.localStorage),
-});
+// await persistCache({
+//   cache,
+//   storage: new LocalStorageWrapper(window.localStorage),
+// });   // TODO fix error in build
 
 // Create the apollo client
 const apolloClient = new ApolloClient({
