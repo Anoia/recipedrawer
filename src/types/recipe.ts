@@ -43,10 +43,12 @@ export function getImageUrl(
   }
 }
 
-export const emptyRecipe: EditableRecipe = {
-  name: '',
-  description: '',
-  image: '',
-  steps: [],
-  recipeIngredients: [],
+export function getEmptyRecipe(): EditableRecipe {
+  return {
+    name: '',
+    description: '',
+    image: '',
+    steps: [],
+    recipeIngredients: [],
+  }
 }

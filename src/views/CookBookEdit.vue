@@ -1,29 +1,29 @@
 <script setup lang="ts">
 
 import { useQuery, useMutation } from '@vue/apollo-composable'
-import gql from 'graphql-tag'
-import { computed, ComputedRef, watch, ref, Ref, nextTick, onMounted, reactive } from 'vue'
+import { computed, watch, ref, Ref, nextTick, onMounted } from 'vue'
 import IngredientSelectorVue from '../components/IngredientSelector.vue'
-import { Unit, Ingredient, Step, EditableRecipe, emptyRecipe, getImageUrl } from '../types/recipe'
+import { Ingredient, Step, EditableRecipe, getEmptyRecipe, getImageUrl } from '../types/recipe'
 import { getRecipeQuery, parseGetRecipeQueryResult, createRecipeMutation, editRecipeMutation } from '../gql/queries'
 
 import { TrashIcon, ChevronUpIcon, ChevronDownIcon, PlusIcon } from '@heroicons/vue/outline'
 import axios from "axios"
+import { useRouter } from 'vue-router'
 
 const props = defineProps({
     id: String
 })
 
-
+const router = useRouter()
 
 const { result, loading, error } = useQuery(getRecipeQuery, {
     id: props.id
 })
 
-onMounted(() => handleInit(result.value, loading.value))
+onMounted(() => {
+    handleInit(result.value, loading.value)})
 
 watch([result, loading], async ([newResult, newLoading]) => {
-    console.log(`watching, ${newResult} ${newLoading}`)
     handleInit(newResult, newLoading)
 })
 
@@ -32,7 +32,7 @@ function handleInit(newResult: any, newLoading: boolean) {
     if (props.id && newResult) {
         recipeToEdit.value = parseGetRecipeQueryResult(newResult)
     } else if (!props.id || !newLoading) {
-        recipeToEdit.value = emptyRecipe
+        recipeToEdit.value = getEmptyRecipe()
     }
     nextTick(() => resizeAllTextAreas())
 }
@@ -74,8 +74,7 @@ function resizeAllTextAreas() {
     }
 }
 
-
-const { mutate: newMutatename } = useMutation(editRecipeMutation, () => ({
+const { mutate: newMutatename, onDone:onDoneMutate } = useMutation(editRecipeMutation, () => ({
     variables: {
         rid: props.id,
         nin: recipeToEdit.value?.recipeIngredients.map(i => i.id),
@@ -94,7 +93,7 @@ const { mutate: newMutatename } = useMutation(editRecipeMutation, () => ({
     },
 }))
 
-const { mutate: mutateCreate } = useMutation(createRecipeMutation, () => ({
+const { mutate: mutateCreate, onDone:onDoneCreate } = useMutation(createRecipeMutation, () => ({
     variables: {
         description: recipeToEdit.value?.description,
         name: recipeToEdit.value?.name,
@@ -109,6 +108,18 @@ const { mutate: mutateCreate } = useMutation(createRecipeMutation, () => ({
         })
     }
 }))
+
+onDoneCreate(r => {
+    console.log(r)
+    let id = r.data.insert_recipes_one.id
+    router.push(`/recipe/${id}`)
+})
+
+onDoneMutate(r => {
+    console.log(r)
+    let id = r.data.update_recipes_by_pk.id
+    router.push(`/recipe/${id}`)
+})
 
 function clickHandler() {
     if (props.id) {
@@ -168,8 +179,6 @@ function uploadFile() {
     let file = selectedFileToUpload.value
     let formData = new FormData()
 
-    console.log(file);
-
     formData.append("file", file)
     formData.append("upload_preset", "cookbook_recipe")
 
@@ -196,7 +205,7 @@ function uploadFile() {
 
 <template>
     <div>
-        <p v-if="error">Error: {{ error }}</p>
+        <p v-if="error && props.id">Error: {{ error }}</p>
         <p v-if="!recipeToEdit">Loading..</p>
         <div v-if="recipeToEdit" class="container mx-auto max-w-4xl">
             <div class="flex flex-row">
