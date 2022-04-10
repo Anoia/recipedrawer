@@ -208,7 +208,7 @@ function uploadFile() {
         <p v-if="error && props.id">Error: {{ error }}</p>
         <p v-if="!recipeToEdit">Loading..</p>
         <div v-if="recipeToEdit" class="container mx-auto max-w-4xl">
-            <div class="flex flex-row">
+            <div class="flex flex-col sm:flex-row">
                 <div class="flex flex-col items-stretch">
                     <img class="m-5 max-w-[200px]" :src="imageUrl" />
 
