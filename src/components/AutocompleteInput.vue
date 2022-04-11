@@ -2,6 +2,7 @@
 import { reactive, ref, computed } from 'vue'
 
 
+
 const props = defineProps<{
     items: any[],
     projection: Function,
@@ -66,7 +67,7 @@ function onArrowUp() {
 function selectCurrentSelection() {
     if (currentSelection.value) {
         selectItem(currentSelection.value)
-    }else if (filteredItems.value.length == 0){
+    } else if (filteredItems.value.length == 0) {
         notFound()
     }
 }
@@ -122,8 +123,8 @@ function scrollSelectionIntoView() {
                     @click="selectItem(i)"
                 >{{ props.projection(i) }}</li>
                 <li
-                    v-if="filteredItems.length == 0"
-                    class="bg-slate-400 font-normal"
+                    
+                    class="bg-slate-200 font-normal"
                     @mousedown.prevent
                     @click="notFound"
                 >add new</li>
