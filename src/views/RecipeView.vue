@@ -40,7 +40,7 @@ const {user:loggedInUser} = useAuth();
     <div>
         <p v-if="!recipeToView">Loading..</p>
         <div v-if="recipeToView" class="container mx-auto max-w-4xl">
-            <div class="flex flex-row">
+            <div class="flex flex-col sm:flex-row">
                 <img class="m-5 max-w-[200px]" :src="imageUrl" />
                 <div class="flex flex-col flex-grow m-5">
                     <h2
