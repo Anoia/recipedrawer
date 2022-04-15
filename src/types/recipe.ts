@@ -9,6 +9,7 @@ export type Unit = {
 }
 
 export type Ingredient = {
+  index:number
   id: string
   name: string
   amount: number

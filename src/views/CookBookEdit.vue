@@ -21,7 +21,8 @@ const { result, loading, error } = useQuery(getRecipeQuery, {
 })
 
 onMounted(() => {
-    handleInit(result.value, loading.value)})
+    handleInit(result.value, loading.value)
+})
 
 watch([result, loading], async ([newResult, newLoading]) => {
     handleInit(newResult, newLoading)
@@ -74,7 +75,7 @@ function resizeAllTextAreas() {
     }
 }
 
-const { mutate: newMutatename, onDone:onDoneMutate } = useMutation(editRecipeMutation, () => ({
+const { mutate: newMutatename, onDone: onDoneMutate } = useMutation(editRecipeMutation, () => ({
     variables: {
         rid: props.id,
         nin: recipeToEdit.value?.recipeIngredients.map(i => i.id),
@@ -93,7 +94,7 @@ const { mutate: newMutatename, onDone:onDoneMutate } = useMutation(editRecipeMut
     },
 }))
 
-const { mutate: mutateCreate, onDone:onDoneCreate } = useMutation(createRecipeMutation, () => ({
+const { mutate: mutateCreate, onDone: onDoneCreate } = useMutation(createRecipeMutation, () => ({
     variables: {
         description: recipeToEdit.value?.description,
         name: recipeToEdit.value?.name,
@@ -132,6 +133,7 @@ function clickHandler() {
 function removeIngredient(i: Ingredient) {
     if (recipeToEdit.value?.recipeIngredients.includes(i)) {
         recipeToEdit.value?.recipeIngredients.splice(recipeToEdit.value.recipeIngredients.indexOf(i), 1)
+        resetIngredientIds()
     }
 }
 
@@ -150,6 +152,19 @@ function moveStep(s: Step, direction: number) {
 
 }
 
+function moveIngredient(i:Ingredient, direction:number) {
+    if (recipeToEdit.value?.recipeIngredients.includes(i)) {
+        let currentIndex = recipeToEdit.value.recipeIngredients.indexOf(i)
+        let newIndex = currentIndex + direction
+
+        if (newIndex >= 0 && newIndex < recipeToEdit.value.recipeIngredients.length) {
+            recipeToEdit.value.recipeIngredients.splice(currentIndex, 1)
+            recipeToEdit.value.recipeIngredients.splice(newIndex, 0, i)
+        }
+        resetIngredientIds()
+    }
+}
+
 function removeStep(s: Step) {
     if (recipeToEdit.value?.steps.includes(s)) {
         recipeToEdit.value?.steps.splice(recipeToEdit.value.steps.indexOf(s), 1)
@@ -160,6 +175,18 @@ function removeStep(s: Step) {
 function resetStepIds() {
     if (recipeToEdit.value != undefined) {
         recipeToEdit.value.steps = recipeToEdit.value.steps.map((el, i) => {
+            el.id = `${i + 1}`
+            return el
+        })
+    }
+}
+
+// TODO remove Index/Id column from frontend, just sort correctly initalliy and send BE the correct order on mutate
+
+
+function resetIngredientIds(){
+        if (recipeToEdit.value != undefined) {
+        recipeToEdit.value.recipeIngredients = recipeToEdit.value.recipeIngredients.map((el, i) => {
             el.id = `${i + 1}`
             return el
         })
@@ -246,7 +273,19 @@ function uploadFile() {
                                     class="grow"
                                 >{{ i.amount }} {{ i.unit.short_name }} {{ i.name }}</span>
                                 <button
-                                    class="grow-0 px-1 hidden group-hover:inline"
+                                    class="grow-0 hidden group-hover:inline"
+                                    @click="moveIngredient(i, -1)"
+                                >
+                                    <ChevronUpIcon class="h-4 w-4 text-slate-500" />
+                                </button>
+                                <button
+                                    class="grow-0 hidden group-hover:inline"
+                                    @click="moveIngredient(i, 1)"
+                                >
+                                    <ChevronDownIcon class="h-4 w-4 text-slate-500" />
+                                </button>
+                                <button
+                                    class="grow-0 pr-1 hidden group-hover:inline"
                                     @click="removeIngredient(i)"
                                 >
                                     <TrashIcon class="h-4 w-4 text-slate-500" />
@@ -256,6 +295,7 @@ function uploadFile() {
                         <li>
                             <IngredientSelectorVue
                                 :add-ingredient="(name, id, amount, unit) => recipeToEdit?.recipeIngredients.push({
+                                    index:recipeToEdit.recipeIngredients.length,
                                     name: name,
                                     id: id,
                                     amount: amount,

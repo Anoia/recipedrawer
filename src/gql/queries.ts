@@ -13,6 +13,7 @@ export const getRecipeQuery = gql`
         name
       }
       recipe_ingredients {
+        index
         amount
         ingredient {
           id
@@ -39,6 +40,7 @@ export function parseGetRecipeQueryResult(result: any): EditableRecipe {
     }),
     recipeIngredients: recipe.recipe_ingredients.map((item: any) => {
       return {
+        index:item.ingredient.index,
         id: item.ingredient.id,
         name: item.ingredient.name,
         amount: item.amount,
