@@ -60,8 +60,6 @@ function doSelect(i: any) {
 }
 
 function addNewIngredient(name: string) {
-
-  console.log(`ADDING NEW INGREDIENT ${name}`)
   newIngredientName.value = name
   showCreateIngredientDialog.value = true
 }
@@ -83,7 +81,7 @@ const showCreateIngredientDialog = ref(false)
   />
 
   <div class="flex" v-if="!loading">
-    <input type="text" class="w-10" placeholder="1" v-model="amount" ref="inputRef" />
+    <input type="text" class="w-16" placeholder="1" v-model="amount" ref="inputRef" />
     <div class>
       <Listbox v-model="selectedUnit">
         <div class="relative mt-1">

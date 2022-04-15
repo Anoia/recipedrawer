@@ -5,6 +5,8 @@ import Home from '../views/Home.vue'
 import About from '../views/About.vue'
 import RecipeView from '../views/RecipeView.vue'
 import UserProfile from '../views/UserProfile.vue'
+import IngredientView from '../views/IngredientView.vue'
+import IngredientsList from '../views/IngredientsList.vue'
 import CookBookEdit from '../views/CookBookEdit.vue'
 import NotFound from '../views/NotFound.vue'
 
@@ -49,6 +51,17 @@ const routes = [
     path: '/user/:username',
     meta: { title: 'View User' },
     component: UserProfile,
+    props: true,
+  },
+  {
+    path: '/ingredients',
+    meta: { title: 'View Ingredients' },
+    component: IngredientsList
+  },
+  {
+    path: '/ingredient/:id',
+    meta: { title: 'View Ingredient' },
+    component: IngredientView,
     props: true,
   },
   {

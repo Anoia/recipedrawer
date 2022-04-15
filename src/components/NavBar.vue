@@ -37,7 +37,9 @@ watch(isAuthenticated, (newAuth, oldAuth) => {
 <template>
     <header class="flex bg-slate-500 items-center text-white">
         <router-link to="/" class="px-10 my-7 font-serif text-3xl grow drop-shadow-md">Recipe Drawer</router-link>
-        <router-link to="/browse" class="mx-2 grow-0">Browse</router-link>
+        <router-link to="/browse" class="mx-2 grow-0">Browse Recipes</router-link>
+        <p>|</p>
+         <router-link to="/ingredients" class="mx-2 grow-0">Browse Ingredients</router-link>
         <p v-if="isAuthenticated">|</p>
         <router-link v-if="isAuthenticated" to="/create" class="mx-2 grow-0">Create</router-link>
         <p>|</p>
