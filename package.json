@@ -6,7 +6,10 @@
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
     "lint:script": "eslint --ext .ts,vue --ignore-path .gitignore .",
-    "runcodegen": "graphql-codegen --config codegen.yml"
+    "runcodegen": "graphql-codegen --config codegen.yml",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run"
   },
   "dependencies": {
     "@apollo/client": "^3.5.8",
@@ -52,6 +55,7 @@
     "tailwindcss": "^3.0.15",
     "typescript": "^4.5.5",
     "vite": "^2.7.2",
+    "vitest": "^0.10.0",
     "vue-tsc": "^0.29.8"
   }
 }
