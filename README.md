@@ -34,3 +34,6 @@ npm i
 npm run dev   
 npm run build 
 ```
+
+## Run code gen for graphql:
+`npx graphql-codegen run -r dotenv/config`

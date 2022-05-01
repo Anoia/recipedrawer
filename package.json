@@ -5,21 +5,30 @@
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
-    "lint:script": "eslint --ext .ts,vue --ignore-path .gitignore ."
+    "lint:script": "eslint --ext .ts,vue --ignore-path .gitignore .",
+    "runcodegen": "graphql-codegen --config codegen.yml"
   },
   "dependencies": {
     "@apollo/client": "^3.5.8",
     "@auth0/auth0-spa-js": "^1.19.2",
     "@cloudinary/url-gen": "^1.7.0",
+    "@graphql-codegen/cli": "^2.6.2",
     "@vue/apollo-composable": "^4.0.0-alpha.16",
     "apollo3-cache-persist": "^0.14.0",
     "axios": "^0.26.1",
-    "graphql": "^16.3.0",
+    "dotenv": "^16.0.0",
+    "graphql": "^16.4.0",
     "graphql-tag": "^2.12.6",
     "vue": "^3.2.31",
     "vue-router": "4"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "2.6.2",
+    "@graphql-codegen/fragment-matcher": "3.2.1",
+    "@graphql-codegen/typescript": "2.4.8",
+    "@graphql-codegen/typescript-document-nodes": "2.2.8",
+    "@graphql-codegen/typescript-graphql-files-modules": "2.1.1",
+    "@graphql-codegen/typescript-operations": "2.3.5",
     "@headlessui/vue": "^1.4.3",
     "@heroicons/vue": "^1.0.5",
     "@tailwindcss/aspect-ratio": "^0.4.0",
