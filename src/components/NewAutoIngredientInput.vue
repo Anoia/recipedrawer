@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { extractInfoFromString } from '../stuff/parse';
 import { Ingredient, Unit } from '../types/recipe';
-import { computed, reactive, ref } from 'vue';
-
+import { computed, ref } from 'vue';
+import IngredientCreation from './IngredientCreation.vue'
 
 const props = defineProps<{
     ingredients: Readonly<Ingredient[]>,
@@ -14,7 +14,6 @@ let defaultUnit = props.units.find(u => u.long_name === "Stück")
 
 const emit = defineEmits<{
     (e: 'selectItem', item: any): void
-    (e: 'notFound', newItem: any): void
 }>()
 
 const userInputString = ref("")
@@ -28,8 +27,7 @@ function findExactUnitMatch(unitName: string) {
 
 function findPossibleUnits(unitName: string): Unit[] {
     const regexp = new RegExp(escapeReg(unitName.trim()), 'i');
-    let r = props.units.filter((u) => u.long_name.match(regexp) || u.short_name.match(regexp))
-    return r
+    return props.units.filter((u) => u.long_name.match(regexp) || u.short_name.match(regexp))
 }
 
 const possibleUnit = computed(() => {
@@ -99,7 +97,9 @@ function onFocus() {
 }
 function onBlur() {
     isInputFocused.value = false
-    userInputString.value = ""
+    if(!showCreateIngredientDialog.value){
+        userInputString.value = ""
+    }
 }
 
 function selectIngredient(i: Ingredient) {
@@ -123,13 +123,8 @@ function selectCurrentSelection() {
 }
 
 function notFound() {
-    if (matchResult.value && defaultUnit) {
-        emit('notFound', {
-            amount: matchResult.value.amount,
-            unit: (possibleUnit.value ?? defaultUnit),
-            ingredientName: ingredientInputString.value
-        })
-        clearData()
+    if (matchResult.value && defaultUnit && ingredientInputString.value) {
+        addNewIngredient(ingredientInputString.value)
     }
 }
 
@@ -138,16 +133,34 @@ function clearData() {
     currentIngredientSelectionIndex.value = 0
     //  document.getElementById(props.elementId)?.blur();
 }
+
+
+//// new  ingredient creation 
+
+function addNewIngredient(name: string) {
+  newIngredientName.value = name
+  showCreateIngredientDialog.value = true
+}
+function hideDialog() {
+  showCreateIngredientDialog.value = false
+}
+
+const newIngredientName = ref("")
+const showCreateIngredientDialog = ref(false)
+
 </script>
 
 <template>
+
+  <IngredientCreation
+    :open="showCreateIngredientDialog"
+    :input="newIngredientName"
+    @close="hideDialog"
+    @created="selectIngredient"
+  />
+
     <div class="my-5">
-        <div>
-            <p>user input: {{ userInputString }}</p>
-            <p>match result: {{ matchResult }}</p>
-            <p>possible unit: {{ possibleUnit }}</p>
-            <p>current Selected Ingredient: {{ currentIngredientSelection }}</p>
-        </div>
+        <label >Add Ingredient:</label>
         <input
             :id="props.elementId"
             class="w-full"
@@ -160,6 +173,7 @@ function clearData() {
             @keydown.up.prevent="onArrowUp"
             @keydown.enter.tab.prevent="selectCurrentSelection"
             autocomplete="off"
+            placeholder="100g Mehl"
         />
         <div v-if="isAutocompleteListVisible">
             <ul>

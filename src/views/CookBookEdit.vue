@@ -257,10 +257,6 @@ function doSelect(i: any) {
     })
 }
 
-function notFound(i: any) {
-    console.log(JSON.stringify(i))
-}
-
 </script>
 
 <template>
@@ -326,24 +322,11 @@ function notFound(i: any) {
                             </div>
                         </li>
                         <li>
-                            <IngredientSelectorVue
-                                :add-ingredient="(name, id, amount, unit) => recipeToEdit?.recipeIngredients.push({
-                                    id: undefined,
-                                    index: recipeToEdit.recipeIngredients.length,
-                                    name: name,
-                                    ingredient_id: id,
-                                    amount: amount,
-                                    unit: unit
-                                })"
-                            ></IngredientSelectorVue>
-                        </li>
-                        <li>
                             <NewAutoIngredientInputVue
                                 element-id="new-auto-input-new-ingredient"
                                 :ingredients="allIngredients"
                                 :units="allUnits"
                                 @select-item="doSelect"
-                                @not-found="notFound"
                             ></NewAutoIngredientInputVue>
                         </li>
                     </ul>
