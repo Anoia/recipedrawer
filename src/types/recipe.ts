@@ -9,8 +9,9 @@ export type Unit = {
 }
 
 export type Ingredient = {
+  id:string | undefined
   index:number
-  id: string
+  ingredient_id: string
   name: string
   amount: number
   unit: Unit

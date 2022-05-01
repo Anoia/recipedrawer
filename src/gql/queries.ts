@@ -13,6 +13,7 @@ export const getRecipeQuery = gql`
         name
       }
       recipe_ingredients {
+        id
         index
         amount
         ingredient {
@@ -31,7 +32,7 @@ export const getRecipeQuery = gql`
 
 export function parseGetRecipeQueryResult(result: any): EditableRecipe {
   let recipe = result.recipes_by_pk
-  return {
+  let parsedRecipe:EditableRecipe = {
     name: recipe.name,
     description: recipe.description,
     image: recipe.image,
@@ -40,26 +41,37 @@ export function parseGetRecipeQueryResult(result: any): EditableRecipe {
     }),
     recipeIngredients: recipe.recipe_ingredients.map((item: any) => {
       return {
-        index:item.ingredient.index,
-        id: item.ingredient.id,
+        id:item.id,
+        index:item.index,
+        ingredient_id: item.ingredient.id,
         name: item.ingredient.name,
         amount: item.amount,
         unit: item.unitByUnit,
       }
     }),
   }
+  parsedRecipe.recipeIngredients.sort((a,b) => (a.index < b.index ? -1: 1))
+  return parsedRecipe
 }
 
-export const editRecipeMutation = gql`
+
+export const editRecipeMutation = gql`  
   mutation edit(
     $rid: Int!
     $nin: [Int!]!
-    $inputtest: [recipe_ingredients_insert_input!]!
+    $inputtest_insert: [recipe_ingredients_insert_input!]!
+    $inputtest_update: [recipe_ingredients_insert_input!]!
     $description: String
     $name: String
     $steps: jsonb
     $image: String = ""
   ) {
+
+    delete_recipe_ingredients(
+      where: { recipe_id: { _eq: $rid }, id: { _nin: $nin } }
+    ) {
+      affected_rows
+    }
     update_recipes_by_pk(
       pk_columns: { id: $rid }
       _set: {
@@ -71,20 +83,16 @@ export const editRecipeMutation = gql`
     ) {
       id
     }
-    insert_recipe_ingredients(
-      objects: $inputtest
-      on_conflict: {
-        constraint: recipe_ingredients_pkey
-        update_columns: [amount, unit]
-      }
-    ) {
-      affected_rows
+  update_ingredients: insert_recipe_ingredients(objects: $inputtest_update, on_conflict: {constraint: recipe_ingredients_pkey, update_columns: [amount, unit, index]}) {
+    affected_rows
+  }
+  insert_ingredients:insert_recipe_ingredients(objects: $inputtest_insert) {
+    returning {
+      id
     }
-    delete_recipe_ingredients(
-      where: { recipe_id: { _eq: $rid }, ingredient_id: { _nin: $nin } }
-    ) {
-      affected_rows
-    }
+     affected_rows
+  }
+
   }
 `
 
@@ -111,6 +119,7 @@ export const createRecipeMutation = gql`
         amount
         ingredient_id
         unit
+        index
       }
     }
   }

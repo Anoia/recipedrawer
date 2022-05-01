@@ -78,13 +78,24 @@ function resizeAllTextAreas() {
 const { mutate: newMutatename, onDone: onDoneMutate } = useMutation(editRecipeMutation, () => ({
     variables: {
         rid: props.id,
-        nin: recipeToEdit.value?.recipeIngredients.map(i => i.id),
-        inputtest: recipeToEdit.value?.recipeIngredients.map(i => {
+        nin: recipeToEdit.value?.recipeIngredients.filter(i => i.id != undefined).map(i => i.id),
+        inputtest_insert: recipeToEdit.value?.recipeIngredients.filter(i => i.id == undefined).map(i => {
             return {
-                ingredient_id: i.id,
+                ingredient_id: i.ingredient_id,
                 recipe_id: props.id,
                 unit: i.unit.id,
-                amount: i.amount
+                amount: i.amount,
+                index: i.index
+            }
+        }),
+        inputtest_update: recipeToEdit.value?.recipeIngredients.filter(i => i.id != undefined).map(i => {
+            return {
+                id:i.id,
+                ingredient_id: i.ingredient_id,
+                recipe_id: props.id,
+                unit: i.unit.id,
+                amount: i.amount,
+                index: i.index
             }
         }),
         description: recipeToEdit.value?.description,
@@ -101,10 +112,11 @@ const { mutate: mutateCreate, onDone: onDoneCreate } = useMutation(createRecipeM
         steps: recipeToEdit.value?.steps,
         data: recipeToEdit.value?.recipeIngredients.map(i => {
             return {
-                ingredient_id: i.id,
+                ingredient_id: i.ingredient_id,
                 recipe_id: props.id,
                 unit: i.unit.id,
-                amount: i.amount
+                amount: i.amount,
+                index: i.index
             }
         })
     }
@@ -187,7 +199,7 @@ function resetStepIds() {
 function resetIngredientIds(){
         if (recipeToEdit.value != undefined) {
         recipeToEdit.value.recipeIngredients = recipeToEdit.value.recipeIngredients.map((el, i) => {
-            el.id = `${i + 1}`
+            el.index = i + 1
             return el
         })
     }
@@ -234,7 +246,7 @@ function uploadFile() {
     <div>
         <p v-if="error && props.id">Error: {{ error }}</p>
         <p v-if="!recipeToEdit">Loading..</p>
-        <div v-if="recipeToEdit" class="container mx-auto max-w-4xl">
+        <div v-if="recipeToEdit" class="container mx-auto max-w-4xl text-slate-800">
             <div class="flex flex-col sm:flex-row">
                 <div class="flex flex-col items-stretch">
                     <img class="m-5 max-w-[200px]" :src="imageUrl" />
@@ -295,9 +307,10 @@ function uploadFile() {
                         <li>
                             <IngredientSelectorVue
                                 :add-ingredient="(name, id, amount, unit) => recipeToEdit?.recipeIngredients.push({
+                                    id:undefined,
                                     index:recipeToEdit.recipeIngredients.length,
                                     name: name,
-                                    id: id,
+                                    ingredient_id: id,
                                     amount: amount,
                                     unit: unit
                                 })"
