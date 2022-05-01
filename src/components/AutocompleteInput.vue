@@ -111,7 +111,7 @@ function scrollSelectionIntoView() {
         />
         <div
             v-if="isListVisible"
-            class="absolute w-full max-h-24 bg-white overflow-y-auto z-10 border-2 border-slate-600"
+            class="absolute w-full max-h-36 bg-white overflow-y-auto z-10 border-2 border-slate-600"
         >
             <ul>
                 <li

@@ -1,0 +1,11 @@
+query getIngredientsAndUnits {
+  ingredients {
+    name
+    id
+  }
+  units {
+    id
+    long_name
+    short_name
+  }
+}

@@ -8,40 +8,44 @@ const regexString = '([0-9.,]{1,})([ ]*)([a-zA-Z]{0,})([ ]+)([a-zA-Z ]+)'
 
 export const regex: RegExp = RegExp(regexString)
 
-let defaultUnit:Unit = {id:3, long_name:'Stück', short_name:''}
+let defaultUnit: Unit = { id: 3, long_name: 'Stück', short_name: '' }
 
 export function parseTextToIngredient(
   units: Unit[],
   ingredients: SourceIngredient[],
   input: string
 ): Maybe<RecipeIngredient> {
-  
-    let maybeMatch =  extractInfoFromString(input)
-    
-    if(maybeMatch){
-        let match = maybeMatch as MatchResult
-        let unitText = match.unitName ?? ''
-        let unit = units.find(u => u.long_name.toLowerCase() === unitText.toLowerCase() || u.short_name.toLowerCase() === unitText.toLowerCase()) ?? defaultUnit
-        
-        let ingredient = ingredients.find(i => i.name.toLowerCase() === match.ingredientName.toLowerCase())
+  let maybeMatch = extractInfoFromString(input)
 
-        if(ingredient){
+  if (maybeMatch) {
+    let match = maybeMatch as MatchResult
+    let unitText = match.unitName ?? ''
+    let unit =
+      units.find(
+        (u) =>
+          u.long_name.toLowerCase() === unitText.toLowerCase() ||
+          u.short_name.toLowerCase() === unitText.toLowerCase()
+      ) ?? defaultUnit
 
-            return {
-                id: 1,
-                index: 1,
-                amount: match.amount,
-                ingredient_id: ingredient.id,
-                name: ingredient.name,
-                unit:unit
-              }
-        }else {return undefined}
+    let ingredient = ingredients.find(
+      (i) => i.name.toLowerCase() === match.ingredientName.toLowerCase()
+    )
 
-    }else {
-        return undefined
+    if (ingredient) {
+      return {
+        id: 1,
+        index: 1,
+        amount: match.amount,
+        ingredient_id: ingredient.id,
+        name: ingredient.name,
+        unit: unit,
+      }
+    } else {
+      return undefined
     }
-
-
+  } else {
+    return undefined
+  }
 }
 
 export type MatchResult = {
@@ -57,9 +61,9 @@ export function extractInfoFromString(input: string): Maybe<MatchResult> {
     return undefined
   } else {
     return {
-        amount: +match[1],
-        unitName:(match[3] == "" ? undefined : match[3]),
-        ingredientName:match[5]
+      amount: +match[1],
+      unitName: match[3] == '' ? undefined : match[3],
+      ingredientName: match[5],
     }
   }
 }

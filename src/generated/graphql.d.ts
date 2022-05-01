@@ -2434,6 +2434,11 @@ export enum Users_Update_Column {
   UpdatedAt = 'updated_at'
 }
 
+export type GetIngredientsAndUnitsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetIngredientsAndUnitsQuery = { __typename?: 'query_root', ingredients: Array<{ __typename?: 'ingredients', name: string, id: number }>, units: Array<{ __typename?: 'units', id: number, long_name: string, short_name: string }> };
+
 export type GetAllRecipesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -2471,6 +2476,15 @@ export type EditRecipeMutationVariables = Exact<{
 export type EditRecipeMutation = { __typename?: 'mutation_root', delete_recipe_ingredients?: { __typename?: 'recipe_ingredients_mutation_response', affected_rows: number } | null, update_recipes_by_pk?: { __typename?: 'recipes', id: number } | null, update_ingredients?: { __typename?: 'recipe_ingredients_mutation_response', affected_rows: number } | null, insert_ingredients?: { __typename?: 'recipe_ingredients_mutation_response', affected_rows: number, returning: Array<{ __typename?: 'recipe_ingredients', id: number }> } | null };
 
 
+declare module '*/ingredients.graphql' {
+  import { DocumentNode } from 'graphql';
+  const defaultDocument: DocumentNode;
+  export const getIngredientsAndUnits: DocumentNode;
+
+  export default defaultDocument;
+}
+    
+
 declare module '*/recipes.graphql' {
   import { DocumentNode } from 'graphql';
   const defaultDocument: DocumentNode;
@@ -2483,6 +2497,19 @@ export const editRecipe: DocumentNode;
 }
     
 
+export const GetIngredientsAndUnits = gql`
+    query getIngredientsAndUnits {
+  ingredients {
+    name
+    id
+  }
+  units {
+    id
+    long_name
+    short_name
+  }
+}
+    `;
 export const GetAllRecipes = gql`
     query getAllRecipes {
   recipes {

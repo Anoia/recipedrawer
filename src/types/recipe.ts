@@ -8,6 +8,11 @@ export type Unit = {
   short_name: string
 }
 
+export type Ingredient = {
+  id:number
+  name:string
+}
+
 export type RecipeIngredient = {
   id:number | undefined
   index:number

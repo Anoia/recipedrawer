@@ -1,5 +1,5 @@
-import { EditableRecipe, RecipeIngredient } from 'src/types/recipe'
-import { Recipes, Recipe_Ingredients } from '../generated/graphql.d'
+import { EditableRecipe, RecipeIngredient } from '../types/recipe'
+import { Ingredients, Recipes, Recipe_Ingredients, Units } from '../generated/graphql.d'
 
 export function parseAllRecipesResult(result:Array<Recipes>):Array<Recipes>{
     return result

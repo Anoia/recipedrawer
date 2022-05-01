@@ -1,13 +1,15 @@
 <script setup lang="ts">
 
-import { useQuery, useMutation } from '@vue/apollo-composable'
+import { useQuery, useMutation, useResult } from '@vue/apollo-composable'
 import { computed, watch, ref, Ref, nextTick, onMounted } from 'vue'
 import IngredientSelectorVue from '../components/IngredientSelector.vue'
-import { RecipeIngredient, Step, EditableRecipe, getEmptyRecipe, getImageUrl } from '../types/recipe'
+import NewAutoIngredientInputVue from '../components/NewAutoIngredientInput.vue'
+import { RecipeIngredient, Step, EditableRecipe, getEmptyRecipe, getImageUrl, Ingredient, Unit } from '../types/recipe'
 import { getRecipeQuery, parseGetRecipeQueryResult, createRecipeMutation, editRecipeMutation } from '../gql/queries'
 import { TrashIcon, ChevronUpIcon, ChevronDownIcon, PlusIcon } from '@heroicons/vue/outline'
 import axios from "axios"
 import { useRouter } from 'vue-router'
+import { GetIngredientsAndUnits } from '../generated/graphql.d'
 
 const props = defineProps({
     id: String
@@ -26,6 +28,10 @@ onMounted(() => {
 watch([result, loading], async ([newResult, newLoading]) => {
     handleInit(newResult, newLoading)
 })
+
+const { result: loadedData } = useQuery(GetIngredientsAndUnits)
+const allIngredients = useResult(loadedData, [] as Ingredient[], ((data) => data.ingredients as Ingredient[]))
+const allUnits = useResult(loadedData, [] as Unit[], ((data) => data.units as Unit[]))
 
 
 function handleInit(newResult: any, newLoading: boolean) {
@@ -89,7 +95,7 @@ const { mutate: newMutatename, onDone: onDoneMutate } = useMutation(editRecipeMu
         }),
         inputtest_update: recipeToEdit.value?.recipeIngredients.filter(i => i.id != undefined).map(i => {
             return {
-                id:i.id,
+                id: i.id,
                 ingredient_id: i.ingredient_id,
                 recipe_id: props.id,
                 unit: i.unit.id,
@@ -163,7 +169,7 @@ function moveStep(s: Step, direction: number) {
 
 }
 
-function moveIngredient(i:RecipeIngredient, direction:number) {
+function moveIngredient(i: RecipeIngredient, direction: number) {
     if (recipeToEdit.value?.recipeIngredients.includes(i)) {
         let currentIndex = recipeToEdit.value.recipeIngredients.indexOf(i)
         let newIndex = currentIndex + direction
@@ -195,8 +201,8 @@ function resetStepIds() {
 // TODO remove Index/Id column from frontend, just sort correctly initalliy and send BE the correct order on mutate
 
 
-function resetIngredientIds(){
-        if (recipeToEdit.value != undefined) {
+function resetIngredientIds() {
+    if (recipeToEdit.value != undefined) {
         recipeToEdit.value.recipeIngredients = recipeToEdit.value.recipeIngredients.map((el, i) => {
             el.index = i + 1
             return el
@@ -237,6 +243,22 @@ function uploadFile() {
         .catch((err) => {
             console.log(err);
         })
+}
+
+function doSelect(i: any) {
+    // TODO type 
+    recipeToEdit.value?.recipeIngredients.push({
+        id: undefined,
+        index: recipeToEdit.value.recipeIngredients.length,
+        name: i.ingredient.name,
+        ingredient_id: i.ingredient.id,
+        amount: i.amount,
+        unit: i.unit
+    })
+}
+
+function notFound(i: any) {
+    console.log(JSON.stringify(i))
 }
 
 </script>
@@ -306,14 +328,23 @@ function uploadFile() {
                         <li>
                             <IngredientSelectorVue
                                 :add-ingredient="(name, id, amount, unit) => recipeToEdit?.recipeIngredients.push({
-                                    id:undefined,
-                                    index:recipeToEdit.recipeIngredients.length,
+                                    id: undefined,
+                                    index: recipeToEdit.recipeIngredients.length,
                                     name: name,
                                     ingredient_id: id,
                                     amount: amount,
                                     unit: unit
                                 })"
                             ></IngredientSelectorVue>
+                        </li>
+                        <li>
+                            <NewAutoIngredientInputVue
+                                element-id="new-auto-input-new-ingredient"
+                                :ingredients="allIngredients"
+                                :units="allUnits"
+                                @select-item="doSelect"
+                                @not-found="notFound"
+                            ></NewAutoIngredientInputVue>
                         </li>
                     </ul>
                 </div>
