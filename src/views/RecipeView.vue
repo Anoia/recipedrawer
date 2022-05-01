@@ -1,34 +1,25 @@
 <script setup lang="ts">
 
-import { useQuery } from '@vue/apollo-composable'
-import { getRecipeQuery, parseGetRecipeQueryResult } from '../gql/queries'
-import { EditableRecipe, getImageUrl } from '../types/recipe'
-import { ComputedRef, computed } from 'vue'
+import { useQuery, useResult } from '@vue/apollo-composable'
+import { getImageUrl } from '../types/recipe'
+import { computed } from 'vue'
 import { useAuth } from '../auth/useAuthService'
+import { GetRecipeById, GetRecipeByIdQueryVariables } from '../generated/graphql.d'
+import { parseGetRecipeByIdResult } from '../gql/queryHelper'
 
-const props = defineProps({
-    id: String
-})
+const props = defineProps<{
+    id: number
+}>()
 
-const { result } = useQuery(getRecipeQuery, {
-    id: props.id,
-    fetchPolicy: 'cache-and-network',
+let queryVariables:GetRecipeByIdQueryVariables = { id: props.id }
 
-})
+const { result } = useQuery(GetRecipeById, queryVariables, { fetchPolicy: 'cache-and-network'})
 
-
-const recipeToView: ComputedRef<EditableRecipe | undefined> = computed(() => {
-    if (result.value) {
-        return parseGetRecipeQueryResult(result.value)
-    } else {
-        return undefined
-    }
-}
-)
+const parsedResult = useResult(result, null, data => parseGetRecipeByIdResult(data.recipes_by_pk))
 
 const imageUrl = computed(() => {
-    if (recipeToView.value) {
-        return getImageUrl(recipeToView.value.image, 200, 200)
+    if (parsedResult.value) {
+        return getImageUrl(parsedResult.value.image, 200, 200)
     } else return 'https://via.placeholder.com/200'
 })
 
@@ -38,13 +29,13 @@ const { user: loggedInUser } = useAuth();
 
 <template>
     <div>
-        <p v-if="!recipeToView">Loading..</p>
-        <div v-if="recipeToView" class="container mx-auto max-w-4xl">
+        <p v-if="!parsedResult">Loading..</p>
+        <div v-if="parsedResult" class="container mx-auto max-w-4xl">
             <div class="flex flex-col sm:flex-row">
                 <img class="m-5 max-w-[200px]" :src="imageUrl" />
                 <div class="flex flex-col flex-grow m-5">
-                    <h2 class="mt-10 text-3xl font-bold text-slate-800">{{ recipeToView.name }}</h2>
-                    <p class="grow my-3">{{ recipeToView.description }}</p>
+                    <h2 class="mt-10 text-3xl font-bold text-slate-800">{{ parsedResult.name }}</h2>
+                    <p class="grow my-3">{{ parsedResult.description }}</p>
                     <p class="relative bottom-0 grow-0 text-slate-500 text-right">
                         written by
                         <router-link
@@ -60,14 +51,14 @@ const { user: loggedInUser } = useAuth();
                     <h3 class="text-xl my-2 px-2 py-1 bg-slate-300">Ingredients</h3>
                     <ul class="my-3 space-y-1">
                         <li
-                            v-for="i in recipeToView.recipeIngredients"
+                            v-for="i in parsedResult.recipeIngredients"
                             class="border-b-[1px] last:border-b-0 p-1 border-slate-300"
                         >{{ i.amount }} {{ i.unit.short_name }} {{ i.name }}</li>
                     </ul>
                 </div>
                 <div class="basis-2/3 m-5">
                     <h3 class="text-xl my-2 px-2 py-1 bg-slate-300">Directions</h3>
-                    <div v-for="step in recipeToView.steps">
+                    <div v-for="step in parsedResult.steps">
                         <div v-if="step.content" class="flex my-5">
                             <span class="text-3xl p-1 pr-4 text-slate-500">{{ step.id }}</span>
                             <p>{{ step.content }}</p>

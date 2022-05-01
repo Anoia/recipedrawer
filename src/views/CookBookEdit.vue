@@ -5,7 +5,6 @@ import { computed, watch, ref, Ref, nextTick, onMounted } from 'vue'
 import IngredientSelectorVue from '../components/IngredientSelector.vue'
 import { Ingredient, Step, EditableRecipe, getEmptyRecipe, getImageUrl } from '../types/recipe'
 import { getRecipeQuery, parseGetRecipeQueryResult, createRecipeMutation, editRecipeMutation } from '../gql/queries'
-
 import { TrashIcon, ChevronUpIcon, ChevronDownIcon, PlusIcon } from '@heroicons/vue/outline'
 import axios from "axios"
 import { useRouter } from 'vue-router'

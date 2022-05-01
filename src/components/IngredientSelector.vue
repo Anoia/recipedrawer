@@ -15,7 +15,7 @@ import { Unit } from '../types/recipe'
 import IngredientCreation from './IngredientCreation.vue'
 
 
-const props = defineProps<{ addIngredient: (name: string, id: string, amount: number, unit: Unit) => void }>()
+const props = defineProps<{ addIngredient: (name: string, id: number, amount: number, unit: Unit) => void }>()
 
 const amount = ref(1)
 
