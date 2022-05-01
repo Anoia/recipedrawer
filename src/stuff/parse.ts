@@ -1,5 +1,5 @@
 import { Maybe } from 'graphql/jsutils/Maybe'
-import { Ingredient } from 'src/types/recipe'
+import { RecipeIngredient } from 'src/types/recipe'
 
 export type Unit = { id: number; long_name: string; short_name: string }
 export type SourceIngredient = { id: number; name: string }
@@ -14,7 +14,7 @@ export function parseTextToIngredient(
   units: Unit[],
   ingredients: SourceIngredient[],
   input: string
-): Maybe<Ingredient> {
+): Maybe<RecipeIngredient> {
   
     let maybeMatch =  extractInfoFromString(input)
     

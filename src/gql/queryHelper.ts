@@ -1,4 +1,4 @@
-import { EditableRecipe, Ingredient } from 'src/types/recipe'
+import { EditableRecipe, RecipeIngredient } from 'src/types/recipe'
 import { Recipes, Recipe_Ingredients } from '../generated/graphql.d'
 
 export function parseAllRecipesResult(result:Array<Recipes>):Array<Recipes>{
@@ -18,7 +18,7 @@ export function parseGetRecipeByIdResult(recipe:Recipes):EditableRecipe{
     return editableRecipe
 }
 
-function mapIngredient(i:Recipe_Ingredients):Ingredient {
+function mapIngredient(i:Recipe_Ingredients):RecipeIngredient {
     return{
         id:i.id,
         amount:i.amount,

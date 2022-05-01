@@ -8,7 +8,7 @@ export type Unit = {
   short_name: string
 }
 
-export type Ingredient = {
+export type RecipeIngredient = {
   id:number | undefined
   index:number
   ingredient_id: number
@@ -27,7 +27,7 @@ export type EditableRecipe = {
   description: string
   image: string
   steps: Step[]
-  recipeIngredients: Ingredient[]
+  recipeIngredients: RecipeIngredient[]
 }
 
 export function getImageUrl(

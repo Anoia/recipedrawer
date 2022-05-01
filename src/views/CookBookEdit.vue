@@ -3,7 +3,7 @@
 import { useQuery, useMutation } from '@vue/apollo-composable'
 import { computed, watch, ref, Ref, nextTick, onMounted } from 'vue'
 import IngredientSelectorVue from '../components/IngredientSelector.vue'
-import { Ingredient, Step, EditableRecipe, getEmptyRecipe, getImageUrl } from '../types/recipe'
+import { RecipeIngredient, Step, EditableRecipe, getEmptyRecipe, getImageUrl } from '../types/recipe'
 import { getRecipeQuery, parseGetRecipeQueryResult, createRecipeMutation, editRecipeMutation } from '../gql/queries'
 import { TrashIcon, ChevronUpIcon, ChevronDownIcon, PlusIcon } from '@heroicons/vue/outline'
 import axios from "axios"
@@ -141,7 +141,7 @@ function clickHandler() {
     }
 }
 
-function removeIngredient(i: Ingredient) {
+function removeIngredient(i: RecipeIngredient) {
     if (recipeToEdit.value?.recipeIngredients.includes(i)) {
         recipeToEdit.value?.recipeIngredients.splice(recipeToEdit.value.recipeIngredients.indexOf(i), 1)
         resetIngredientIds()
@@ -163,7 +163,7 @@ function moveStep(s: Step, direction: number) {
 
 }
 
-function moveIngredient(i:Ingredient, direction:number) {
+function moveIngredient(i:RecipeIngredient, direction:number) {
     if (recipeToEdit.value?.recipeIngredients.includes(i)) {
         let currentIndex = recipeToEdit.value.recipeIngredients.indexOf(i)
         let newIndex = currentIndex + direction
