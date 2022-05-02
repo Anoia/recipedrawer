@@ -10,7 +10,7 @@ const props = defineProps<{
     elementId: string
 }>()
 
-let defaultUnit = props.units.find(u => u.long_name === "Stück")
+let defaultUnit = computed(() => props.units.find(u => u.long_name === "Stück"))
 
 const emit = defineEmits<{
     (e: 'selectItem', item: any): void
@@ -97,7 +97,7 @@ function onFocus() {
 }
 function onBlur() {
     isInputFocused.value = false
-    if(!showCreateIngredientDialog.value){
+    if (!showCreateIngredientDialog.value) {
         userInputString.value = ""
     }
 }
@@ -138,11 +138,11 @@ function clearData() {
 //// new  ingredient creation 
 
 function addNewIngredient(name: string) {
-  newIngredientName.value = name
-  showCreateIngredientDialog.value = true
+    newIngredientName.value = name
+    showCreateIngredientDialog.value = true
 }
 function hideDialog() {
-  showCreateIngredientDialog.value = false
+    showCreateIngredientDialog.value = false
 }
 
 const newIngredientName = ref("")
@@ -151,16 +151,15 @@ const showCreateIngredientDialog = ref(false)
 </script>
 
 <template>
-
-  <IngredientCreation
-    :open="showCreateIngredientDialog"
-    :input="newIngredientName"
-    @close="hideDialog"
-    @created="selectIngredient"
-  />
+    <IngredientCreation
+        :open="showCreateIngredientDialog"
+        :input="newIngredientName"
+        @close="hideDialog"
+        @created="selectIngredient"
+    />
 
     <div class="my-5">
-        <label >Add Ingredient:</label>
+        <label>Add Ingredient:</label>
         <input
             :id="props.elementId"
             class="w-full"
