@@ -84,11 +84,32 @@ function onInput() {
 function onArrowDown() {
     if (isAutocompleteListVisible.value && currentIngredientSelectionIndex.value < filteredIngredients.value.length - 1) {
         currentIngredientSelectionIndex.value++
+        scrollSelectedToView()
     }
 }
 function onArrowUp() {
     if (isAutocompleteListVisible.value && currentIngredientSelectionIndex.value > 0) {
         currentIngredientSelectionIndex.value--
+        scrollSelectedToView()
+    }
+}
+
+function scrollSelectedToView() {
+    const wrapper = document.getElementById(`${props.elementId}-wrapper`)
+    const selectedItem = document.getElementById(`autocompleteingredient-${currentIngredientSelectionIndex.value}`)
+
+    if (isAutocompleteListVisible.value &&  wrapper && selectedItem) {
+
+        const heightOfWrapper = wrapper.offsetHeight
+
+        let selectedItemPositionInList = selectedItem.offsetTop - wrapper.offsetTop
+        let selectedItemScrollPosition = selectedItemPositionInList - wrapper.scrollTop
+
+        if (selectedItemScrollPosition < 0) {
+            wrapper.scrollTo(0, selectedItemPositionInList)
+        } else if (selectedItemScrollPosition + selectedItem.scrollHeight > heightOfWrapper) {
+            wrapper.scrollTo(0, selectedItemPositionInList - heightOfWrapper + selectedItem.scrollHeight)
+        }
     }
 }
 
@@ -174,10 +195,15 @@ const showCreateIngredientDialog = ref(false)
             autocomplete="off"
             placeholder="100g Mehl"
         />
-        <div v-if="isAutocompleteListVisible">
+        <div
+            v-if="isAutocompleteListVisible"
+            :id="`${props.elementId}-wrapper`"
+            class="max-h-28 overflow-y-auto scrollbar-hide"
+        >
             <ul>
                 <li
                     v-for="(i, index) in filteredIngredients"
+                    :id="`autocompleteingredient-${index}`"
                     :key="index"
                     :class="{ 'bg-slate-400': currentIngredientSelectionIndex == index }"
                     @mouseenter="currentIngredientSelectionIndex = index"
