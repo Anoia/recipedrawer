@@ -2512,7 +2512,7 @@ export const GetIngredientsAndUnits = gql`
     `;
 export const GetAllRecipes = gql`
     query getAllRecipes {
-  recipes {
+  recipes(order_by: {created_at: desc}) {
     description
     id
     name
