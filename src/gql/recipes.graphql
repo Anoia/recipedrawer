@@ -103,3 +103,9 @@ mutation editRecipe(
     affected_rows
   }
 }
+
+mutation deleteRecipe($id: Int!) {
+  delete_recipes_by_pk(id: $id) {
+    name
+  }
+}

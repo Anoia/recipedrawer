@@ -2475,6 +2475,13 @@ export type EditRecipeMutationVariables = Exact<{
 
 export type EditRecipeMutation = { __typename?: 'mutation_root', delete_recipe_ingredients?: { __typename?: 'recipe_ingredients_mutation_response', affected_rows: number } | null, update_recipes_by_pk?: { __typename?: 'recipes', id: number } | null, update_ingredients?: { __typename?: 'recipe_ingredients_mutation_response', affected_rows: number } | null, insert_ingredients?: { __typename?: 'recipe_ingredients_mutation_response', affected_rows: number, returning: Array<{ __typename?: 'recipe_ingredients', id: number }> } | null };
 
+export type DeleteRecipeMutationVariables = Exact<{
+  id: Scalars['Int'];
+}>;
+
+
+export type DeleteRecipeMutation = { __typename?: 'mutation_root', delete_recipes_by_pk?: { __typename?: 'recipes', name: string } | null };
+
 
 declare module '*/ingredients.graphql' {
   import { DocumentNode } from 'graphql';
@@ -2492,6 +2499,7 @@ declare module '*/recipes.graphql' {
 export const getRecipeById: DocumentNode;
 export const createRecipe: DocumentNode;
 export const editRecipe: DocumentNode;
+export const deleteRecipe: DocumentNode;
 
   export default defaultDocument;
 }
@@ -2588,6 +2596,13 @@ export const EditRecipe = gql`
       id
     }
     affected_rows
+  }
+}
+    `;
+export const DeleteRecipe = gql`
+    mutation deleteRecipe($id: Int!) {
+  delete_recipes_by_pk(id: $id) {
+    name
   }
 }
     `;

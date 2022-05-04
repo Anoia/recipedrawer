@@ -1,19 +1,22 @@
 <script setup lang="ts">
 
-import { useQuery, useResult } from '@vue/apollo-composable'
+import { useMutation, useQuery, useResult } from '@vue/apollo-composable'
 import { getImageUrl } from '../types/recipe'
 import { computed } from 'vue'
 import { useAuth } from '../auth/useAuthService'
-import { GetRecipeById, GetRecipeByIdQueryVariables } from '../generated/graphql.d'
+import { DeleteRecipeMutationVariables, GetRecipeById, GetRecipeByIdQueryVariables, DeleteRecipe } from '../generated/graphql.d'
 import { parseGetRecipeByIdResult } from '../gql/queryHelper'
+import { useRouter } from 'vue-router'
 
 const props = defineProps<{
     id: number
 }>()
 
-let queryVariables:GetRecipeByIdQueryVariables = { id: props.id }
+const router = useRouter()
 
-const { result } = useQuery(GetRecipeById, queryVariables, { fetchPolicy: 'cache-and-network'})
+let queryVariables: GetRecipeByIdQueryVariables = { id: props.id }
+
+const { result } = useQuery(GetRecipeById, queryVariables, { fetchPolicy: 'cache-and-network' })
 
 const parsedResult = useResult(result, null, data => parseGetRecipeByIdResult(data.recipes_by_pk))
 
@@ -24,6 +27,24 @@ const imageUrl = computed(() => {
 })
 
 const { user: loggedInUser } = useAuth();
+
+const isAuthor = computed(() => result?.value.recipes_by_pk.user.name == loggedInUser?.value?.['https://recipedrawer.herokuapp.com/username'])
+
+    let variables: DeleteRecipeMutationVariables = {id:props.id}
+    const {mutate, onDone} = useMutation(DeleteRecipe, () => ({
+        variables:variables
+    }))
+
+function deleteRecipe(){
+    console.log('starting delte')
+
+    mutate()
+
+}
+    onDone(r  => {
+        console.log(`deleted ${r}`)
+        router.push(`/`)
+    })
 
 </script>
 
@@ -66,14 +87,17 @@ const { user: loggedInUser } = useAuth();
                     </div>
                 </div>
             </div>
-            <div
-                v-if="result?.recipes_by_pk.user.name == loggedInUser?.['https://recipedrawer.herokuapp.com/username']"
-                class="flex-row"
-            >
+            <div v-if="isAuthor" class="flex-row">
                 <router-link
                     :to="'/edit/' + props.id"
                     class="hover:underline m-10 float-right text-slate-500"
                 >Edit Recipe</router-link>
+            </div>
+            <div v-if="isAuthor" class="flex-row">
+                <a
+                    class="hover:underline my-10 float-right text-slate-500"
+                    @click="deleteRecipe"
+                >Delete Recipe</a>
             </div>
         </div>
     </div>
