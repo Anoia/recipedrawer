@@ -15,7 +15,6 @@ export type Ingredient = {
 
 export type RecipeIngredient = {
   id:number | undefined
-  index:number
   ingredient_id: number
   name: string
   amount: number

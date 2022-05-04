@@ -39,7 +39,7 @@ export function parseGetRecipeQueryResult(result: any): EditableRecipe {
     steps: recipe.steps.map((s: any) => {
       return { id: s.id, content: s.content }
     }),
-    recipeIngredients: recipe.recipe_ingredients.map((item: any) => {
+    recipeIngredients: [...recipe.recipe_ingredients].sort((a:any,b:any) => (a.index < b.index ? -1: 1)).map((item: any) => {
       return {
         id:item.id,
         index:item.index,
@@ -50,7 +50,6 @@ export function parseGetRecipeQueryResult(result: any): EditableRecipe {
       }
     }),
   }
-  parsedRecipe.recipeIngredients.sort((a,b) => (a.index < b.index ? -1: 1))
   return parsedRecipe
 }
 

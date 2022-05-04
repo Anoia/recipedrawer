@@ -84,23 +84,23 @@ const { mutate: newMutatename, onDone: onDoneMutate } = useMutation(editRecipeMu
     variables: {
         rid: props.id,
         nin: recipeToEdit.value?.recipeIngredients.filter(i => i.id != undefined).map(i => i.id),
-        inputtest_insert: recipeToEdit.value?.recipeIngredients.filter(i => i.id == undefined).map(i => {
+        inputtest_insert: recipeToEdit.value?.recipeIngredients.filter(i => i.id == undefined).map((ingredient, index) => {
             return {
-                ingredient_id: i.ingredient_id,
+                ingredient_id: ingredient.ingredient_id,
                 recipe_id: props.id,
-                unit: i.unit.id,
-                amount: i.amount,
-                index: i.index
+                unit: ingredient.unit.id,
+                amount: ingredient.amount,
+                index: index
             }
         }),
-        inputtest_update: recipeToEdit.value?.recipeIngredients.filter(i => i.id != undefined).map(i => {
+        inputtest_update: recipeToEdit.value?.recipeIngredients.filter(i => i.id != undefined).map((ingredient, index) => {
             return {
-                id: i.id,
-                ingredient_id: i.ingredient_id,
+                id: ingredient.id,
+                ingredient_id: ingredient.ingredient_id,
                 recipe_id: props.id,
-                unit: i.unit.id,
-                amount: i.amount,
-                index: i.index
+                unit: ingredient.unit.id,
+                amount: ingredient.amount,
+                index: index
             }
         }),
         description: recipeToEdit.value?.description,
@@ -115,13 +115,13 @@ const { mutate: mutateCreate, onDone: onDoneCreate } = useMutation(createRecipeM
         description: recipeToEdit.value?.description,
         name: recipeToEdit.value?.name,
         steps: recipeToEdit.value?.steps,
-        data: recipeToEdit.value?.recipeIngredients.map(i => {
+        data: recipeToEdit.value?.recipeIngredients.map((ingredient, index) => {
             return {
-                ingredient_id: i.ingredient_id,
+                ingredient_id: ingredient.ingredient_id,
                 recipe_id: props.id,
-                unit: i.unit.id,
-                amount: i.amount,
-                index: i.index
+                unit: ingredient.unit.id,
+                amount: ingredient.amount,
+                index: index
             }
         })
     }
@@ -150,7 +150,6 @@ function clickHandler() {
 function removeIngredient(i: RecipeIngredient) {
     if (recipeToEdit.value?.recipeIngredients.includes(i)) {
         recipeToEdit.value?.recipeIngredients.splice(recipeToEdit.value.recipeIngredients.indexOf(i), 1)
-        resetIngredientIds()
     }
 }
 
@@ -178,7 +177,6 @@ function moveIngredient(i: RecipeIngredient, direction: number) {
             recipeToEdit.value.recipeIngredients.splice(currentIndex, 1)
             recipeToEdit.value.recipeIngredients.splice(newIndex, 0, i)
         }
-        resetIngredientIds()
     }
 }
 
@@ -193,18 +191,6 @@ function resetStepIds() {
     if (recipeToEdit.value != undefined) {
         recipeToEdit.value.steps = recipeToEdit.value.steps.map((el, i) => {
             el.id = `${i + 1}`
-            return el
-        })
-    }
-}
-
-// TODO remove Index/Id column from frontend, just sort correctly initalliy and send BE the correct order on mutate
-
-
-function resetIngredientIds() {
-    if (recipeToEdit.value != undefined) {
-        recipeToEdit.value.recipeIngredients = recipeToEdit.value.recipeIngredients.map((el, i) => {
-            el.index = i + 1
             return el
         })
     }
@@ -249,7 +235,6 @@ function doSelect(i: any) {
     // TODO type 
     recipeToEdit.value?.recipeIngredients.push({
         id: undefined,
-        index: recipeToEdit.value.recipeIngredients.length,
         name: i.ingredient.name,
         ingredient_id: i.ingredient.id,
         amount: i.amount,
@@ -262,7 +247,6 @@ function editIngredient(i: any) {
         let oldIng = recipeToEdit.value.recipeIngredients[editingIngredientIndex.value]
         let newIng = {
             id: oldIng.id,
-            index: oldIng.index,
             name: i.ingredient.name,
             ingredient_id: i.ingredient.id,
             amount: i.amount,
