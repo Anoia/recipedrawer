@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { extractInfoFromString } from '../stuff/parse';
 import { Ingredient, Unit } from '../types/recipe';
-import { computed, ref } from 'vue';
+import { computed, ref,onMounted} from 'vue';
 import IngredientCreation from './IngredientCreation.vue'
 
 const props = defineProps<{
@@ -12,8 +12,13 @@ const props = defineProps<{
 
 let defaultUnit = computed(() => props.units.find(u => u.long_name === "Stück"))
 
+onMounted(() => {
+     document.getElementById(props.elementId)?.focus();
+})
+
 const emit = defineEmits<{
     (e: 'selectItem', item: any): void
+    (e: 'cancel'):void
 }>()
 
 const userInputString = ref("")
@@ -120,15 +125,20 @@ function onBlur() {
     isInputFocused.value = false
     if (!showCreateIngredientDialog.value) {
         userInputString.value = ""
+        emit('cancel')
     }
 }
 
 function selectIngredient(i: Ingredient) {
     if (matchResult.value && defaultUnit) {
+        console.log("EMITTING "+i.name)
         emit('selectItem', {
             amount: matchResult.value.amount,
             unit: (possibleUnit.value ?? defaultUnit),
-            ingredient: i
+            ingredient: {
+                id:i.id,
+                name:i.name
+            }
         })
         clearData()
     }
@@ -179,8 +189,8 @@ const showCreateIngredientDialog = ref(false)
         @created="selectIngredient"
     />
 
-    <div class="my-5">
-        <label>Add Ingredient:</label>
+    <div>
+     
         <input
             :id="props.elementId"
             class="w-full"
@@ -208,9 +218,9 @@ const showCreateIngredientDialog = ref(false)
                     :class="{ 'bg-slate-400': currentIngredientSelectionIndex == index }"
                     @mouseenter="currentIngredientSelectionIndex = index"
                     @mousedown.prevent
-                    @click="selectIngredient(i)"
+                    @click.stop="selectIngredient(i)"
                 >{{ i.name }}</li>
-                <li class="bg-slate-200 font-normal" @mousedown.prevent @click="notFound">add new</li>
+                <li class="bg-slate-200 font-normal" @mousedown.prevent @click.stop="notFound">add new</li>
             </ul>
         </div>
     </div>

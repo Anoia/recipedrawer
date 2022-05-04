@@ -257,6 +257,32 @@ function doSelect(i: any) {
     })
 }
 
+function editIngredient(i: any) {
+    if (recipeToEdit.value && editingIngredientIndex.value != -1) {
+        let oldIng = recipeToEdit.value.recipeIngredients[editingIngredientIndex.value]
+        let newIng = {
+            id: oldIng.id,
+            index: oldIng.index,
+            name: i.ingredient.name,
+            ingredient_id: i.ingredient.id,
+            amount: i.amount,
+            unit: i.unit
+        }
+        recipeToEdit.value.recipeIngredients[editingIngredientIndex.value] = newIng
+        resetEditingIngredientIndex()
+    }
+}
+
+let editingIngredientIndex: Ref<number> = ref(-1)
+
+function setEditingIngredientIndex(i: number) {
+    editingIngredientIndex.value = i
+}
+
+function resetEditingIngredientIndex() {
+    editingIngredientIndex.value = -1
+}
+
 </script>
 
 <template>
@@ -294,12 +320,13 @@ function doSelect(i: any) {
                     <h3 class="text-xl my-2 px-2 py-1 bg-slate-300">Ingredients</h3>
                     <ul class="my-3">
                         <li
-                            v-for="i in recipeToEdit?.recipeIngredients"
+                            v-for="(i, index) in recipeToEdit?.recipeIngredients"
                             class="border-b-[1px] last:border-b-0 p-2 border-slate-300 hover:bg-slate-100 group"
                         >
-                            <div class="flex">
+                            <div v-if="editingIngredientIndex != index" class="flex">
                                 <span
                                     class="grow"
+                                    @click.stop="setEditingIngredientIndex(index)"
                                 >{{ i.amount }} {{ i.unit.short_name }} {{ i.name }}</span>
                                 <button
                                     class="grow-0 hidden group-hover:inline"
@@ -319,6 +346,15 @@ function doSelect(i: any) {
                                 >
                                     <TrashIcon class="h-4 w-4 text-slate-500" />
                                 </button>
+                            </div>
+                            <div v-if="editingIngredientIndex == index">
+                                <NewAutoIngredientInputVue
+                                    :element-id="`new-auto-input-ingredient-${index}`"
+                                    :ingredients="allIngredients"
+                                    :units="allUnits"
+                                    @cancel="resetEditingIngredientIndex"
+                                    @select-item="editIngredient"
+                                ></NewAutoIngredientInputVue>
                             </div>
                         </li>
                         <li>
@@ -373,7 +409,7 @@ function doSelect(i: any) {
             </div>
             <div class="flex justify-end">
                 <button
-                    @click="clickHandler"
+                    @click.stop="clickHandler"
                     class="bg-slate-500 hover:bg-slate-600 text-white p-3 w-40 m-10"
                 >Save</button>
             </div>
