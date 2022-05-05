@@ -23,7 +23,6 @@ test('parseTextToIngredient', () => {
 
   expect(result).toEqual({
     id: 1,
-    index: 1,
     amount: 200,
     ingredient_id:1,
     name: 'Mehl',
@@ -36,7 +35,6 @@ test('parseTextToIngredient', () => {
 
   expect(result2).toEqual({
     id: 1,
-    index: 1,
     amount: 3,
     ingredient_id:2,
     name: 'Zuccini',
