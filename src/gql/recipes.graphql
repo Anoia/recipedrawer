@@ -62,22 +62,22 @@ mutation createRecipe(
 }
 
 mutation editRecipe(
-  $rid: Int!
-  $nin: [Int!]!
-  $inputtest_insert: [recipe_ingredients_insert_input!]!
-  $inputtest_update: [recipe_ingredients_insert_input!]!
+  $recipe_id: Int!
+  $delete_not_in: [Int!]!
+  $insert: [recipe_ingredients_insert_input!]!
+  $update: [recipe_ingredients_insert_input!]!
   $description: String
   $name: String
   $steps: jsonb
   $image: String = ""
 ) {
   delete_recipe_ingredients(
-    where: { recipe_id: { _eq: $rid }, id: { _nin: $nin } }
+    where: { recipe_id: { _eq: $recipe_id }, id: { _nin: $delete_not_in } }
   ) {
     affected_rows
   }
   update_recipes_by_pk(
-    pk_columns: { id: $rid }
+    pk_columns: { id: $recipe_id }
     _set: {
       image: $image
       name: $name
@@ -88,7 +88,7 @@ mutation editRecipe(
     id
   }
   update_ingredients: insert_recipe_ingredients(
-    objects: $inputtest_update
+    objects: $update
     on_conflict: {
       constraint: recipe_ingredients_pkey
       update_columns: [amount, unit, index]
@@ -96,7 +96,7 @@ mutation editRecipe(
   ) {
     affected_rows
   }
-  insert_ingredients: insert_recipe_ingredients(objects: $inputtest_insert) {
+  insert_ingredients: insert_recipe_ingredients(objects: $insert) {
     returning {
       id
     }

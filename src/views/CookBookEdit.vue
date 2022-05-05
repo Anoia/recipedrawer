@@ -2,28 +2,29 @@
 
 import { useQuery, useMutation, useResult } from '@vue/apollo-composable'
 import { computed, watch, ref, Ref, nextTick, onMounted } from 'vue'
-import IngredientSelectorVue from '../components/IngredientSelector.vue'
 import NewAutoIngredientInputVue from '../components/NewAutoIngredientInput.vue'
 import { RecipeIngredient, Step, EditableRecipe, getEmptyRecipe, getImageUrl, Ingredient, Unit } from '../types/recipe'
-import { getRecipeQuery, parseGetRecipeQueryResult, createRecipeMutation, editRecipeMutation } from '../gql/queries'
 import { TrashIcon, ChevronUpIcon, ChevronDownIcon, PlusIcon } from '@heroicons/vue/outline'
 import axios from "axios"
 import { useRouter } from 'vue-router'
-import { GetIngredientsAndUnits } from '../generated/graphql.d'
+import { GetIngredientsAndUnits, GetRecipeById, EditRecipe, CreateRecipe, EditRecipeMutationVariables, CreateRecipeMutationVariables, Recipe_Ingredients_Insert_Input } from '../generated/graphql.d'
+import { parseGetRecipeByIdResult } from '../gql/queryHelper'
 
-const props = defineProps({
-    id: String
-})
+const props = defineProps<{
+    id: string
+}>()
 
 const router = useRouter()
 
-const { result, loading, error } = useQuery(getRecipeQuery, {
+const { result, loading, error } = useQuery(GetRecipeById, {
     id: props.id
 })
 
 onMounted(() => {
     handleInit(result.value, loading.value)
 })
+
+const parsedResult: Ref<EditableRecipe | undefined> = useResult(result, undefined, data => parseGetRecipeByIdResult(data.recipes_by_pk))
 
 watch([result, loading], async ([newResult, newLoading]) => {
     handleInit(newResult, newLoading)
@@ -36,7 +37,7 @@ const allUnits = useResult(loadedData, [] as Unit[], ((data) => data.units as Un
 
 function handleInit(newResult: any, newLoading: boolean) {
     if (props.id && newResult) {
-        recipeToEdit.value = parseGetRecipeQueryResult(newResult)
+        recipeToEdit.value = parsedResult.value
     } else if (!props.id || !newLoading) {
         recipeToEdit.value = getEmptyRecipe()
     }
@@ -80,61 +81,78 @@ function resizeAllTextAreas() {
     }
 }
 
-const { mutate: newMutatename, onDone: onDoneMutate } = useMutation(editRecipeMutation, () => ({
-    variables: {
-        rid: props.id,
-        nin: recipeToEdit.value?.recipeIngredients.filter(i => i.id != undefined).map(i => i.id),
-        inputtest_insert: recipeToEdit.value?.recipeIngredients.filter(i => i.id == undefined).map((ingredient, index) => {
-            return {
-                ingredient_id: ingredient.ingredient_id,
-                recipe_id: props.id,
-                unit: ingredient.unit.id,
-                amount: ingredient.amount,
-                index: index
-            }
-        }),
-        inputtest_update: recipeToEdit.value?.recipeIngredients.filter(i => i.id != undefined).map((ingredient, index) => {
+const { mutate: newMutatename, onDone: onDoneMutate } = useMutation(EditRecipe, () => {
+    var ingredients: Recipe_Ingredients_Insert_Input[] = []
+
+    if (recipeToEdit.value) {
+        ingredients = recipeToEdit.value.recipeIngredients.map((ingredient, index) => {
             return {
                 id: ingredient.id,
                 ingredient_id: ingredient.ingredient_id,
-                recipe_id: props.id,
-                unit: ingredient.unit.id,
-                amount: ingredient.amount,
-                index: index
-            }
-        }),
-        description: recipeToEdit.value?.description,
-        name: recipeToEdit.value?.name,
-        steps: recipeToEdit.value?.steps,
-        image: recipeToEdit.value?.image
-    },
-}))
-
-const { mutate: mutateCreate, onDone: onDoneCreate } = useMutation(createRecipeMutation, () => ({
-    variables: {
-        description: recipeToEdit.value?.description,
-        name: recipeToEdit.value?.name,
-        steps: recipeToEdit.value?.steps,
-        data: recipeToEdit.value?.recipeIngredients.map((ingredient, index) => {
-            return {
-                ingredient_id: ingredient.ingredient_id,
-                recipe_id: props.id,
+                recipe_id: parseInt(props.id),
                 unit: ingredient.unit.id,
                 amount: ingredient.amount,
                 index: index
             }
         })
     }
-}))
+
+    let deleteNotIn: number[] = []
+
+    ingredients.forEach(i => {
+        if (i.id) {
+            deleteNotIn.push(i.id)
+        }
+    })
+
+    let variables: EditRecipeMutationVariables = {
+        recipe_id: parseInt(props.id),
+        delete_not_in: deleteNotIn,
+        insert: ingredients.filter(i => i.id == undefined),
+        update: ingredients.filter(i => i.id != undefined),
+        description: recipeToEdit.value?.description,
+        name: recipeToEdit.value?.name,
+        steps: recipeToEdit.value?.steps,
+        image: recipeToEdit.value?.image
+    }
+
+    return ({
+        variables: variables,
+    })
+})
+
+const { mutate: mutateCreate, onDone: onDoneCreate } = useMutation(CreateRecipe, () => {
+    var ingredients: Recipe_Ingredients_Insert_Input[] = []
+
+    if (recipeToEdit.value) {
+        ingredients = recipeToEdit.value.recipeIngredients.map((ingredient, index) => {
+            return {
+                ingredient_id: ingredient.ingredient_id,
+                unit: ingredient.unit.id,
+                amount: ingredient.amount,
+                index: index
+            }
+        })
+    }
+
+    let vars: CreateRecipeMutationVariables = {
+        description: recipeToEdit.value?.description,
+        name: recipeToEdit.value?.name,
+        steps: recipeToEdit.value?.steps,
+        data: ingredients
+    }
+
+    return ({
+        variables: vars
+    })
+})
 
 onDoneCreate(r => {
-    console.log(r)
     let id = r.data.insert_recipes_one.id
     router.push(`/recipe/${id}`)
 })
 
 onDoneMutate(r => {
-    console.log(r)
     let id = r.data.update_recipes_by_pk.id
     router.push(`/recipe/${id}`)
 })

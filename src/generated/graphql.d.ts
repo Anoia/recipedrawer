@@ -2462,10 +2462,10 @@ export type CreateRecipeMutationVariables = Exact<{
 export type CreateRecipeMutation = { __typename?: 'mutation_root', insert_recipes_one?: { __typename?: 'recipes', id: number, description?: string | null, name: string, steps: any, recipe_ingredients: Array<{ __typename?: 'recipe_ingredients', amount: number, ingredient_id: number, unit: number, index: number }> } | null };
 
 export type EditRecipeMutationVariables = Exact<{
-  rid: Scalars['Int'];
-  nin: Array<Scalars['Int']> | Scalars['Int'];
-  inputtest_insert: Array<Recipe_Ingredients_Insert_Input> | Recipe_Ingredients_Insert_Input;
-  inputtest_update: Array<Recipe_Ingredients_Insert_Input> | Recipe_Ingredients_Insert_Input;
+  recipe_id: Scalars['Int'];
+  delete_not_in: Array<Scalars['Int']> | Scalars['Int'];
+  insert: Array<Recipe_Ingredients_Insert_Input> | Recipe_Ingredients_Insert_Input;
+  update: Array<Recipe_Ingredients_Insert_Input> | Recipe_Ingredients_Insert_Input;
   description?: InputMaybe<Scalars['String']>;
   name?: InputMaybe<Scalars['String']>;
   steps?: InputMaybe<Scalars['jsonb']>;
@@ -2575,23 +2575,25 @@ export const CreateRecipe = gql`
 }
     `;
 export const EditRecipe = gql`
-    mutation editRecipe($rid: Int!, $nin: [Int!]!, $inputtest_insert: [recipe_ingredients_insert_input!]!, $inputtest_update: [recipe_ingredients_insert_input!]!, $description: String, $name: String, $steps: jsonb, $image: String = "") {
-  delete_recipe_ingredients(where: {recipe_id: {_eq: $rid}, id: {_nin: $nin}}) {
+    mutation editRecipe($recipe_id: Int!, $delete_not_in: [Int!]!, $insert: [recipe_ingredients_insert_input!]!, $update: [recipe_ingredients_insert_input!]!, $description: String, $name: String, $steps: jsonb, $image: String = "") {
+  delete_recipe_ingredients(
+    where: {recipe_id: {_eq: $recipe_id}, id: {_nin: $delete_not_in}}
+  ) {
     affected_rows
   }
   update_recipes_by_pk(
-    pk_columns: {id: $rid}
+    pk_columns: {id: $recipe_id}
     _set: {image: $image, name: $name, description: $description, steps: $steps}
   ) {
     id
   }
   update_ingredients: insert_recipe_ingredients(
-    objects: $inputtest_update
+    objects: $update
     on_conflict: {constraint: recipe_ingredients_pkey, update_columns: [amount, unit, index]}
   ) {
     affected_rows
   }
-  insert_ingredients: insert_recipe_ingredients(objects: $inputtest_insert) {
+  insert_ingredients: insert_recipe_ingredients(objects: $insert) {
     returning {
       id
     }
