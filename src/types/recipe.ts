@@ -45,7 +45,7 @@ export function getImageUrl(
     image.resize(Resize.fill().width(w).height(h))
     return image.toURL()
   } else {
-    return `https://via.placeholder.com/${h}`
+    return `https://picsum.photos/${w}/${h}`
   }
 }
 
