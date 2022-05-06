@@ -4,7 +4,7 @@ import { RecipeIngredient } from 'src/types/recipe'
 export type Unit = { id: number; long_name: string; short_name: string }
 export type SourceIngredient = { id: number; name: string }
 
-const regexString = '([0-9.,]{1,})([ ]*)([a-zA-Z]{0,})([ ]+)([a-zA-Z ]+)'
+const regexString = '([0-9.,]{1,})([ ]*)([a-zA-ZäÄöÖüÜ]{0,})([ ]+)([a-zA-ZäÄöÖüÜ ]+)'
 
 export const regex: RegExp = RegExp(regexString)
 

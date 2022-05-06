@@ -131,7 +131,6 @@ function onBlur() {
 
 function selectIngredient(i: Ingredient) {
     if (matchResult.value && defaultUnit) {
-        console.log("EMITTING "+i.name)
         emit('selectItem', {
             amount: matchResult.value.amount,
             unit: (possibleUnit.value ?? defaultUnit),
