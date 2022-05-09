@@ -2449,7 +2449,7 @@ export type GetRecipeByIdQueryVariables = Exact<{
 }>;
 
 
-export type GetRecipeByIdQuery = { __typename?: 'query_root', recipes_by_pk?: { __typename?: 'recipes', id: number, name: string, description?: string | null, image?: string | null, steps: any, user?: { __typename?: 'users', name: string } | null, recipe_ingredients: Array<{ __typename?: 'recipe_ingredients', id: number, index: number, amount: number, ingredient: { __typename?: 'ingredients', id: number, name: string }, unitByUnit: { __typename?: 'units', id: number, long_name: string, short_name: string } }> } | null };
+export type GetRecipeByIdQuery = { __typename?: 'query_root', recipes_by_pk?: { __typename?: 'recipes', id: number, name: string, description?: string | null, image?: string | null, steps: any, user?: { __typename?: 'users', name: string } | null, recipe_ingredients: Array<{ __typename?: 'recipe_ingredients', id: number, index: number, amount: number, section?: string | null, ingredient: { __typename?: 'ingredients', id: number, name: string }, unitByUnit: { __typename?: 'units', id: number, long_name: string, short_name: string } }> } | null };
 
 export type CreateRecipeMutationVariables = Exact<{
   description?: InputMaybe<Scalars['String']>;
@@ -2459,7 +2459,7 @@ export type CreateRecipeMutationVariables = Exact<{
 }>;
 
 
-export type CreateRecipeMutation = { __typename?: 'mutation_root', insert_recipes_one?: { __typename?: 'recipes', id: number, description?: string | null, name: string, steps: any, recipe_ingredients: Array<{ __typename?: 'recipe_ingredients', amount: number, ingredient_id: number, unit: number, index: number }> } | null };
+export type CreateRecipeMutation = { __typename?: 'mutation_root', insert_recipes_one?: { __typename?: 'recipes', id: number, description?: string | null, name: string, steps: any, recipe_ingredients: Array<{ __typename?: 'recipe_ingredients', amount: number, ingredient_id: number, unit: number, index: number, section?: string | null }> } | null };
 
 export type EditRecipeMutationVariables = Exact<{
   recipe_id: Scalars['Int'];
@@ -2543,6 +2543,7 @@ export const GetRecipeById = gql`
       id
       index
       amount
+      section
       ingredient {
         id
         name
@@ -2570,6 +2571,7 @@ export const CreateRecipe = gql`
       ingredient_id
       unit
       index
+      section
     }
   }
 }
@@ -2589,7 +2591,7 @@ export const EditRecipe = gql`
   }
   update_ingredients: insert_recipe_ingredients(
     objects: $update
-    on_conflict: {constraint: recipe_ingredients_pkey, update_columns: [amount, unit, index]}
+    on_conflict: {constraint: recipe_ingredients_pkey, update_columns: [amount, unit, index, section]}
   ) {
     affected_rows
   }

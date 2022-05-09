@@ -14,11 +14,16 @@ export type Ingredient = {
 }
 
 export type RecipeIngredient = {
+  type:"ingredient"
   id:number | undefined
   ingredient_id: number
   name: string
   amount: number
   unit: Unit
+}
+export type RecipeIngredientSection = {
+  type:"section"
+  name:string
 }
 
 export type Step = {
@@ -31,7 +36,7 @@ export type EditableRecipe = {
   description: string
   image: string
   steps: Step[]
-  recipeIngredients: RecipeIngredient[]
+  recipeIngredients: Array<RecipeIngredient | RecipeIngredientSection>
 }
 
 export function getImageUrl(

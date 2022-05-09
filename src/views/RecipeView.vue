@@ -30,21 +30,21 @@ const { user: loggedInUser } = useAuth();
 
 const isAuthor = computed(() => result?.value.recipes_by_pk.user.name == loggedInUser?.value?.['https://recipedrawer.herokuapp.com/username'])
 
-    let variables: DeleteRecipeMutationVariables = {id:props.id}
-    const {mutate, onDone} = useMutation(DeleteRecipe, () => ({
-        variables:variables
-    }))
+let variables: DeleteRecipeMutationVariables = { id: props.id }
+const { mutate, onDone } = useMutation(DeleteRecipe, () => ({
+    variables: variables
+}))
 
-function deleteRecipe(){
+function deleteRecipe() {
     console.log('starting delte')
 
     mutate()
 
 }
-    onDone(r  => {
-        console.log(`deleted ${r}`)
-        router.push(`/`)
-    })
+onDone(r => {
+    console.log(`deleted ${r}`)
+    router.push(`/`)
+})
 
 </script>
 
@@ -74,7 +74,10 @@ function deleteRecipe(){
                         <li
                             v-for="i in parsedResult.recipeIngredients"
                             class="border-b-[1px] last:border-b-0 p-1 border-slate-300"
-                        >{{ i.amount }} {{ i.unit.short_name }} {{ i.name }}</li>
+                        >
+                            <span v-if="i.type==='ingredient'">{{ i.amount }} {{ i.unit.short_name }} {{ i.name }}</span>
+                            <span v-if="i.type==='section'" class="text-sm font-semibold ">{{ i.name }} </span>
+                        </li>
                     </ul>
                 </div>
                 <div class="basis-2/3 m-5">

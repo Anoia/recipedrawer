@@ -3,12 +3,13 @@
 import { useQuery, useMutation, useResult } from '@vue/apollo-composable'
 import { computed, watch, ref, Ref, nextTick, onMounted } from 'vue'
 import NewAutoIngredientInputVue from '../components/NewAutoIngredientInput.vue'
-import { RecipeIngredient, Step, EditableRecipe, getEmptyRecipe, getImageUrl, Ingredient, Unit } from '../types/recipe'
+import { RecipeIngredient, Step, EditableRecipe, getEmptyRecipe, getImageUrl, Ingredient, Unit, RecipeIngredientSection } from '../types/recipe'
 import { TrashIcon, ChevronUpIcon, ChevronDownIcon, PlusIcon } from '@heroicons/vue/outline'
 import axios from "axios"
 import { useRouter } from 'vue-router'
 import { GetIngredientsAndUnits, GetRecipeById, EditRecipe, CreateRecipe, EditRecipeMutationVariables, CreateRecipeMutationVariables, Recipe_Ingredients_Insert_Input } from '../generated/graphql.d'
 import { parseGetRecipeByIdResult } from '../gql/queryHelper'
+import { image } from '@cloudinary/url-gen/qualifiers/source'
 
 const props = defineProps<{
     id: string
@@ -85,16 +86,27 @@ const { mutate: newMutatename, onDone: onDoneMutate } = useMutation(EditRecipe, 
     var ingredients: Recipe_Ingredients_Insert_Input[] = []
 
     if (recipeToEdit.value) {
-        ingredients = recipeToEdit.value.recipeIngredients.map((ingredient, index) => {
-            return {
-                id: ingredient.id,
-                ingredient_id: ingredient.ingredient_id,
-                recipe_id: parseInt(props.id),
-                unit: ingredient.unit.id,
-                amount: ingredient.amount,
-                index: index
+        var currentSectionName: string | undefined = undefined
+
+        ingredients = recipeToEdit.value.recipeIngredients.reduce((prev, current, index) => {
+            if (current.type === "ingredient") {
+
+                let newIngredient = {
+                    id: current.id,
+                    ingredient_id: current.ingredient_id,
+                    recipe_id: parseInt(props.id),
+                    unit: current.unit.id,
+                    amount: current.amount,
+                    index: index,
+                    section: currentSectionName
+                }
+                prev.push(newIngredient)
+                return prev
+            } else {
+                currentSectionName = current.name
+                return prev
             }
-        })
+        }, Array<Recipe_Ingredients_Insert_Input>())
     }
 
     let deleteNotIn: number[] = []
@@ -125,14 +137,27 @@ const { mutate: mutateCreate, onDone: onDoneCreate } = useMutation(CreateRecipe,
     var ingredients: Recipe_Ingredients_Insert_Input[] = []
 
     if (recipeToEdit.value) {
-        ingredients = recipeToEdit.value.recipeIngredients.map((ingredient, index) => {
-            return {
-                ingredient_id: ingredient.ingredient_id,
-                unit: ingredient.unit.id,
-                amount: ingredient.amount,
-                index: index
+
+        var currentSectionName: string | undefined = undefined
+
+        ingredients = recipeToEdit.value.recipeIngredients.reduce((prev, current, index, list) => {
+            if (current.type === "ingredient") {
+
+                let newIngredient = {
+                    ingredient_id: current.ingredient_id,
+                    unit: current.unit.id,
+                    amount: current.amount,
+                    index: index,
+                    section: currentSectionName
+                }
+                prev.push(newIngredient)
+                return prev
+            } else {
+                currentSectionName = current.name
+                return prev
             }
-        })
+        }, Array<Recipe_Ingredients_Insert_Input>())
+
     }
 
     let vars: CreateRecipeMutationVariables = {
@@ -165,7 +190,7 @@ function clickHandler() {
     }
 }
 
-function removeIngredient(i: RecipeIngredient) {
+function removeIngredient(i: RecipeIngredient | RecipeIngredientSection) {
     if (recipeToEdit.value?.recipeIngredients.includes(i)) {
         recipeToEdit.value?.recipeIngredients.splice(recipeToEdit.value.recipeIngredients.indexOf(i), 1)
     }
@@ -186,7 +211,7 @@ function moveStep(s: Step, direction: number) {
 
 }
 
-function moveIngredient(i: RecipeIngredient, direction: number) {
+function moveIngredient(i: RecipeIngredient | RecipeIngredientSection, direction: number) {
     if (recipeToEdit.value?.recipeIngredients.includes(i)) {
         let currentIndex = recipeToEdit.value.recipeIngredients.indexOf(i)
         let newIndex = currentIndex + direction
@@ -239,19 +264,21 @@ function uploadFile() {
         data: formData
     })
         .then((res) => {
-            console.log(res);
+            console.log(`uploaded image: ${res}`);
             if (recipeToEdit.value) {
-                recipeToEdit.value.image = res?.data?.public_id ?? ""
+                let imageId = res?.data?.public_id ?? ""
+                recipeToEdit.value.image = imageId
             }
         })
         .catch((err) => {
-            console.log(err);
+            console.log(`error on cloudinary upload${err}`);
         })
 }
 
 function doSelect(i: any) {
     // TODO type 
     recipeToEdit.value?.recipeIngredients.push({
+        type: "ingredient",
         id: undefined,
         name: i.ingredient.name,
         ingredient_id: i.ingredient.id,
@@ -263,15 +290,18 @@ function doSelect(i: any) {
 function editIngredient(i: any) {
     if (recipeToEdit.value && editingIngredientIndex.value != -1) {
         let oldIng = recipeToEdit.value.recipeIngredients[editingIngredientIndex.value]
-        let newIng = {
-            id: oldIng.id,
-            name: i.ingredient.name,
-            ingredient_id: i.ingredient.id,
-            amount: i.amount,
-            unit: i.unit
+        if (oldIng.type === "ingredient") {
+            let newIng: RecipeIngredient = {
+                type: "ingredient",
+                id: oldIng.id,
+                name: i.ingredient.name,
+                ingredient_id: i.ingredient.id,
+                amount: i.amount,
+                unit: i.unit
+            }
+            recipeToEdit.value.recipeIngredients[editingIngredientIndex.value] = newIng
+            resetEditingIngredientIndex()
         }
-        recipeToEdit.value.recipeIngredients[editingIngredientIndex.value] = newIng
-        resetEditingIngredientIndex()
     }
 }
 
@@ -283,6 +313,18 @@ function setEditingIngredientIndex(i: number) {
 
 function resetEditingIngredientIndex() {
     editingIngredientIndex.value = -1
+}
+
+const newSectionName: Ref<string> = ref("")
+
+function addSection() {
+    if (newSectionName.value && recipeToEdit.value) {
+        recipeToEdit.value.recipeIngredients.push({
+            type: "section",
+            name: newSectionName.value
+        })
+        newSectionName.value = ""
+    }
 }
 
 </script>
@@ -325,7 +367,10 @@ function resetEditingIngredientIndex() {
                             v-for="(i, index) in recipeToEdit?.recipeIngredients"
                             class="border-b-[1px] last:border-b-0 p-2 border-slate-300 hover:bg-slate-100 group"
                         >
-                            <div v-if="editingIngredientIndex != index" class="flex">
+                            <div
+                                v-if="editingIngredientIndex != index && i.type === 'ingredient'"
+                                class="flex"
+                            >
                                 <span
                                     class="grow"
                                     @click.stop="setEditingIngredientIndex(index)"
@@ -349,7 +394,7 @@ function resetEditingIngredientIndex() {
                                     <TrashIcon class="h-4 w-4 text-slate-500" />
                                 </button>
                             </div>
-                            <div v-if="editingIngredientIndex == index">
+                            <div v-if="editingIngredientIndex == index && i.type === 'ingredient'">
                                 <NewAutoIngredientInputVue
                                     :element-id="`new-auto-input-ingredient-${index}`"
                                     :ingredients="allIngredients"
@@ -358,14 +403,39 @@ function resetEditingIngredientIndex() {
                                     @select-item="editIngredient"
                                 ></NewAutoIngredientInputVue>
                             </div>
+                            <div v-if="i.type === 'section'" class="flex">
+                                <span  class="grow text-sm font-semibold">{{ i.name }}</span>
+                                <button
+                                    class="grow-0 hidden group-hover:inline"
+                                    @click="moveIngredient(i, -1)"
+                                >
+                                    <ChevronUpIcon class="h-4 w-4 text-slate-500" />
+                                </button>
+                                <button
+                                    class="grow-0 hidden group-hover:inline"
+                                    @click="moveIngredient(i, 1)"
+                                >
+                                    <ChevronDownIcon class="h-4 w-4 text-slate-500" />
+                                </button>
+                                <button
+                                    class="grow-0 pr-1 hidden group-hover:inline"
+                                    @click="removeIngredient(i)"
+                                >
+                                    <TrashIcon class="h-4 w-4 text-slate-500" />
+                                </button>
+                            </div>
                         </li>
-                        <li>
+                        <li class="my-5">
                             <NewAutoIngredientInputVue
                                 element-id="new-auto-input-new-ingredient"
                                 :ingredients="allIngredients"
                                 :units="allUnits"
                                 @select-item="doSelect"
                             ></NewAutoIngredientInputVue>
+                        </li>
+                        <li class="flex flex-row">
+                            <input type="text" placeholder="Add section" v-model="newSectionName" />
+                            <button class="bg-slate-400 p-3 mx-2" @click="addSection">Add</button>
                         </li>
                     </ul>
                 </div>

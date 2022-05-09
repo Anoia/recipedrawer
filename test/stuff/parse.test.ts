@@ -22,6 +22,7 @@ test('parseTextToIngredient', () => {
   let result =  parseTextToIngredient(units, ingredients,input)
 
   expect(result).toEqual({
+    type:"ingredient",
     id: 1,
     amount: 200,
     ingredient_id:1,
@@ -34,6 +35,7 @@ test('parseTextToIngredient', () => {
   let result2 =  parseTextToIngredient(units, ingredients,input2)
 
   expect(result2).toEqual({
+    type:"ingredient",
     id: 1,
     amount: 3,
     ingredient_id:2,

@@ -33,6 +33,7 @@ export function parseTextToIngredient(
 
     if (ingredient) {
       return {
+        type:"ingredient",
         id: 1,
         amount: match.amount,
         ingredient_id: ingredient.id,

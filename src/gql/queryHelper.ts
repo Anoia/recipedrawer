@@ -1,5 +1,5 @@
-import { EditableRecipe, RecipeIngredient } from '../types/recipe'
-import { Recipes, Recipe_Ingredients } from '../generated/graphql.d'
+import { EditableRecipe, RecipeIngredient, RecipeIngredientSection } from '../types/recipe'
+import { Recipes } from '../generated/graphql.d'
 
 export function parseAllRecipesResult(result:Array<Recipes>):Array<Recipes>{
     return result
@@ -7,22 +7,34 @@ export function parseAllRecipesResult(result:Array<Recipes>):Array<Recipes>{
 
 // correct: Maybe<Recipes>
 export function parseGetRecipeByIdResult(recipe:Recipes):EditableRecipe{
+    var lastSectionName:string|undefined = undefined
     let editableRecipe:EditableRecipe = {
         name:recipe.name,
         description:(recipe.description ?? ''),
         image: (recipe.image ?? ''),
-        recipeIngredients:[...recipe.recipe_ingredients].sort((a,b) => (a.index < b.index ? -1: 1)).map(mapIngredient),
+        recipeIngredients:[...recipe.recipe_ingredients].sort((a,b) => (a.index < b.index ? -1: 1)).reduce((prev, current) => {
+
+            if(current.section && current.section != lastSectionName){
+                prev.push({
+                    type:"section",
+                    name:current.section
+                })
+                lastSectionName = current.section
+            }
+
+            prev.push({
+                type:"ingredient",
+                id:current.id,
+                amount:current.amount,
+                ingredient_id:current.ingredient.id, 
+                name:current.ingredient.name,
+                unit: current.unitByUnit
+            })
+
+
+            return prev
+        }, Array<RecipeIngredient | RecipeIngredientSection>()),
         steps:recipe.steps
     }
     return editableRecipe
-}
-
-function mapIngredient(i:Recipe_Ingredients):RecipeIngredient {
-    return{
-        id:i.id,
-        amount:i.amount,
-        ingredient_id:i.ingredient.id, 
-        name:i.ingredient.name,
-        unit: i.unitByUnit
-    }
 }
