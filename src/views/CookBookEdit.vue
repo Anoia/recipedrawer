@@ -140,7 +140,7 @@ const { mutate: mutateCreate, onDone: onDoneCreate } = useMutation(CreateRecipe,
 
         var currentSectionName: string | undefined = undefined
 
-        ingredients = recipeToEdit.value.recipeIngredients.reduce((prev, current, index, list) => {
+        ingredients = recipeToEdit.value.recipeIngredients.reduce((prev, current, index) => {
             if (current.type === "ingredient") {
 
                 let newIngredient = {
