@@ -40,6 +40,7 @@ mutation createRecipe(
   $name: String
   $steps: jsonb
   $data: [recipe_ingredients_insert_input!]!
+  $image:String
 ) {
   insert_recipes_one(
     object: {
@@ -47,12 +48,14 @@ mutation createRecipe(
       name: $name
       steps: $steps
       recipe_ingredients: { data: $data }
+      image: $image
     }
   ) {
     id
     description
     name
     steps
+    image
     recipe_ingredients {
       amount
       ingredient_id

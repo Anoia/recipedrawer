@@ -164,7 +164,8 @@ const { mutate: mutateCreate, onDone: onDoneCreate } = useMutation(CreateRecipe,
         description: recipeToEdit.value?.description,
         name: recipeToEdit.value?.name,
         steps: recipeToEdit.value?.steps,
-        data: ingredients
+        data: ingredients,
+        image: recipeToEdit.value?.image
     }
 
     return ({

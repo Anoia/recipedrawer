@@ -2456,10 +2456,11 @@ export type CreateRecipeMutationVariables = Exact<{
   name?: InputMaybe<Scalars['String']>;
   steps?: InputMaybe<Scalars['jsonb']>;
   data: Array<Recipe_Ingredients_Insert_Input> | Recipe_Ingredients_Insert_Input;
+  image?: InputMaybe<Scalars['String']>;
 }>;
 
 
-export type CreateRecipeMutation = { __typename?: 'mutation_root', insert_recipes_one?: { __typename?: 'recipes', id: number, description?: string | null, name: string, steps: any, recipe_ingredients: Array<{ __typename?: 'recipe_ingredients', amount: number, ingredient_id: number, unit: number, index: number, section?: string | null }> } | null };
+export type CreateRecipeMutation = { __typename?: 'mutation_root', insert_recipes_one?: { __typename?: 'recipes', id: number, description?: string | null, name: string, steps: any, image?: string | null, recipe_ingredients: Array<{ __typename?: 'recipe_ingredients', amount: number, ingredient_id: number, unit: number, index: number, section?: string | null }> } | null };
 
 export type EditRecipeMutationVariables = Exact<{
   recipe_id: Scalars['Int'];
@@ -2558,14 +2559,15 @@ export const GetRecipeById = gql`
 }
     `;
 export const CreateRecipe = gql`
-    mutation createRecipe($description: String, $name: String, $steps: jsonb, $data: [recipe_ingredients_insert_input!]!) {
+    mutation createRecipe($description: String, $name: String, $steps: jsonb, $data: [recipe_ingredients_insert_input!]!, $image: String) {
   insert_recipes_one(
-    object: {description: $description, name: $name, steps: $steps, recipe_ingredients: {data: $data}}
+    object: {description: $description, name: $name, steps: $steps, recipe_ingredients: {data: $data}, image: $image}
   ) {
     id
     description
     name
     steps
+    image
     recipe_ingredients {
       amount
       ingredient_id
