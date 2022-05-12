@@ -2564,6 +2564,13 @@ export type DeleteRecipeMutationVariables = Exact<{
 
 export type DeleteRecipeMutation = { __typename?: 'mutation_root', delete_recipes_by_pk?: { __typename?: 'recipes', name: string } | null };
 
+export type SearchQueryVariables = Exact<{
+  searchterm?: InputMaybe<Scalars['String']>;
+}>;
+
+
+export type SearchQuery = { __typename?: 'query_root', recipes: Array<{ __typename?: 'recipes', description?: string | null, id: number, name: string, image?: string | null }> };
+
 
 declare module '*/ingredients.graphql' {
   import { DocumentNode } from 'graphql';
@@ -2582,6 +2589,15 @@ export const getRecipeById: DocumentNode;
 export const createRecipe: DocumentNode;
 export const editRecipe: DocumentNode;
 export const deleteRecipe: DocumentNode;
+
+  export default defaultDocument;
+}
+    
+
+declare module '*/search.graphql' {
+  import { DocumentNode } from 'graphql';
+  const defaultDocument: DocumentNode;
+  export const search: DocumentNode;
 
   export default defaultDocument;
 }
@@ -2696,6 +2712,19 @@ export const DeleteRecipe = gql`
     mutation deleteRecipe($id: Int!) {
   delete_recipes_by_pk(id: $id) {
     name
+  }
+}
+    `;
+export const Search = gql`
+    query search($searchterm: String) {
+  recipes(
+    order_by: {created_at: desc}
+    where: {_or: [{name: {_ilike: $searchterm}}, {description: {_ilike: $searchterm}}]}
+  ) {
+    description
+    id
+    name
+    image
   }
 }
     `;

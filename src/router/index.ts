@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 //Routes
 import Home from '../views/Home.vue'
+import Browse from '../views/Browse.vue'
 import About from '../views/About.vue'
 import RecipeView from '../views/RecipeView.vue'
 import UserProfile from '../views/UserProfile.vue'
@@ -19,7 +20,7 @@ const routes = [
   {
     path: '/browse',
     meta: { title: 'Browse Recipes' },
-    component: Home,
+    component: Browse,
   },
   {
     path: '/about',

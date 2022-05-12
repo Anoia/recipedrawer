@@ -1,0 +1,16 @@
+query search($searchterm: String) {
+  recipes(
+    order_by: { created_at: desc }
+    where: {
+      _or: [
+        { name: { _ilike: $searchterm } }
+        { description: { _ilike: $searchterm } }
+      ]
+    }
+  ) {
+    description
+    id
+    name
+    image
+  }
+}
