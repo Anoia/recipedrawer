@@ -1,5 +1,5 @@
 query getAllRecipes {
-  recipes(order_by: {created_at: desc}) {
+  recipes(order_by: { created_at: desc }) {
     description
     id
     name
@@ -14,6 +14,9 @@ query getRecipeById($id: Int!) {
     description
     image
     steps
+    prep_time
+    cook_time
+    portions
     user {
       name
     }
@@ -40,7 +43,10 @@ mutation createRecipe(
   $name: String
   $steps: jsonb
   $data: [recipe_ingredients_insert_input!]!
-  $image:String
+  $image: String
+  $prep_time: interval
+  $cook_time: interval
+  $portions: Int!
 ) {
   insert_recipes_one(
     object: {
@@ -49,6 +55,9 @@ mutation createRecipe(
       steps: $steps
       recipe_ingredients: { data: $data }
       image: $image
+      prep_time: $prep_time
+      cook_time: $cook_time
+      portions: $portions
     }
   ) {
     id
@@ -56,6 +65,9 @@ mutation createRecipe(
     name
     steps
     image
+    prep_time
+    cook_time
+    portions
     recipe_ingredients {
       amount
       ingredient_id
@@ -75,6 +87,9 @@ mutation editRecipe(
   $name: String
   $steps: jsonb
   $image: String = ""
+  $prep_time: interval
+  $cook_time: interval
+  $portions: Int!
 ) {
   delete_recipe_ingredients(
     where: { recipe_id: { _eq: $recipe_id }, id: { _nin: $delete_not_in } }
@@ -88,6 +103,9 @@ mutation editRecipe(
       name: $name
       description: $description
       steps: $steps
+      prep_time: $prep_time
+      cook_time: $cook_time
+      portions: $portions
     }
   ) {
     id

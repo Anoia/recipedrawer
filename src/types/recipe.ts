@@ -9,21 +9,21 @@ export type Unit = {
 }
 
 export type Ingredient = {
-  id:number
-  name:string
+  id: number
+  name: string
 }
 
 export type RecipeIngredient = {
-  type:"ingredient"
-  id:number | undefined
+  type: 'ingredient'
+  id: number | undefined
   ingredient_id: number
   name: string
   amount: number
   unit: Unit
 }
 export type RecipeIngredientSection = {
-  type:"section"
-  name:string
+  type: 'section'
+  name: string
 }
 
 export type Step = {
@@ -37,13 +37,12 @@ export type EditableRecipe = {
   image: string
   steps: Step[]
   recipeIngredients: Array<RecipeIngredient | RecipeIngredientSection>
+  portions: number
+  cookingTime: string | undefined
+  prepTime: string | undefined
 }
 
-export function getImageUrl(
-  imageId:string,
-  w: number,
-  h: number
-): string {
+export function getImageUrl(imageId: string, w: number, h: number): string {
   if (imageId) {
     const cloudinary = inject('cloudinary') as Cloudinary
     const image = cloudinary.image(imageId)
@@ -61,5 +60,8 @@ export function getEmptyRecipe(): EditableRecipe {
     image: '',
     steps: [],
     recipeIngredients: [],
+    portions: 2,
+    cookingTime: undefined,
+    prepTime: undefined,
   }
 }

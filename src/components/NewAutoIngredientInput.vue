@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { extractInfoFromString } from '../stuff/parse';
+import { extractRecipeMatchResult } from '../stuff/parse';
 import { Ingredient, Unit } from '../types/recipe';
 import { computed, ref,onMounted} from 'vue';
 import IngredientCreation from './IngredientCreation.vue'
@@ -24,7 +24,7 @@ const emit = defineEmits<{
 const userInputString = ref("")
 const isInputFocused = ref(false)
 
-const matchResult = computed(() => extractInfoFromString(userInputString.value))
+const matchResult = computed(() => extractRecipeMatchResult(userInputString.value))
 
 function findExactUnitMatch(unitName: string) {
     return props.units.find(u => u.long_name.toLowerCase() === unitName.toLowerCase() || u.short_name.toLowerCase() === unitName.toLowerCase())

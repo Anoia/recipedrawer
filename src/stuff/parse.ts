@@ -1,52 +1,10 @@
 import { Maybe } from 'graphql/jsutils/Maybe'
-import { RecipeIngredient } from 'src/types/recipe'
 
 export type Unit = { id: number; long_name: string; short_name: string }
 export type SourceIngredient = { id: number; name: string }
 
-const regexString = '([0-9.,]{1,})([ ]*)([a-zA-ZäÄöÖüÜß]{0,})([ ]+)([a-zA-ZäÄöÖüÜß ]+)'
-
-export const regex: RegExp = RegExp(regexString)
-
-let defaultUnit: Unit = { id: 3, long_name: 'Stück', short_name: '' }
-
-export function parseTextToIngredient(
-  units: Unit[],
-  ingredients: SourceIngredient[],
-  input: string
-): Maybe<RecipeIngredient> {
-  let maybeMatch = extractInfoFromString(input)
-
-  if (maybeMatch) {
-    let match = maybeMatch as MatchResult
-    let unitText = match.unitName ?? ''
-    let unit =
-      units.find(
-        (u) =>
-          u.long_name.toLowerCase() === unitText.toLowerCase() ||
-          u.short_name.toLowerCase() === unitText.toLowerCase()
-      ) ?? defaultUnit
-
-    let ingredient = ingredients.find(
-      (i) => i.name.toLowerCase() === match.ingredientName.toLowerCase()
-    )
-
-    if (ingredient) {
-      return {
-        type:"ingredient",
-        id: 1,
-        amount: match.amount,
-        ingredient_id: ingredient.id,
-        name: ingredient.name,
-        unit: unit,
-      }
-    } else {
-      return undefined
-    }
-  } else {
-    return undefined
-  }
-}
+export const regexStringIngredientInput =
+  /([0-9.,]{1,})([ ]*)([a-zA-ZäÄöÖüÜß]{0,})([ ]+)([a-zA-ZäÄöÖüÜß ]+)/
 
 export type MatchResult = {
   amount: number
@@ -54,8 +12,8 @@ export type MatchResult = {
   ingredientName: string
 }
 
-export function extractInfoFromString(input: string): Maybe<MatchResult> {
-  let match = regex.exec(input)
+export function extractRecipeMatchResult(input: string): Maybe<MatchResult> {
+  let match = regexStringIngredientInput.exec(input)
 
   if (!match || match.length < 6) {
     return undefined
@@ -66,4 +24,45 @@ export function extractInfoFromString(input: string): Maybe<MatchResult> {
       ingredientName: match[5],
     }
   }
+}
+
+export type Time = {
+  minutes: number | undefined
+  hours: number | undefined
+}
+
+export const regexStringTime =
+  /(([0-9]{0,})([ ]*)([Hh]ours|[Hh]our|[Hh]))?([ ]*)(([0-9]{0,})?([ ]*)([Mm]inutes|[Mm]inute|[Mm]))?/
+
+export function extractTimeFromString(input: string): Maybe<Time> {
+  let match = regexStringTime.exec(input)
+
+  if (match) {
+    let m = parseInt(match[7])
+    let h = parseInt(match[2])
+
+    if (Number.isInteger(m) || Number.isInteger(h)) {
+      return {
+        minutes: Number.isInteger(m) ? m : undefined,
+        hours: Number.isInteger(h) ? h : undefined,
+      }
+    }
+  }
+  return undefined
+}
+
+export function convertTimeToInterval(time: Time): string {
+  let hours: string = time.hours ? `${time.hours}h` : ''
+  let minutes: string = time.minutes ? `${time.minutes}m` : ''
+  return hours + minutes
+}
+
+export function inputStringToInterval(input: string | undefined) {
+  if (input) {
+    let time = extractTimeFromString(input)
+    if (time) {
+      return convertTimeToInterval(time)
+    }
+  }
+  return undefined
 }

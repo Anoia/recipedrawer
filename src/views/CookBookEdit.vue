@@ -9,7 +9,7 @@ import axios from "axios"
 import { useRouter } from 'vue-router'
 import { GetIngredientsAndUnits, GetRecipeById, EditRecipe, CreateRecipe, EditRecipeMutationVariables, CreateRecipeMutationVariables, Recipe_Ingredients_Insert_Input } from '../generated/graphql.d'
 import { parseGetRecipeByIdResult } from '../gql/queryHelper'
-import { image } from '@cloudinary/url-gen/qualifiers/source'
+import { inputStringToInterval } from '../stuff/parse'
 
 const props = defineProps<{
     id: string
@@ -125,7 +125,10 @@ const { mutate: newMutatename, onDone: onDoneMutate } = useMutation(EditRecipe, 
         description: recipeToEdit.value?.description,
         name: recipeToEdit.value?.name,
         steps: recipeToEdit.value?.steps,
-        image: recipeToEdit.value?.image
+        image: recipeToEdit.value?.image,
+        portions: recipeToEdit.value?.portions ?? 2,
+        prep_time: inputStringToInterval(recipeToEdit.value?.prepTime),
+        cook_time: inputStringToInterval(recipeToEdit.value?.cookingTime)
     }
 
     return ({
@@ -165,7 +168,10 @@ const { mutate: mutateCreate, onDone: onDoneCreate } = useMutation(CreateRecipe,
         name: recipeToEdit.value?.name,
         steps: recipeToEdit.value?.steps,
         data: ingredients,
-        image: recipeToEdit.value?.image
+        image: recipeToEdit.value?.image,
+        portions: recipeToEdit.value?.portions ?? 2,
+        prep_time: inputStringToInterval(recipeToEdit.value?.prepTime),
+        cook_time: inputStringToInterval(recipeToEdit.value?.cookingTime)
     }
 
     return ({
@@ -356,6 +362,18 @@ function addSection() {
                         v-model="recipeToEdit.description"
                     />
                     <div class="grow"></div>
+                    <span>
+                        <label>Portions:</label>
+                        <input type="number" v-model="recipeToEdit.portions" />
+                    </span>
+                    <span>
+                        <label>Cook time:</label>
+                        <input type="text" v-model="recipeToEdit.cookingTime" />
+                    </span>
+                    <span>
+                        <label>Prep time:</label>
+                        <input type="text" v-model="recipeToEdit.prepTime" />
+                    </span>
                     <p class="relative bottom-0 grow-0 text-slate-500 text-right">written by me</p>
                 </div>
             </div>
@@ -405,7 +423,7 @@ function addSection() {
                                 ></NewAutoIngredientInputVue>
                             </div>
                             <div v-if="i.type === 'section'" class="flex">
-                                <span  class="grow text-sm font-semibold">{{ i.name }}</span>
+                                <span class="grow text-sm font-semibold">{{ i.name }}</span>
                                 <button
                                     class="grow-0 hidden group-hover:inline"
                                     @click="moveIngredient(i, -1)"

@@ -18,7 +18,7 @@ const parsedRecipes = useResult(result, null, data => parseAllRecipesResult(data
           <div
             v-for="recipe of parsedRecipes"
             :key="recipe.id"
-            class="max-w-[250px] bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700"
+            class="max-w-[250px] bg-white rounded-lg border border-gray-200 shadow-md "
           >
             <router-link :to="'/recipe/' + recipe.id">
               <img class="rounded-t-lg" :src="getImageUrl((recipe.image ?? ''), 250, 200)" />
@@ -26,11 +26,11 @@ const parsedRecipes = useResult(result, null, data => parseAllRecipesResult(data
             <div class="p-5">
               <router-link :to="'/recipe/' + recipe.id">
                 <h5
-                  class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white"
+                  class="mb-2 text-xl font-bold tracking-tight text-gray-900 "
                 >{{ recipe.name }}</h5>
               </router-link>
               <p
-                class="font-normal text-sm text-gray-700 dark:text-gray-400"
+                class="font-normal text-sm text-gray-700 "
               >{{ recipe.description }}</p>
             </div>
           </div>

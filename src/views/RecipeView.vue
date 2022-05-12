@@ -57,6 +57,15 @@ onDone(r => {
                 <div class="flex flex-col flex-grow m-5">
                     <h2 class="mt-10 text-3xl font-bold text-slate-800">{{ parsedResult.name }}</h2>
                     <p class="grow my-3">{{ parsedResult.description }}</p>
+
+                    <p>{{ parsedResult.portions }} Portions</p>
+                    <p>
+                        <span v-if="parsedResult.prepTime">{{ parsedResult.prepTime }} prep time</span>
+                        <span v-if="parsedResult.prepTime && parsedResult.cookingTime">,</span>
+                        <span
+                            v-if="parsedResult.cookingTime"
+                        >{{ parsedResult.cookingTime }} cooking time</span>
+                    </p>
                     <p class="relative bottom-0 grow-0 text-slate-500 text-right">
                         written by
                         <router-link
@@ -75,8 +84,13 @@ onDone(r => {
                             v-for="i in parsedResult.recipeIngredients"
                             class="border-b-[1px] last:border-b-0 p-1 border-slate-300"
                         >
-                            <span v-if="i.type==='ingredient'">{{ i.amount }} {{ i.unit.short_name }} {{ i.name }}</span>
-                            <span v-if="i.type==='section'" class="text-sm font-semibold ">{{ i.name }} </span>
+                            <span
+                                v-if="i.type === 'ingredient'"
+                            >{{ i.amount }} {{ i.unit.short_name }} {{ i.name }}</span>
+                            <span
+                                v-if="i.type === 'section'"
+                                class="text-sm font-semibold"
+                            >{{ i.name }}</span>
                         </li>
                     </ul>
                 </div>
