@@ -79,17 +79,18 @@ onDone(r => {
             <div class="flex flex-col sm:flex-row">
                 <div class="basis-1/3 m-5 border-slate-400">
                     <h3 class="text-xl my-2 px-2 py-1 bg-slate-300">Ingredients</h3>
-                    <ul class="my-3 space-y-1">
+                    <ul class="my-3">
                         <li
                             v-for="i in parsedResult.recipeIngredients"
-                            class="border-b-[1px] last:border-b-0 p-1 border-slate-300"
+                            class="border-b-[1px] last:border-b-0 p-1 py-2 border-slate-300"
+                            :class="(i.type === 'section')? `bg-slate-200` : ``"
                         >
                             <span
                                 v-if="i.type === 'ingredient'"
                             >{{ i.amount }} {{ i.unit.short_name }} {{ i.name }}</span>
                             <span
                                 v-if="i.type === 'section'"
-                                class="text-sm font-semibold"
+                                class="font-semibold"
                             >{{ i.name }}</span>
                         </li>
                     </ul>
