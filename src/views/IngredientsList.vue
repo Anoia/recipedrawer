@@ -1,12 +1,16 @@
 <script setup lang="ts">import { useQuery } from '@vue/apollo-composable';
 import gql from 'graphql-tag';
-import { getImageUrl } from '../types/recipe'
 
 const getIngredients = gql`
-query GetIngredientsList{
-  ingredients {
+query listIngredients {
+  ingredients(order_by: {recipe_ingredients_aggregate: {count: desc}}) {
     id
     name
+    recipe_ingredients_aggregate {
+      aggregate {
+        count(distinct: true, columns: recipe_id)
+      }
+    }
   }
 }`
 
@@ -18,21 +22,26 @@ const { result, loading, error } = useQuery(getIngredients)
 <template>
     <p v-if="loading">ingredient list</p>
     <p v-if="error">{{ error }}</p>
-    <div v-if="result">
-        <p>Ingredients:</p>
-        <!-- {{result}} -->
+    <div v-if="result" class="container mx-auto">
+        <p class="text-2xl my-8">Ingredients</p>
 
-        <router-link
-            v-for="i of result.ingredients"
-            :key="i.id"
-            class="flex items-center m-5 space-x-5"
-            :to="'/ingredient/' + i.id"
-        >
-            <!-- <img class="max-w-[50px]" src="https://via.placeholder.com/50" /> -->
-            <span>
-                <h3 class="text-lg">{{ i.name }}</h3>
-                <!-- <p class="text-l">{{ recipe.recipe.description }}</p> -->
-            </span>
-        </router-link>
+        <table class="shadow-md rounded">
+            <thead>
+                <tr class="bg-slate-200">
+                    <th class="p-4 text-left font-bold">Name</th>
+                    <th class="p-4 text-left font-bold">Recipes</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-300">
+                <tr v-for="i of result.ingredients" :key="i.id" class="hover:bg-slate-100">
+                    <td class="p-4">
+                        <router-link :to="'/ingredient/' + i.id">{{ i.name }}</router-link>
+                    </td>
+                    <td
+                        class="p-4 text-right"
+                    >{{ i.recipe_ingredients_aggregate.aggregate.count ? i.recipe_ingredients_aggregate.aggregate.count : `-` }}</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </template>
