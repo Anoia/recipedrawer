@@ -7,7 +7,8 @@ import IngredientCreation from './IngredientCreation.vue'
 const props = defineProps<{
     ingredients: Readonly<Ingredient[]>,
     units: Readonly<Unit[]>,
-    elementId: string
+    elementId: string,
+    input:string
 }>()
 
 let defaultUnit = computed(() => props.units.find(u => u.long_name === "Stück"))
@@ -21,7 +22,7 @@ const emit = defineEmits<{
     (e: 'cancel'):void
 }>()
 
-const userInputString = ref("")
+const userInputString = ref(props.input)
 const isInputFocused = ref(false)
 
 const matchResult = computed(() => extractRecipeMatchResult(userInputString.value))

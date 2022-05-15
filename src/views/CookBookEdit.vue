@@ -418,6 +418,7 @@ function addSection() {
                                     :element-id="`new-auto-input-ingredient-${index}`"
                                     :ingredients="allIngredients"
                                     :units="allUnits"
+                                    :input="`${i.amount} ${i.unit.short_name} ${i.name}`"
                                     @cancel="resetEditingIngredientIndex"
                                     @select-item="editIngredient"
                                 ></NewAutoIngredientInputVue>
@@ -449,6 +450,7 @@ function addSection() {
                                 element-id="new-auto-input-new-ingredient"
                                 :ingredients="allIngredients"
                                 :units="allUnits"
+                                input=""
                                 @select-item="doSelect"
                             ></NewAutoIngredientInputVue>
                         </li>
