@@ -1,25 +1,21 @@
 <script setup lang="ts">
 import { extractRecipeMatchResult } from '../stuff/parse';
 import { Ingredient, Unit } from '../types/recipe';
-import { computed, ref,onMounted} from 'vue';
+import { computed, ref, nextTick } from 'vue';
 import IngredientCreation from './IngredientCreation.vue'
 
 const props = defineProps<{
     ingredients: Readonly<Ingredient[]>,
     units: Readonly<Unit[]>,
     elementId: string,
-    input:string
+    input: string
 }>()
 
 let defaultUnit = computed(() => props.units.find(u => u.long_name === "Stück"))
 
-onMounted(() => {
-     document.getElementById(props.elementId)?.focus();
-})
-
 const emit = defineEmits<{
     (e: 'selectItem', item: any): void
-    (e: 'cancel'):void
+    (e: 'cancel'): void
 }>()
 
 const userInputString = ref(props.input)
@@ -74,7 +70,6 @@ const filteredIngredients = computed(() => {
 }
 )
 
-
 const currentIngredientSelectionIndex = ref(0)
 
 const currentIngredientSelection = computed(() => {
@@ -104,7 +99,7 @@ function scrollSelectedToView() {
     const wrapper = document.getElementById(`${props.elementId}-wrapper`)
     const selectedItem = document.getElementById(`autocompleteingredient-${currentIngredientSelectionIndex.value}`)
 
-    if (isAutocompleteListVisible.value &&  wrapper && selectedItem) {
+    if (isAutocompleteListVisible.value && wrapper && selectedItem) {
 
         const heightOfWrapper = wrapper.offsetHeight
 
@@ -120,10 +115,12 @@ function scrollSelectedToView() {
 }
 
 function onFocus() {
+    console.log("focus auto input")
     isInputFocused.value = true
 }
 function onBlur() {
     isInputFocused.value = false
+    console.log("blur auto input")
     if (!showCreateIngredientDialog.value) {
         userInputString.value = ""
         emit('cancel')
@@ -136,12 +133,13 @@ function selectIngredient(i: Ingredient) {
             amount: matchResult.value.amount,
             unit: (possibleUnit.value ?? defaultUnit),
             ingredient: {
-                id:i.id,
-                name:i.name
+                id: i.id,
+                name: i.name
             }
         })
         clearData()
     }
+    nextTick(() => document.getElementById(props.elementId)?.focus())
 
 }
 
@@ -162,7 +160,6 @@ function notFound() {
 function clearData() {
     userInputString.value = ""
     currentIngredientSelectionIndex.value = 0
-    //  document.getElementById(props.elementId)?.blur();
 }
 
 
@@ -174,6 +171,7 @@ function addNewIngredient(name: string) {
 }
 function hideDialog() {
     showCreateIngredientDialog.value = false
+    nextTick(() => document.getElementById(props.elementId)?.focus())
 }
 
 const newIngredientName = ref("")
@@ -190,7 +188,6 @@ const showCreateIngredientDialog = ref(false)
     />
 
     <div>
-     
         <input
             :id="props.elementId"
             class="w-full"
@@ -220,7 +217,11 @@ const showCreateIngredientDialog = ref(false)
                     @mousedown.prevent
                     @click.stop="selectIngredient(i)"
                 >{{ i.name }}</li>
-                <li class="bg-slate-200 font-normal" @mousedown.prevent @click.stop="notFound">add new</li>
+                <li
+                    class="bg-slate-200 font-normal"
+                    @mousedown.prevent
+                    @click.stop="notFound"
+                >add new</li>
             </ul>
         </div>
     </div>
