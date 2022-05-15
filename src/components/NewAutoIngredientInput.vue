@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { extractRecipeMatchResult } from '../stuff/parse';
 import { Ingredient, Unit } from '../types/recipe';
-import { computed, ref, nextTick } from 'vue';
+import { computed, ref, nextTick, onMounted } from 'vue';
 import IngredientCreation from './IngredientCreation.vue'
 
 const props = defineProps<{
@@ -17,6 +17,12 @@ const emit = defineEmits<{
     (e: 'selectItem', item: any): void
     (e: 'cancel'): void
 }>()
+
+onMounted(() => {
+    if (props.input) {
+        document.getElementById(props.elementId)?.focus();
+    }
+})
 
 const userInputString = ref(props.input)
 const isInputFocused = ref(false)
@@ -115,12 +121,10 @@ function scrollSelectedToView() {
 }
 
 function onFocus() {
-    console.log("focus auto input")
     isInputFocused.value = true
 }
 function onBlur() {
     isInputFocused.value = false
-    console.log("blur auto input")
     if (!showCreateIngredientDialog.value) {
         userInputString.value = ""
         emit('cancel')
