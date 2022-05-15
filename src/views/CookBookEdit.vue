@@ -367,7 +367,7 @@ function addSection() {
                         <input type="number" v-model="recipeToEdit.portions" />
                     </span>
                     <span>
-                        <label>Cook time:</label>
+                        <label>Total time:</label>
                         <input type="text" v-model="recipeToEdit.cookingTime" />
                     </span>
                     <span>

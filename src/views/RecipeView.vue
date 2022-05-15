@@ -64,7 +64,7 @@ onDone(r => {
                         <span v-if="parsedResult.prepTime && parsedResult.cookingTime">,</span>
                         <span
                             v-if="parsedResult.cookingTime"
-                        >{{ parsedResult.cookingTime }} cooking time</span>
+                        >{{ parsedResult.cookingTime }} total time</span>
                     </p>
                     <p class="relative bottom-0 grow-0 text-slate-500 text-right">
                         written by
