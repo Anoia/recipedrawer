@@ -22,6 +22,8 @@ const { result, loading, error } = useQuery(GetRecipeById, {
     id: props.id
 })
 
+const recipeTitleInput: Ref<HTMLInputElement | null> = ref(null)
+
 onMounted(() => {
     handleInit(result.value, loading.value)
 })
@@ -42,6 +44,9 @@ function handleInit(newResult: any, newLoading: boolean) {
         recipeToEdit.value = parsedResult.value
     } else if (!props.id || !newLoading) {
         recipeToEdit.value = getEmptyRecipe()
+        if (recipeTitleInput.value) {
+            nextTick(() => recipeTitleInput.value?.focus())
+        }
     }
     nextTick(() => resizeAllTextAreas())
 }
@@ -352,6 +357,7 @@ function addSection() {
                 <div class="flex flex-col flex-grow mx-5 mt-5">
                     <input
                         type="text"
+                        ref="recipeTitleInput"
                         v-model="recipeToEdit.name"
                         placeholder="Recipe title"
                         class="mt-10 text-3xl font-bold focus:ring-0 text-slate-800 border-2 border-white focus:border-slate-400 hover:focus:border-solid hover:border-dashed hover:border-slate-400"
@@ -436,7 +442,7 @@ function addSection() {
                             element-id="new-auto-input-new-ingredient"
                             :ingredients="allIngredients"
                             :units="allUnits"
-                            input=""
+                            :input="``"
                             @select-item="doSelect"
                         ></NewAutoIngredientInputVue>
                     </div>
