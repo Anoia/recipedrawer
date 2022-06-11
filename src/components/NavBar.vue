@@ -40,7 +40,7 @@ watch(isAuthenticated, (newAuth, oldAuth) => {
             <router-link
                 to="/"
                 class="px-10 font-serif text-3xl drop-shadow-md"
-            >Recipe Drawer</router-link>
+            ><img class="w-14 h-14 inline mr-5" src="/book.png">  Recipe Drawer</router-link>
         </div>
 
         <div class="flex items-center mb-5 lg:my-5">
