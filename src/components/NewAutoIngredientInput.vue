@@ -82,7 +82,8 @@ const currentIngredientSelection = computed(() => {
     return isAutocompleteListVisible.value && currentIngredientSelectionIndex.value < filteredIngredients.value.length ? filteredIngredients.value[currentIngredientSelectionIndex.value] : undefined
 })
 
-function onInput() {
+function onInput(e:any) {
+    userInputString.value = e.target.value
     if (isAutocompleteListVisible.value && currentIngredientSelectionIndex.value > filteredIngredients.value.length) {
         currentIngredientSelectionIndex.value = (filteredIngredients.value.length || 1) - 1
     }
@@ -196,7 +197,7 @@ const showCreateIngredientDialog = ref(false)
             :id="props.elementId"
             class="w-full"
             type="text"
-            v-model="userInputString"
+            :value="userInputString"
             @input="onInput"
             @focus="onFocus"
             @blur="onBlur"
