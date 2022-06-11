@@ -10,6 +10,7 @@ import { useRouter } from 'vue-router'
 import { GetIngredientsAndUnits, GetRecipeById, EditRecipe, CreateRecipe, EditRecipeMutationVariables, CreateRecipeMutationVariables, Recipe_Ingredients_Insert_Input } from '../generated/graphql.d'
 import { parseGetRecipeByIdResult } from '../gql/queryHelper'
 import { inputStringToInterval } from '../stuff/parse'
+import draggable from 'vuedraggable'
 
 const props = defineProps<{
     id: string
@@ -378,87 +379,71 @@ function addSection() {
                 </div>
             </div>
 
-            <div class="flex flex-col sm:flex-row">
+            <div class="flex flex-col sm:flex-row" v-if="recipeToEdit">
                 <div class="basis-1/3 m-5 border-slate-400">
                     <h3 class="text-xl my-2 px-2 py-1 bg-slate-300">Ingredients</h3>
-                    <ul class="my-3">
-                        <li
-                            v-for="(i, index) in recipeToEdit?.recipeIngredients"
-                            class="border-b-[1px] last:border-b-0 p-2 border-slate-300 hover:bg-slate-100 group"
-                        >
+                    <draggable
+                        class="my-3"
+                        :list="recipeToEdit.recipeIngredients"
+                        item-key="name"
+                        ghost-class="bg-slate-500"
+                    >
+                        <template #item="{ element, index }">
                             <div
-                                v-if="editingIngredientIndex != index && i.type === 'ingredient'"
-                                class="flex"
+                                class="border-b-[1px] last:border-b-0 p-2 border-slate-300 hover:bg-slate-200 group"
                             >
-                                <span
-                                    class="grow"
-                                    @click.stop="setEditingIngredientIndex(index)"
-                                >{{ i.amount }} {{ i.unit.short_name }} {{ i.name }}</span>
-                                <button
-                                    class="grow-0 hidden group-hover:inline"
-                                    @click="moveIngredient(i, -1)"
+                                <div
+                                    v-if="editingIngredientIndex != index && element.type === 'ingredient'"
+                                    class="flex"
                                 >
-                                    <ChevronUpIcon class="h-4 w-4 text-slate-500" />
-                                </button>
-                                <button
-                                    class="grow-0 hidden group-hover:inline"
-                                    @click="moveIngredient(i, 1)"
+                                    <span
+                                        class="grow"
+                                        @click.stop="setEditingIngredientIndex(index)"
+                                    >{{ element.amount }} {{ element.unit.short_name }} {{ element.name }}</span>
+                                    <button
+                                        class="grow-0 pr-1 hidden group-hover:inline"
+                                        @click="removeIngredient(element)"
+                                    >
+                                        <TrashIcon class="h-4 w-4 text-slate-500" />
+                                    </button>
+                                </div>
+                                <div
+                                    v-if="editingIngredientIndex == index && element.type === 'ingredient'"
                                 >
-                                    <ChevronDownIcon class="h-4 w-4 text-slate-500" />
-                                </button>
-                                <button
-                                    class="grow-0 pr-1 hidden group-hover:inline"
-                                    @click="removeIngredient(i)"
-                                >
-                                    <TrashIcon class="h-4 w-4 text-slate-500" />
-                                </button>
+                                    <NewAutoIngredientInputVue
+                                        :element-id="`new-auto-input-ingredient-${index}`"
+                                        :ingredients="allIngredients"
+                                        :units="allUnits"
+                                        :input="`${element.amount} ${element.unit.short_name} ${element.name}`"
+                                        @cancel="resetEditingIngredientIndex"
+                                        @select-item="editIngredient"
+                                    ></NewAutoIngredientInputVue>
+                                </div>
+                                <div v-if="element.type === 'section'" class="flex">
+                                    <span class="grow text-sm font-semibold">{{ element.name }}</span>
+                                    <button
+                                        class="grow-0 pr-1 hidden group-hover:inline"
+                                        @click="removeIngredient(element)"
+                                    >
+                                        <TrashIcon class="h-4 w-4 text-slate-500" />
+                                    </button>
+                                </div>
                             </div>
-                            <div v-if="editingIngredientIndex == index && i.type === 'ingredient'">
-                                <NewAutoIngredientInputVue
-                                    :element-id="`new-auto-input-ingredient-${index}`"
-                                    :ingredients="allIngredients"
-                                    :units="allUnits"
-                                    :input="`${i.amount} ${i.unit.short_name} ${i.name}`"
-                                    @cancel="resetEditingIngredientIndex"
-                                    @select-item="editIngredient"
-                                ></NewAutoIngredientInputVue>
-                            </div>
-                            <div v-if="i.type === 'section'" class="flex">
-                                <span class="grow text-sm font-semibold">{{ i.name }}</span>
-                                <button
-                                    class="grow-0 hidden group-hover:inline"
-                                    @click="moveIngredient(i, -1)"
-                                >
-                                    <ChevronUpIcon class="h-4 w-4 text-slate-500" />
-                                </button>
-                                <button
-                                    class="grow-0 hidden group-hover:inline"
-                                    @click="moveIngredient(i, 1)"
-                                >
-                                    <ChevronDownIcon class="h-4 w-4 text-slate-500" />
-                                </button>
-                                <button
-                                    class="grow-0 pr-1 hidden group-hover:inline"
-                                    @click="removeIngredient(i)"
-                                >
-                                    <TrashIcon class="h-4 w-4 text-slate-500" />
-                                </button>
-                            </div>
-                        </li>
-                        <li class="my-5">
-                            <NewAutoIngredientInputVue
-                                element-id="new-auto-input-new-ingredient"
-                                :ingredients="allIngredients"
-                                :units="allUnits"
-                                input=""
-                                @select-item="doSelect"
-                            ></NewAutoIngredientInputVue>
-                        </li>
-                        <li class="flex flex-row">
-                            <input type="text" placeholder="Add section" v-model="newSectionName" />
-                            <button class="bg-slate-400 p-3 mx-2" @click="addSection">Add</button>
-                        </li>
-                    </ul>
+                        </template>
+                    </draggable>
+                    <div class="my-5">
+                        <NewAutoIngredientInputVue
+                            element-id="new-auto-input-new-ingredient"
+                            :ingredients="allIngredients"
+                            :units="allUnits"
+                            input
+                            @select-item="doSelect"
+                        ></NewAutoIngredientInputVue>
+                    </div>
+                    <div class="flex flex-row">
+                        <input type="text" placeholder="Add section" v-model="newSectionName" />
+                        <button class="bg-slate-400 p-3 mx-2" @click="addSection">Add</button>
+                    </div>
                 </div>
                 <div class="basis-2/3 m-5">
                     <h3 class="text-xl my-2 px-2 py-1 bg-slate-300">Directions</h3>
