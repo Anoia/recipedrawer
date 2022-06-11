@@ -61,7 +61,7 @@ onDone(r => {
                     <p>{{ parsedResult.portions }} Portions</p>
                     <p>
                         <span v-if="parsedResult.prepTime">{{ parsedResult.prepTime }} prep time</span>
-                        <span v-if="parsedResult.prepTime && parsedResult.cookingTime">,</span>
+                        <span v-if="parsedResult.prepTime && parsedResult.cookingTime">, </span>
                         <span
                             v-if="parsedResult.cookingTime"
                         >{{ parsedResult.cookingTime }} total time</span>
@@ -87,7 +87,7 @@ onDone(r => {
                         >
                             <span
                                 v-if="i.type === 'ingredient'"
-                            >{{ i.amount }} {{ i.unit.short_name }} {{ i.name }}</span>
+                            >{{ i.amount }} {{ i.unit.short_name }}   <router-link :to="'/ingredient/' + i.ingredient_id">{{ i.name }}</router-link></span>
                             <span v-if="i.type === 'section'" class="font-semibold">{{ i.name }}</span>
                         </li>
                     </ul>
