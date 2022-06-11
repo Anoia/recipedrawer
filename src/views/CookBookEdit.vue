@@ -436,7 +436,7 @@ function addSection() {
                             element-id="new-auto-input-new-ingredient"
                             :ingredients="allIngredients"
                             :units="allUnits"
-                            input
+                            input=""
                             @select-item="doSelect"
                         ></NewAutoIngredientInputVue>
                     </div>

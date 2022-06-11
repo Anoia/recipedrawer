@@ -1,6 +1,8 @@
 <script setup lang="ts">
 
 import { onMounted, Ref, ref, watch, nextTick } from 'vue'
+import gql from 'graphql-tag'
+import { useMutation } from '@vue/apollo-composable'
 
 const props = defineProps<{
     open: boolean
@@ -37,8 +39,6 @@ function create() {
     insertIngredient()
 }
 
-import gql from 'graphql-tag'
-import { useMutation } from '@vue/apollo-composable'
 
 let insert = gql`
 mutation MyMutation($name: String) {
