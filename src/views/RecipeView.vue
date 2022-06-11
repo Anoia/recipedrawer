@@ -83,15 +83,12 @@ onDone(r => {
                         <li
                             v-for="i in parsedResult.recipeIngredients"
                             class="border-b-[1px] last:border-b-0 p-1 py-2 border-slate-300"
-                            :class="(i.type === 'section')? `bg-slate-200` : ``"
+                            :class="(i.type === 'section') ? `bg-slate-200` : ``"
                         >
                             <span
                                 v-if="i.type === 'ingredient'"
                             >{{ i.amount }} {{ i.unit.short_name }} {{ i.name }}</span>
-                            <span
-                                v-if="i.type === 'section'"
-                                class="font-semibold"
-                            >{{ i.name }}</span>
+                            <span v-if="i.type === 'section'" class="font-semibold">{{ i.name }}</span>
                         </li>
                     </ul>
                 </div>
@@ -106,16 +103,16 @@ onDone(r => {
                 </div>
             </div>
             <div v-if="isAuthor" class="flex-row">
-                <router-link
-                    :to="'/edit/' + props.id"
-                    class="hover:underline m-10 float-right text-slate-500"
-                >Edit Recipe</router-link>
-            </div>
-            <div v-if="isAuthor" class="flex-row">
                 <a
-                    class="hover:underline my-10 float-right text-slate-500"
+                    class="hover:underline float-left my-10 ml-5 text-red-700 cursor-pointer"
                     @click="deleteRecipe"
                 >Delete Recipe</a>
+            </div>
+            <div v-if="isAuthor" class="flex-row">
+                <router-link
+                    :to="'/edit/' + props.id"
+                    class="hover:underline m-10 float-right text-teal-500"
+                >Edit Recipe</router-link>
             </div>
         </div>
     </div>
