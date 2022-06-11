@@ -79,8 +79,10 @@ export type String_Comparison_Exp = {
 export type Ingredients = {
   __typename?: 'ingredients';
   created_at: Scalars['timestamptz'];
+  diet?: Maybe<Scalars['String']>;
   id: Scalars['Int'];
   name: Scalars['String'];
+  recipe_id?: Maybe<Scalars['Int']>;
   /** An array relationship */
   recipe_ingredients: Array<Recipe_Ingredients>;
   /** An aggregate relationship */
@@ -142,6 +144,7 @@ export type Ingredients_Aggregate_FieldsCountArgs = {
 export type Ingredients_Avg_Fields = {
   __typename?: 'ingredients_avg_fields';
   id?: Maybe<Scalars['Float']>;
+  recipe_id?: Maybe<Scalars['Float']>;
 };
 
 /** Boolean expression to filter rows from the table "ingredients". All fields are combined with a logical 'AND'. */
@@ -150,8 +153,10 @@ export type Ingredients_Bool_Exp = {
   _not?: InputMaybe<Ingredients_Bool_Exp>;
   _or?: InputMaybe<Array<Ingredients_Bool_Exp>>;
   created_at?: InputMaybe<Timestamptz_Comparison_Exp>;
+  diet?: InputMaybe<String_Comparison_Exp>;
   id?: InputMaybe<Int_Comparison_Exp>;
   name?: InputMaybe<String_Comparison_Exp>;
+  recipe_id?: InputMaybe<Int_Comparison_Exp>;
   recipe_ingredients?: InputMaybe<Recipe_Ingredients_Bool_Exp>;
   updated_at?: InputMaybe<Timestamptz_Comparison_Exp>;
 };
@@ -167,13 +172,16 @@ export enum Ingredients_Constraint {
 /** input type for incrementing numeric columns in table "ingredients" */
 export type Ingredients_Inc_Input = {
   id?: InputMaybe<Scalars['Int']>;
+  recipe_id?: InputMaybe<Scalars['Int']>;
 };
 
 /** input type for inserting data into table "ingredients" */
 export type Ingredients_Insert_Input = {
   created_at?: InputMaybe<Scalars['timestamptz']>;
+  diet?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['Int']>;
   name?: InputMaybe<Scalars['String']>;
+  recipe_id?: InputMaybe<Scalars['Int']>;
   recipe_ingredients?: InputMaybe<Recipe_Ingredients_Arr_Rel_Insert_Input>;
   updated_at?: InputMaybe<Scalars['timestamptz']>;
 };
@@ -182,8 +190,10 @@ export type Ingredients_Insert_Input = {
 export type Ingredients_Max_Fields = {
   __typename?: 'ingredients_max_fields';
   created_at?: Maybe<Scalars['timestamptz']>;
+  diet?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['Int']>;
   name?: Maybe<Scalars['String']>;
+  recipe_id?: Maybe<Scalars['Int']>;
   updated_at?: Maybe<Scalars['timestamptz']>;
 };
 
@@ -191,8 +201,10 @@ export type Ingredients_Max_Fields = {
 export type Ingredients_Min_Fields = {
   __typename?: 'ingredients_min_fields';
   created_at?: Maybe<Scalars['timestamptz']>;
+  diet?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['Int']>;
   name?: Maybe<Scalars['String']>;
+  recipe_id?: Maybe<Scalars['Int']>;
   updated_at?: Maybe<Scalars['timestamptz']>;
 };
 
@@ -222,8 +234,10 @@ export type Ingredients_On_Conflict = {
 /** Ordering options when selecting data from "ingredients". */
 export type Ingredients_Order_By = {
   created_at?: InputMaybe<Order_By>;
+  diet?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
   name?: InputMaybe<Order_By>;
+  recipe_id?: InputMaybe<Order_By>;
   recipe_ingredients_aggregate?: InputMaybe<Recipe_Ingredients_Aggregate_Order_By>;
   updated_at?: InputMaybe<Order_By>;
 };
@@ -238,9 +252,13 @@ export enum Ingredients_Select_Column {
   /** column name */
   CreatedAt = 'created_at',
   /** column name */
+  Diet = 'diet',
+  /** column name */
   Id = 'id',
   /** column name */
   Name = 'name',
+  /** column name */
+  RecipeId = 'recipe_id',
   /** column name */
   UpdatedAt = 'updated_at'
 }
@@ -248,8 +266,10 @@ export enum Ingredients_Select_Column {
 /** input type for updating data in table "ingredients" */
 export type Ingredients_Set_Input = {
   created_at?: InputMaybe<Scalars['timestamptz']>;
+  diet?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['Int']>;
   name?: InputMaybe<Scalars['String']>;
+  recipe_id?: InputMaybe<Scalars['Int']>;
   updated_at?: InputMaybe<Scalars['timestamptz']>;
 };
 
@@ -257,24 +277,28 @@ export type Ingredients_Set_Input = {
 export type Ingredients_Stddev_Fields = {
   __typename?: 'ingredients_stddev_fields';
   id?: Maybe<Scalars['Float']>;
+  recipe_id?: Maybe<Scalars['Float']>;
 };
 
 /** aggregate stddev_pop on columns */
 export type Ingredients_Stddev_Pop_Fields = {
   __typename?: 'ingredients_stddev_pop_fields';
   id?: Maybe<Scalars['Float']>;
+  recipe_id?: Maybe<Scalars['Float']>;
 };
 
 /** aggregate stddev_samp on columns */
 export type Ingredients_Stddev_Samp_Fields = {
   __typename?: 'ingredients_stddev_samp_fields';
   id?: Maybe<Scalars['Float']>;
+  recipe_id?: Maybe<Scalars['Float']>;
 };
 
 /** aggregate sum on columns */
 export type Ingredients_Sum_Fields = {
   __typename?: 'ingredients_sum_fields';
   id?: Maybe<Scalars['Int']>;
+  recipe_id?: Maybe<Scalars['Int']>;
 };
 
 /** update columns of table "ingredients" */
@@ -282,9 +306,13 @@ export enum Ingredients_Update_Column {
   /** column name */
   CreatedAt = 'created_at',
   /** column name */
+  Diet = 'diet',
+  /** column name */
   Id = 'id',
   /** column name */
   Name = 'name',
+  /** column name */
+  RecipeId = 'recipe_id',
   /** column name */
   UpdatedAt = 'updated_at'
 }
@@ -293,18 +321,21 @@ export enum Ingredients_Update_Column {
 export type Ingredients_Var_Pop_Fields = {
   __typename?: 'ingredients_var_pop_fields';
   id?: Maybe<Scalars['Float']>;
+  recipe_id?: Maybe<Scalars['Float']>;
 };
 
 /** aggregate var_samp on columns */
 export type Ingredients_Var_Samp_Fields = {
   __typename?: 'ingredients_var_samp_fields';
   id?: Maybe<Scalars['Float']>;
+  recipe_id?: Maybe<Scalars['Float']>;
 };
 
 /** aggregate variance on columns */
 export type Ingredients_Variance_Fields = {
   __typename?: 'ingredients_variance_fields';
   id?: Maybe<Scalars['Float']>;
+  recipe_id?: Maybe<Scalars['Float']>;
 };
 
 /** Boolean expression to compare columns of type "interval". All fields are combined with logical 'AND'. */
@@ -2512,7 +2543,7 @@ export enum Users_Update_Column {
 export type GetIngredientsAndUnitsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetIngredientsAndUnitsQuery = { __typename?: 'query_root', ingredients: Array<{ __typename?: 'ingredients', name: string, id: number }>, units: Array<{ __typename?: 'units', id: number, long_name: string, short_name: string }> };
+export type GetIngredientsAndUnitsQuery = { __typename?: 'query_root', ingredients: Array<{ __typename?: 'ingredients', name: string, id: number, diet?: string | null, recipe_id?: number | null }>, units: Array<{ __typename?: 'units', id: number, long_name: string, short_name: string }> };
 
 export type GetAllRecipesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2608,6 +2639,8 @@ export const GetIngredientsAndUnits = gql`
   ingredients {
     name
     id
+    diet
+    recipe_id
   }
   units {
     id

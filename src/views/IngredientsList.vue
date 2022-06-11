@@ -6,6 +6,7 @@ query listIngredients {
   ingredients(order_by: {recipe_ingredients_aggregate: {count: desc}}) {
     id
     name
+    diet
     recipe_ingredients_aggregate {
       aggregate {
         count(distinct: true, columns: recipe_id)
@@ -30,6 +31,7 @@ const { result, loading, error } = useQuery(getIngredients)
                 <tr class="bg-slate-200">
                     <th class="p-4 text-left font-bold">Name</th>
                     <th class="p-4 text-left font-bold">Recipes</th>
+                    <th class="p-4 text-left font-bold">Diet</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-slate-300">
@@ -40,6 +42,9 @@ const { result, loading, error } = useQuery(getIngredients)
                     <td
                         class="p-4 text-right"
                     >{{ i.recipe_ingredients_aggregate.aggregate.count ? i.recipe_ingredients_aggregate.aggregate.count : `-` }}</td>
+                                        <td
+                        class="p-4 text-right"
+                    >{{i.diet}}</td>
                 </tr>
             </tbody>
         </table>

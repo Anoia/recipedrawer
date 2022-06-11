@@ -2,6 +2,8 @@ query getIngredientsAndUnits {
   ingredients {
     name
     id
+    diet
+    recipe_id
   }
   units {
     id

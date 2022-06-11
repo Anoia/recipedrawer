@@ -28,6 +28,7 @@ onMounted(() => {
 })
 
 const ingredientName = ref(props.input)
+const diet = ref('vegan')
 
 const createIngredientDialogInput: Ref<HTMLInputElement | null> = ref(null)
 
@@ -41,10 +42,11 @@ function create() {
 
 
 let insert = gql`
-mutation MyMutation($name: String) {
-  insert_ingredients_one(object: {name: $name}) {
+mutation MyMutation($name: String, $diet:String) {
+  insert_ingredients_one(object: {name: $name, diet: $diet}) {
     id
     name
+    diet
   }
 }
 `
@@ -52,7 +54,8 @@ mutation MyMutation($name: String) {
 const { mutate: insertIngredient, onDone } = useMutation(insert, () => ({
     variables: {
         name: ingredientName.value,
-    },  // TODO cache update
+        diet: diet.value
+    },  // TODO cache update !!
 }))
 
 onDone(result => {
@@ -90,6 +93,60 @@ onDone(result => {
                     placeholder="Name"
                     v-model="ingredientName"
                 />
+                <div class="flex justify-center">
+                    <div class="flex">
+                        <div class="flex items-center mr-4">
+                            <input
+                                type="radio"
+                                id="vegan"
+                                name="diet"
+                                value="vegan"
+                                v-model="diet"
+                                class="w-4 h-4 text-teal-600 bg-gray-100 border-gray-300 focus:ring-teal-500 focus:ring-1"
+                            />
+                            <label for="vegan" class="ml-2 text-sm font-medium text-teal-600">vegan</label>
+                        </div>
+
+                        <div class="flex items-center mr-4">
+                            <input
+                                type="radio"
+                                id="vegetarian"
+                                name="diet"
+                                value="vegetarian"
+                                v-model="diet"
+                                class="w-4 h-4 text-teal-600 bg-gray-100 border-gray-300 focus:ring-teal-500 focus:ring-1"
+                            />
+                            <label
+                                for="vegetarian"
+                                class="ml-2 text-sm font-medium text-teal-600"
+                            >vegetarian</label>
+                        </div>
+
+                        <div class="flex items-center mr-4">
+                            <input
+                                type="radio"
+                                id="fish"
+                                name="diet"
+                                value="fish"
+                                v-model="diet"
+                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 focus:ring-1"
+                            />
+                            <label for="fish" class="ml-2 text-sm font-medium text-blue-600">fish</label>
+                        </div>
+
+                        <div class="flex items-center mr-4">
+                            <input
+                                type="radio"
+                                id="meat"
+                                name="diet"
+                                value="meat"
+                                v-model="diet"
+                                class="w-4 h-4 text-red-600 bg-gray-100 border-gray-300 focus:ring-red-500 focus:ring-1"
+                            />
+                            <label for="meat" class="ml-2 text-sm font-medium text-red-600">meat</label>
+                        </div>
+                    </div>
+                </div>
                 <div class="flex flex-row my-5 space-x-5">
                     <button
                         @click="setClosed"
