@@ -53,15 +53,19 @@ export function getImageUrl(imageId: string, w: number, h: number): string {
   }
 }
 
+const emptyRecipe:EditableRecipe = {
+  name: '',
+  description: '',
+  image: '',
+  steps: [],
+  recipeIngredients: [],
+  portions: 2,
+  cookingTime: undefined,
+  prepTime: undefined,
+}
+
 export function getEmptyRecipe(): EditableRecipe {
   return {
-    name: '',
-    description: '',
-    image: '',
-    steps: [],
-    recipeIngredients: [],
-    portions: 2,
-    cookingTime: undefined,
-    prepTime: undefined,
+    ...emptyRecipe
   }
 }
