@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { useMutation, useQuery, useResult } from '@vue/apollo-composable'
+import { useMutation, useQuery } from '@vue/apollo-composable'
 import { getImageUrl } from '../types/recipe'
 import { computed } from 'vue'
 import { useAuth } from '../auth/useAuthService'
@@ -18,7 +18,7 @@ let queryVariables: GetRecipeByIdQueryVariables = { id: props.id }
 
 const { result } = useQuery(GetRecipeById, queryVariables, { fetchPolicy: 'cache-and-network' })
 
-const parsedResult = useResult(result, null, data => parseGetRecipeByIdResult(data.recipes_by_pk))
+const parsedResult = computed(() => (result.value) ? parseGetRecipeByIdResult(result.value.recipes_by_pk) : null)
 
 const imageUrl = computed(() => {
     if (parsedResult.value) {
@@ -61,7 +61,7 @@ onDone(r => {
                     <p>{{ parsedResult.portions }} Portions</p>
                     <p>
                         <span v-if="parsedResult.prepTime">{{ parsedResult.prepTime }} prep time</span>
-                        <span v-if="parsedResult.prepTime && parsedResult.cookingTime">, </span>
+                        <span v-if="parsedResult.prepTime && parsedResult.cookingTime">,</span>
                         <span
                             v-if="parsedResult.cookingTime"
                         >{{ parsedResult.cookingTime }} total time</span>
@@ -85,9 +85,10 @@ onDone(r => {
                             class="border-b-[1px] last:border-b-0 p-1 py-2 border-slate-300"
                             :class="(i.type === 'section') ? `bg-slate-200` : ``"
                         >
-                            <span
-                                v-if="i.type === 'ingredient'"
-                            >{{ i.amount }} {{ i.unit.short_name }}   <router-link :to="'/ingredient/' + i.ingredient_id">{{ i.name }}</router-link></span>
+                            <span v-if="i.type === 'ingredient'">
+                                {{ i.amount }} {{ i.unit.short_name }}
+                                <router-link :to="'/ingredient/' + i.ingredient_id">{{ i.name }}</router-link>
+                            </span>
                             <span v-if="i.type === 'section'" class="font-semibold">{{ i.name }}</span>
                         </li>
                     </ul>

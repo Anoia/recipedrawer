@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { useQuery, useMutation, useResult } from '@vue/apollo-composable'
+import { useQuery, useMutation } from '@vue/apollo-composable'
 import { computed, watch, ref, Ref, nextTick, onMounted } from 'vue'
 import NewAutoIngredientInputVue from '../components/NewAutoIngredientInput.vue'
 import { RecipeIngredient, Step, EditableRecipe, getEmptyRecipe, getImageUrl, Ingredient, Unit, RecipeIngredientSection } from '../types/recipe'
@@ -28,15 +28,15 @@ onMounted(() => {
     handleInit(result.value, loading.value)
 })
 
-const parsedResult: Ref<EditableRecipe | undefined> = useResult(result, undefined, data => parseGetRecipeByIdResult(data.recipes_by_pk))
+const parsedResult: Ref<EditableRecipe | undefined> = computed(() => (result.value) ? parseGetRecipeByIdResult(result.value.recipes_by_pk) : undefined)
 
 watch([result, loading], async ([newResult, newLoading]) => {
     handleInit(newResult, newLoading)
 })
 
-const { result: loadedData, refetch:refetchIngredientsAndUnits } = useQuery(GetIngredientsAndUnits)
-const allIngredients = useResult(loadedData, [] as Ingredient[], ((data) => data.ingredients as Ingredient[]))
-const allUnits = useResult(loadedData, [] as Unit[], ((data) => data.units as Unit[]))
+const { result: loadedData, refetch: refetchIngredientsAndUnits } = useQuery(GetIngredientsAndUnits)
+const allIngredients = computed(() => (loadedData.value) ? loadedData.value.ingredients as Ingredient[] : [] as Ingredient[])
+const allUnits = computed(() => (loadedData.value) ? loadedData.value.units as Unit[] : [] as Unit[])
 
 
 function handleInit(newResult: any, newLoading: boolean) {

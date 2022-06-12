@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { useQuery, useResult } from '@vue/apollo-composable'
+import { useQuery } from '@vue/apollo-composable'
 import { getImageUrl } from '../types/recipe'
 import { GetAllRecipes } from '../generated/graphql.d'
 import { parseAllRecipesResult } from '../gql/queryHelper'
+import { computed } from 'vue'
 
 const { result } = useQuery(GetAllRecipes)
-const parsedRecipes = useResult(result, null, data => parseAllRecipesResult(data.recipes))
+const parsedRecipes = computed(() => result.value ? parseAllRecipesResult(result.value.recipes) : null)
 
 </script>
 
