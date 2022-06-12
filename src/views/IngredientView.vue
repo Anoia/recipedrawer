@@ -1,6 +1,6 @@
 <script setup lang="ts">import { useMutation, useQuery } from '@vue/apollo-composable';
 import gql from 'graphql-tag';
-import { ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { getImageUrl } from '../types/recipe'
 
 const props = defineProps({
@@ -50,7 +50,15 @@ const { result, loading, error, refetch } = useQuery(getIngredient, {
 })
 
 const editing = ref(false)
-const editingDiet = ref(result?.value?.ingredients_by_pk?.diet ?? 'vegan')
+const dietFromIngredient  = computed(() => result?.value?.ingredients_by_pk?.diet)
+
+watch(dietFromIngredient, (newValue, oldValue) => {
+    if(newValue){
+      editingDiet.value = newValue
+    }
+})
+
+const editingDiet = ref('vegan')
 
 </script>
 
