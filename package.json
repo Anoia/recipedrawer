@@ -20,6 +20,7 @@
     "apollo3-cache-persist": "^0.14.0",
     "axios": "^0.27.2",
     "dotenv": "^16.0.0",
+    "fuzzysort": "^2.0.1",
     "graphql": "^16.4.0",
     "graphql-tag": "^2.12.6",
     "vue": "^3.2.33",
