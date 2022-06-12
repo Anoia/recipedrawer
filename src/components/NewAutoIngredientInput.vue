@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { extractRecipeMatchResult } from '../stuff/parse';
 import { Ingredient, Unit } from '../types/recipe';
-import { computed, ref, nextTick, onMounted } from 'vue';
+import { computed, ref, nextTick, onMounted, ComputedRef } from 'vue';
 import IngredientCreation from './IngredientCreation.vue'
+import fuzzysort from 'fuzzysort'
 
 const props = defineProps<{
     ingredients: Readonly<Ingredient[]>,
@@ -65,32 +66,28 @@ function escapeReg(i: string) {
     return i.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
-const filteredIngredients = computed(() => {
+const fuzzyIngredients: ComputedRef<Fuzzysort.KeyResults<Ingredient>> = computed(() => {
 
-    if (ingredientInputString.value) {
-        const regexp = new RegExp(escapeReg(ingredientInputString.value), 'i');
-        return props.ingredients.filter((i) => i.name.match(regexp))
-    } else {
-        return props.ingredients
-    }
-}
-)
+    let target = ingredientInputString.value ?? ''
+
+    return fuzzysort.go(target, props.ingredients, { key: 'name', all: true,threshold: -75000, })
+})
 
 const currentIngredientSelectionIndex = ref(0)
 
 const currentIngredientSelection = computed(() => {
-    return isAutocompleteListVisible.value && currentIngredientSelectionIndex.value < filteredIngredients.value.length ? filteredIngredients.value[currentIngredientSelectionIndex.value] : undefined
+    return isAutocompleteListVisible.value && currentIngredientSelectionIndex.value < fuzzyIngredients.value.length ? fuzzyIngredients.value[currentIngredientSelectionIndex.value].obj : undefined
 })
 
 function onInput(e:any) {
     userInputString.value = e.target.value
-    if (isAutocompleteListVisible.value && currentIngredientSelectionIndex.value > filteredIngredients.value.length) {
-        currentIngredientSelectionIndex.value = (filteredIngredients.value.length || 1) - 1
+    if (isAutocompleteListVisible.value && currentIngredientSelectionIndex.value > fuzzyIngredients.value.length) {
+        currentIngredientSelectionIndex.value = (fuzzyIngredients.value.length || 1) - 1
     }
 }
 
 function onArrowDown() {
-    if (isAutocompleteListVisible.value && currentIngredientSelectionIndex.value < filteredIngredients.value.length - 1) {
+    if (isAutocompleteListVisible.value && currentIngredientSelectionIndex.value < fuzzyIngredients.value.length - 1) {
         currentIngredientSelectionIndex.value++
         scrollSelectedToView()
     }
@@ -151,7 +148,7 @@ function selectIngredient(i: Ingredient) {
 function selectCurrentSelection() {
     if (currentIngredientSelection.value) {
         selectIngredient(currentIngredientSelection.value)
-    } else if (filteredIngredients.value.length == 0) {
+    } else if (fuzzyIngredients.value.length == 0) {
         notFound()
     }
 }
@@ -214,14 +211,14 @@ const showCreateIngredientDialog = ref(false)
         >
             <ul>
                 <li
-                    v-for="(i, index) in filteredIngredients"
+                    v-for="(i, index) in fuzzyIngredients"
                     :id="`autocompleteingredient-${index}`"
                     :key="index"
                     :class="{ 'bg-slate-400': currentIngredientSelectionIndex == index }"
                     @mouseenter="currentIngredientSelectionIndex = index"
                     @mousedown.prevent
-                    @click.stop="selectIngredient(i)"
-                >{{ i.name }}</li>
+                    @click.stop="selectIngredient(i.obj)"
+                >{{ i.obj.name }} {{i.score}}</li>
                 <li
                     class="bg-slate-200 font-normal"
                     @mousedown.prevent
