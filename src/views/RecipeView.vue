@@ -4,7 +4,7 @@ import { useMutation, useQuery } from '@vue/apollo-composable'
 import { getImageUrl } from '../types/recipe'
 import { computed } from 'vue'
 import { useAuth } from '../auth/useAuthService'
-import { DeleteRecipeMutationVariables, GetRecipeById, GetRecipeByIdQueryVariables, DeleteRecipe } from '../generated/graphql.d'
+import { DeleteRecipeMutationVariables, GetRecipeById, GetRecipeByIdQueryVariables, DeleteRecipe, CreateNewIngredient } from '../generated/graphql.d'
 import { parseGetRecipeByIdResult } from '../gql/queryHelper'
 import { useRouter } from 'vue-router'
 
@@ -26,9 +26,41 @@ const imageUrl = computed(() => {
     } else return 'https://via.placeholder.com/200'
 })
 
+const dietOrder = ['vegan', 'vegetarian', 'fish', 'meat']
+
+const recipeDiet = computed(() => {
+    if (parsedResult.value) {
+        let dietIndex =  parsedResult.value.recipeIngredients.reduce((prev, current) => {
+
+            if (current.type === 'ingredient') {
+
+                let currentDiet = dietOrder.indexOf(current.diet)
+
+                return Math.max(currentDiet, prev)
+            } else {
+                return prev
+            }
+
+        }, 0)
+        return dietOrder[dietIndex]
+
+    } else return undefined
+})
+
 const { user: loggedInUser } = useAuth();
 
 const isAuthor = computed(() => result?.value.recipes_by_pk.user.name == loggedInUser?.value?.['https://recipedrawer.herokuapp.com/username'])
+const recipeAsIngredient = computed(() => (result?.value.recipes_by_pk.ingredients.length > 0) ? result.value.recipes_by_pk.ingredients[0] : undefined)   // has name, id
+
+
+const { mutate: createIngredient, onDone: IngredientCreateDone } = useMutation(CreateNewIngredient, () => ({   //todo reload on done
+    variables: {
+        name: parsedResult.value?.name,
+        diet: recipeDiet.value,
+        recipe_id: props.id
+    },
+}))
+
 
 let variables: DeleteRecipeMutationVariables = { id: props.id }
 const { mutate, onDone } = useMutation(DeleteRecipe, () => ({
@@ -66,6 +98,7 @@ onDone(r => {
                             v-if="parsedResult.cookingTime"
                         >{{ parsedResult.cookingTime }} total time</span>
                     </p>
+                    <p>Diet: {{ recipeDiet }}</p>
                     <p class="relative bottom-0 grow-0 text-slate-500 text-right">
                         written by
                         <router-link
@@ -114,6 +147,18 @@ onDone(r => {
                     :to="'/edit/' + props.id"
                     class="hover:underline m-10 float-right text-teal-500"
                 >Edit Recipe</router-link>
+            </div>
+            <div v-if="isAuthor" class="flex-row">
+                <router-link
+                    v-if="recipeAsIngredient"
+                    :to="'/ingredient/' + recipeAsIngredient.id"
+                    class="hover:underline m-10 float-right text-teal-500"
+                >Available as Ingredient: {{recipeAsIngredient.name}}</router-link>
+                <button
+                    v-if="!recipeAsIngredient"
+                    @click="createIngredient()"
+                    class="hover:underline m-10 float-right text-teal-500"
+                >Create Ingredient from Recipe</button>
             </div>
         </div>
     </div>

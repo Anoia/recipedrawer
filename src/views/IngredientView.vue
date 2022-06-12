@@ -13,7 +13,10 @@ query Ingredient($id: Int!) {
     id
     name
     diet
-    recipe_id
+    recipe {
+      id
+      name
+    }
     recipe_ingredients {
       recipe {
         id
@@ -50,12 +53,12 @@ const { result, loading, error, refetch } = useQuery(getIngredient, {
 })
 
 const editing = ref(false)
-const dietFromIngredient  = computed(() => result?.value?.ingredients_by_pk?.diet)
+const dietFromIngredient = computed(() => result?.value?.ingredients_by_pk?.diet)
 
 watch(dietFromIngredient, (newValue, oldValue) => {
-    if(newValue){
-      editingDiet.value = newValue
-    }
+  if (newValue) {
+    editingDiet.value = newValue
+  }
 })
 
 const editingDiet = ref('vegan')
@@ -67,6 +70,12 @@ const editingDiet = ref('vegan')
   <p v-if="error">{{ error }}</p>
   <div v-if="result">
     <h1>Ingredient: {{ result.ingredients_by_pk.name }}</h1>
+    <p v-if="result.ingredients_by_pk.recipe">
+      Recipe for this ingredient:
+      <router-link
+        :to="'/recipe/' + result.ingredients_by_pk.recipe.id"
+      >{{ result.ingredients_by_pk.recipe.name }}</router-link>
+    </p>
     <p v-if="result.ingredients_by_pk.diet">diet is {{ result.ingredients_by_pk.diet }}</p>
     <p v-if="!result.ingredients_by_pk.diet">diet is not set!</p>
     <button class="bg-slate-200 m-2 p-2" @click="editing = !editing">edit diet</button>
@@ -124,8 +133,7 @@ const editingDiet = ref('vegan')
       </div>
       <button class="bg-slate-200 m-2 p-2" @click="updateDietMutation()">save</button>
     </div>
-    <p>created recipes:</p>
-    <!-- {{result}} -->
+    <p>Recipes using this ingredient:</p>
 
     <router-link
       v-for="recipe of result.ingredients_by_pk.recipe_ingredients"

@@ -296,7 +296,8 @@ function doSelect(i: any) {
         name: i.ingredient.name,
         ingredient_id: i.ingredient.id,
         amount: i.amount,
-        unit: i.unit
+        unit: i.unit,
+        diet: i.diet,
     })
     refetchIngredientsAndUnits()
 }
@@ -311,7 +312,8 @@ function editIngredient(i: any) {
                 name: i.ingredient.name,
                 ingredient_id: i.ingredient.id,
                 amount: i.amount,
-                unit: i.unit
+                unit: i.unit,
+                diet:i.diet
             }
             recipeToEdit.value.recipeIngredients[editingIngredientIndex.value] = newIng
             resetEditingIngredientIndex()

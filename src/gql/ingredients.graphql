@@ -11,3 +11,12 @@ query getIngredientsAndUnits {
     short_name
   }
 }
+
+mutation createNewIngredient($name: String, $diet:String, $recipe_id:Int = null) {
+  insert_ingredients_one(object: {name: $name, diet: $diet, recipe_id: $recipe_id}) {
+    id
+    name
+    diet
+    recipe_id
+  }
+}

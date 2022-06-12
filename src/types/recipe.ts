@@ -20,6 +20,7 @@ export type RecipeIngredient = {
   name: string
   amount: number
   unit: Unit
+  diet:string
 }
 export type RecipeIngredientSection = {
   type: 'section'

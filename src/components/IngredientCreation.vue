@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import { onMounted, Ref, ref, watch, nextTick } from 'vue'
-import gql from 'graphql-tag'
+import  {  CreateNewIngredient} from '../generated/graphql.d'
 import { useMutation } from '@vue/apollo-composable'
 
 const props = defineProps<{
@@ -41,17 +41,7 @@ function create() {
 }
 
 
-let insert = gql`
-mutation MyMutation($name: String, $diet:String) {
-  insert_ingredients_one(object: {name: $name, diet: $diet}) {
-    id
-    name
-    diet
-  }
-}
-`
-
-const { mutate: insertIngredient, onDone } = useMutation(insert, () => ({
+const { mutate: insertIngredient, onDone } = useMutation(CreateNewIngredient, () => ({
     variables: {
         name: ingredientName.value,
         diet: diet.value
@@ -62,7 +52,7 @@ onDone(result => {
     console.log(result.data)
     let id = result.data.insert_ingredients_one.id
     let name = result.data.insert_ingredients_one.name
-    emit('created', { id: id, name: name })
+    emit('created', { id: id, name: name, diet: result.data.insert_ingredients_one.diet})
     setClosed()
 })
 

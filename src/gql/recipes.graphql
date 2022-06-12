@@ -28,12 +28,17 @@ query getRecipeById($id: Int!) {
       ingredient {
         id
         name
+        diet
       }
       unitByUnit {
         id
         long_name
         short_name
       }
+    }
+    ingredients {
+      id
+      name
     }
   }
 }

@@ -79,9 +79,11 @@ export type String_Comparison_Exp = {
 export type Ingredients = {
   __typename?: 'ingredients';
   created_at: Scalars['timestamptz'];
-  diet?: Maybe<Scalars['String']>;
+  diet: Scalars['String'];
   id: Scalars['Int'];
   name: Scalars['String'];
+  /** An object relationship */
+  recipe?: Maybe<Recipes>;
   recipe_id?: Maybe<Scalars['Int']>;
   /** An array relationship */
   recipe_ingredients: Array<Recipe_Ingredients>;
@@ -140,11 +142,39 @@ export type Ingredients_Aggregate_FieldsCountArgs = {
   distinct?: InputMaybe<Scalars['Boolean']>;
 };
 
+/** order by aggregate values of table "ingredients" */
+export type Ingredients_Aggregate_Order_By = {
+  avg?: InputMaybe<Ingredients_Avg_Order_By>;
+  count?: InputMaybe<Order_By>;
+  max?: InputMaybe<Ingredients_Max_Order_By>;
+  min?: InputMaybe<Ingredients_Min_Order_By>;
+  stddev?: InputMaybe<Ingredients_Stddev_Order_By>;
+  stddev_pop?: InputMaybe<Ingredients_Stddev_Pop_Order_By>;
+  stddev_samp?: InputMaybe<Ingredients_Stddev_Samp_Order_By>;
+  sum?: InputMaybe<Ingredients_Sum_Order_By>;
+  var_pop?: InputMaybe<Ingredients_Var_Pop_Order_By>;
+  var_samp?: InputMaybe<Ingredients_Var_Samp_Order_By>;
+  variance?: InputMaybe<Ingredients_Variance_Order_By>;
+};
+
+/** input type for inserting array relation for remote table "ingredients" */
+export type Ingredients_Arr_Rel_Insert_Input = {
+  data: Array<Ingredients_Insert_Input>;
+  /** upsert condition */
+  on_conflict?: InputMaybe<Ingredients_On_Conflict>;
+};
+
 /** aggregate avg on columns */
 export type Ingredients_Avg_Fields = {
   __typename?: 'ingredients_avg_fields';
   id?: Maybe<Scalars['Float']>;
   recipe_id?: Maybe<Scalars['Float']>;
+};
+
+/** order by avg() on columns of table "ingredients" */
+export type Ingredients_Avg_Order_By = {
+  id?: InputMaybe<Order_By>;
+  recipe_id?: InputMaybe<Order_By>;
 };
 
 /** Boolean expression to filter rows from the table "ingredients". All fields are combined with a logical 'AND'. */
@@ -156,6 +186,7 @@ export type Ingredients_Bool_Exp = {
   diet?: InputMaybe<String_Comparison_Exp>;
   id?: InputMaybe<Int_Comparison_Exp>;
   name?: InputMaybe<String_Comparison_Exp>;
+  recipe?: InputMaybe<Recipes_Bool_Exp>;
   recipe_id?: InputMaybe<Int_Comparison_Exp>;
   recipe_ingredients?: InputMaybe<Recipe_Ingredients_Bool_Exp>;
   updated_at?: InputMaybe<Timestamptz_Comparison_Exp>;
@@ -181,6 +212,7 @@ export type Ingredients_Insert_Input = {
   diet?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['Int']>;
   name?: InputMaybe<Scalars['String']>;
+  recipe?: InputMaybe<Recipes_Obj_Rel_Insert_Input>;
   recipe_id?: InputMaybe<Scalars['Int']>;
   recipe_ingredients?: InputMaybe<Recipe_Ingredients_Arr_Rel_Insert_Input>;
   updated_at?: InputMaybe<Scalars['timestamptz']>;
@@ -197,6 +229,16 @@ export type Ingredients_Max_Fields = {
   updated_at?: Maybe<Scalars['timestamptz']>;
 };
 
+/** order by max() on columns of table "ingredients" */
+export type Ingredients_Max_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  diet?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  name?: InputMaybe<Order_By>;
+  recipe_id?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
 /** aggregate min on columns */
 export type Ingredients_Min_Fields = {
   __typename?: 'ingredients_min_fields';
@@ -206,6 +248,16 @@ export type Ingredients_Min_Fields = {
   name?: Maybe<Scalars['String']>;
   recipe_id?: Maybe<Scalars['Int']>;
   updated_at?: Maybe<Scalars['timestamptz']>;
+};
+
+/** order by min() on columns of table "ingredients" */
+export type Ingredients_Min_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  diet?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  name?: InputMaybe<Order_By>;
+  recipe_id?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
 };
 
 /** response of any mutation on the table "ingredients" */
@@ -237,6 +289,7 @@ export type Ingredients_Order_By = {
   diet?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
   name?: InputMaybe<Order_By>;
+  recipe?: InputMaybe<Recipes_Order_By>;
   recipe_id?: InputMaybe<Order_By>;
   recipe_ingredients_aggregate?: InputMaybe<Recipe_Ingredients_Aggregate_Order_By>;
   updated_at?: InputMaybe<Order_By>;
@@ -280,11 +333,23 @@ export type Ingredients_Stddev_Fields = {
   recipe_id?: Maybe<Scalars['Float']>;
 };
 
+/** order by stddev() on columns of table "ingredients" */
+export type Ingredients_Stddev_Order_By = {
+  id?: InputMaybe<Order_By>;
+  recipe_id?: InputMaybe<Order_By>;
+};
+
 /** aggregate stddev_pop on columns */
 export type Ingredients_Stddev_Pop_Fields = {
   __typename?: 'ingredients_stddev_pop_fields';
   id?: Maybe<Scalars['Float']>;
   recipe_id?: Maybe<Scalars['Float']>;
+};
+
+/** order by stddev_pop() on columns of table "ingredients" */
+export type Ingredients_Stddev_Pop_Order_By = {
+  id?: InputMaybe<Order_By>;
+  recipe_id?: InputMaybe<Order_By>;
 };
 
 /** aggregate stddev_samp on columns */
@@ -294,11 +359,23 @@ export type Ingredients_Stddev_Samp_Fields = {
   recipe_id?: Maybe<Scalars['Float']>;
 };
 
+/** order by stddev_samp() on columns of table "ingredients" */
+export type Ingredients_Stddev_Samp_Order_By = {
+  id?: InputMaybe<Order_By>;
+  recipe_id?: InputMaybe<Order_By>;
+};
+
 /** aggregate sum on columns */
 export type Ingredients_Sum_Fields = {
   __typename?: 'ingredients_sum_fields';
   id?: Maybe<Scalars['Int']>;
   recipe_id?: Maybe<Scalars['Int']>;
+};
+
+/** order by sum() on columns of table "ingredients" */
+export type Ingredients_Sum_Order_By = {
+  id?: InputMaybe<Order_By>;
+  recipe_id?: InputMaybe<Order_By>;
 };
 
 /** update columns of table "ingredients" */
@@ -324,6 +401,12 @@ export type Ingredients_Var_Pop_Fields = {
   recipe_id?: Maybe<Scalars['Float']>;
 };
 
+/** order by var_pop() on columns of table "ingredients" */
+export type Ingredients_Var_Pop_Order_By = {
+  id?: InputMaybe<Order_By>;
+  recipe_id?: InputMaybe<Order_By>;
+};
+
 /** aggregate var_samp on columns */
 export type Ingredients_Var_Samp_Fields = {
   __typename?: 'ingredients_var_samp_fields';
@@ -331,11 +414,23 @@ export type Ingredients_Var_Samp_Fields = {
   recipe_id?: Maybe<Scalars['Float']>;
 };
 
+/** order by var_samp() on columns of table "ingredients" */
+export type Ingredients_Var_Samp_Order_By = {
+  id?: InputMaybe<Order_By>;
+  recipe_id?: InputMaybe<Order_By>;
+};
+
 /** aggregate variance on columns */
 export type Ingredients_Variance_Fields = {
   __typename?: 'ingredients_variance_fields';
   id?: Maybe<Scalars['Float']>;
   recipe_id?: Maybe<Scalars['Float']>;
+};
+
+/** order by variance() on columns of table "ingredients" */
+export type Ingredients_Variance_Order_By = {
+  id?: InputMaybe<Order_By>;
+  recipe_id?: InputMaybe<Order_By>;
 };
 
 /** Boolean expression to compare columns of type "interval". All fields are combined with logical 'AND'. */
@@ -734,9 +829,9 @@ export enum Order_By {
 
 export type Query_Root = {
   __typename?: 'query_root';
-  /** fetch data from the table: "ingredients" */
+  /** An array relationship */
   ingredients: Array<Ingredients>;
-  /** fetch aggregated fields from the table: "ingredients" */
+  /** An aggregate relationship */
   ingredients_aggregate: Ingredients_Aggregate;
   /** fetch data from the table: "ingredients" using primary key columns */
   ingredients_by_pk?: Maybe<Ingredients>;
@@ -1333,6 +1428,10 @@ export type Recipes = {
   description?: Maybe<Scalars['String']>;
   id: Scalars['Int'];
   image?: Maybe<Scalars['String']>;
+  /** An array relationship */
+  ingredients: Array<Ingredients>;
+  /** An aggregate relationship */
+  ingredients_aggregate: Ingredients_Aggregate;
   name: Scalars['String'];
   portions: Scalars['Int'];
   prep_time?: Maybe<Scalars['interval']>;
@@ -1345,6 +1444,26 @@ export type Recipes = {
   /** An object relationship */
   user?: Maybe<Users>;
   user_id?: Maybe<Scalars['String']>;
+};
+
+
+/** columns and relationships of "recipes" */
+export type RecipesIngredientsArgs = {
+  distinct_on?: InputMaybe<Array<Ingredients_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<Ingredients_Order_By>>;
+  where?: InputMaybe<Ingredients_Bool_Exp>;
+};
+
+
+/** columns and relationships of "recipes" */
+export type RecipesIngredients_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Ingredients_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<Ingredients_Order_By>>;
+  where?: InputMaybe<Ingredients_Bool_Exp>;
 };
 
 
@@ -1453,6 +1572,7 @@ export type Recipes_Bool_Exp = {
   description?: InputMaybe<String_Comparison_Exp>;
   id?: InputMaybe<Int_Comparison_Exp>;
   image?: InputMaybe<String_Comparison_Exp>;
+  ingredients?: InputMaybe<Ingredients_Bool_Exp>;
   name?: InputMaybe<String_Comparison_Exp>;
   portions?: InputMaybe<Int_Comparison_Exp>;
   prep_time?: InputMaybe<Interval_Comparison_Exp>;
@@ -1497,6 +1617,7 @@ export type Recipes_Insert_Input = {
   description?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['Int']>;
   image?: InputMaybe<Scalars['String']>;
+  ingredients?: InputMaybe<Ingredients_Arr_Rel_Insert_Input>;
   name?: InputMaybe<Scalars['String']>;
   portions?: InputMaybe<Scalars['Int']>;
   prep_time?: InputMaybe<Scalars['interval']>;
@@ -1587,6 +1708,7 @@ export type Recipes_Order_By = {
   description?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
   image?: InputMaybe<Order_By>;
+  ingredients_aggregate?: InputMaybe<Ingredients_Aggregate_Order_By>;
   name?: InputMaybe<Order_By>;
   portions?: InputMaybe<Order_By>;
   prep_time?: InputMaybe<Order_By>;
@@ -1767,9 +1889,9 @@ export type Recipes_Variance_Order_By = {
 
 export type Subscription_Root = {
   __typename?: 'subscription_root';
-  /** fetch data from the table: "ingredients" */
+  /** An array relationship */
   ingredients: Array<Ingredients>;
-  /** fetch aggregated fields from the table: "ingredients" */
+  /** An aggregate relationship */
   ingredients_aggregate: Ingredients_Aggregate;
   /** fetch data from the table: "ingredients" using primary key columns */
   ingredients_by_pk?: Maybe<Ingredients>;
@@ -2543,7 +2665,16 @@ export enum Users_Update_Column {
 export type GetIngredientsAndUnitsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetIngredientsAndUnitsQuery = { __typename?: 'query_root', ingredients: Array<{ __typename?: 'ingredients', name: string, id: number, diet?: string | null, recipe_id?: number | null }>, units: Array<{ __typename?: 'units', id: number, long_name: string, short_name: string }> };
+export type GetIngredientsAndUnitsQuery = { __typename?: 'query_root', ingredients: Array<{ __typename?: 'ingredients', name: string, id: number, diet: string, recipe_id?: number | null }>, units: Array<{ __typename?: 'units', id: number, long_name: string, short_name: string }> };
+
+export type CreateNewIngredientMutationVariables = Exact<{
+  name?: InputMaybe<Scalars['String']>;
+  diet?: InputMaybe<Scalars['String']>;
+  recipe_id?: InputMaybe<Scalars['Int']>;
+}>;
+
+
+export type CreateNewIngredientMutation = { __typename?: 'mutation_root', insert_ingredients_one?: { __typename?: 'ingredients', id: number, name: string, diet: string, recipe_id?: number | null } | null };
 
 export type GetAllRecipesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2555,7 +2686,7 @@ export type GetRecipeByIdQueryVariables = Exact<{
 }>;
 
 
-export type GetRecipeByIdQuery = { __typename?: 'query_root', recipes_by_pk?: { __typename?: 'recipes', id: number, name: string, description?: string | null, image?: string | null, steps: any, prep_time?: any | null, cook_time?: any | null, portions: number, user?: { __typename?: 'users', name: string } | null, recipe_ingredients: Array<{ __typename?: 'recipe_ingredients', id: number, index: number, amount: number, section?: string | null, ingredient: { __typename?: 'ingredients', id: number, name: string }, unitByUnit: { __typename?: 'units', id: number, long_name: string, short_name: string } }> } | null };
+export type GetRecipeByIdQuery = { __typename?: 'query_root', recipes_by_pk?: { __typename?: 'recipes', id: number, name: string, description?: string | null, image?: string | null, steps: any, prep_time?: any | null, cook_time?: any | null, portions: number, user?: { __typename?: 'users', name: string } | null, recipe_ingredients: Array<{ __typename?: 'recipe_ingredients', id: number, index: number, amount: number, section?: string | null, ingredient: { __typename?: 'ingredients', id: number, name: string, diet: string }, unitByUnit: { __typename?: 'units', id: number, long_name: string, short_name: string } }>, ingredients: Array<{ __typename?: 'ingredients', id: number, name: string }> } | null };
 
 export type CreateRecipeMutationVariables = Exact<{
   description?: InputMaybe<Scalars['String']>;
@@ -2607,6 +2738,7 @@ declare module '*/ingredients.graphql' {
   import { DocumentNode } from 'graphql';
   const defaultDocument: DocumentNode;
   export const getIngredientsAndUnits: DocumentNode;
+export const createNewIngredient: DocumentNode;
 
   export default defaultDocument;
 }
@@ -2649,6 +2781,18 @@ export const GetIngredientsAndUnits = gql`
   }
 }
     `;
+export const CreateNewIngredient = gql`
+    mutation createNewIngredient($name: String, $diet: String, $recipe_id: Int = null) {
+  insert_ingredients_one(
+    object: {name: $name, diet: $diet, recipe_id: $recipe_id}
+  ) {
+    id
+    name
+    diet
+    recipe_id
+  }
+}
+    `;
 export const GetAllRecipes = gql`
     query getAllRecipes {
   recipes(order_by: {created_at: desc}) {
@@ -2681,12 +2825,17 @@ export const GetRecipeById = gql`
       ingredient {
         id
         name
+        diet
       }
       unitByUnit {
         id
         long_name
         short_name
       }
+    }
+    ingredients {
+      id
+      name
     }
   }
 }
