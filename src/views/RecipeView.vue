@@ -30,7 +30,7 @@ const dietOrder = ['vegan', 'vegetarian', 'fish', 'meat']
 
 const recipeDiet = computed(() => {
     if (parsedResult.value) {
-        let dietIndex =  parsedResult.value.recipeIngredients.reduce((prev, current) => {
+        let dietIndex = parsedResult.value.recipeIngredients.reduce((prev, current) => {
 
             if (current.type === 'ingredient') {
 
@@ -93,7 +93,7 @@ onDone(r => {
                     <p>{{ parsedResult.portions }} Portions</p>
                     <p>
                         <span v-if="parsedResult.prepTime">{{ parsedResult.prepTime }} prep time</span>
-                        <span v-if="parsedResult.prepTime && parsedResult.cookingTime">,</span>
+                        <span v-if="parsedResult.prepTime && parsedResult.cookingTime">{{ `, ` }}</span>
                         <span
                             v-if="parsedResult.cookingTime"
                         >{{ parsedResult.cookingTime }} total time</span>
@@ -153,7 +153,7 @@ onDone(r => {
                     v-if="recipeAsIngredient"
                     :to="'/ingredient/' + recipeAsIngredient.id"
                     class="hover:underline m-10 float-right text-teal-500"
-                >Available as Ingredient: {{recipeAsIngredient.name}}</router-link>
+                >Available as Ingredient: {{ recipeAsIngredient.name }}</router-link>
                 <button
                     v-if="!recipeAsIngredient"
                     @click="createIngredient()"
