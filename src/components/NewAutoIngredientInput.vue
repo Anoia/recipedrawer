@@ -70,7 +70,7 @@ const fuzzyIngredients: ComputedRef<Fuzzysort.KeyResults<Ingredient>> = computed
 
     let target = ingredientInputString.value ?? ''
 
-    return fuzzysort.go(target, props.ingredients, { key: 'name', all: true,threshold: -75000, })
+    return fuzzysort.go(target, props.ingredients, { key: 'name', all: true,threshold: -50000, })
 })
 
 const currentIngredientSelectionIndex = ref(0)
@@ -218,7 +218,7 @@ const showCreateIngredientDialog = ref(false)
                     @mouseenter="currentIngredientSelectionIndex = index"
                     @mousedown.prevent
                     @click.stop="selectIngredient(i.obj)"
-                >{{ i.obj.name }} {{i.score}}</li>
+                >{{ i.obj.name }}</li>
                 <li
                     class="bg-slate-200 font-normal"
                     @mousedown.prevent
