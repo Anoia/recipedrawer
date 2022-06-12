@@ -16,7 +16,7 @@ const router = useRouter()
 
 let queryVariables: GetRecipeByIdQueryVariables = { id: props.id }
 
-const { result } = useQuery(GetRecipeById, queryVariables, { fetchPolicy: 'cache-and-network' })
+const { result, refetch } = useQuery(GetRecipeById, queryVariables, { fetchPolicy: 'cache-and-network' })
 
 const parsedResult = computed(() => (result.value) ? parseGetRecipeByIdResult(result.value.recipes_by_pk) : null)
 
@@ -60,6 +60,8 @@ const { mutate: createIngredient, onDone: IngredientCreateDone } = useMutation(C
         recipe_id: props.id
     },
 }))
+
+IngredientCreateDone(() => refetch())
 
 
 let variables: DeleteRecipeMutationVariables = { id: props.id }
