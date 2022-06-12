@@ -34,7 +34,7 @@ watch([result, loading], async ([newResult, newLoading]) => {
     handleInit(newResult, newLoading)
 })
 
-const { result: loadedData } = useQuery(GetIngredientsAndUnits)
+const { result: loadedData, refetch:refetchIngredientsAndUnits } = useQuery(GetIngredientsAndUnits)
 const allIngredients = useResult(loadedData, [] as Ingredient[], ((data) => data.ingredients as Ingredient[]))
 const allUnits = useResult(loadedData, [] as Unit[], ((data) => data.units as Unit[]))
 
@@ -298,6 +298,7 @@ function doSelect(i: any) {
         amount: i.amount,
         unit: i.unit
     })
+    refetchIngredientsAndUnits()
 }
 
 function editIngredient(i: any) {
