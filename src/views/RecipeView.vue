@@ -26,27 +26,6 @@ const imageUrl = computed(() => {
     } else return 'https://via.placeholder.com/200'
 })
 
-const dietOrder = ['vegan', 'vegetarian', 'fish', 'meat']
-
-const recipeDiet = computed(() => {
-    if (parsedResult.value) {
-        let dietIndex = parsedResult.value.recipeIngredients.reduce((prev, current) => {
-
-            if (current.type === 'ingredient') {
-
-                let currentDiet = dietOrder.indexOf(current.diet)
-
-                return Math.max(currentDiet, prev)
-            } else {
-                return prev
-            }
-
-        }, 0)
-        return dietOrder[dietIndex]
-
-    } else return undefined
-})
-
 const { user: loggedInUser } = useAuth();
 
 const isAuthor = computed(() => result?.value.recipes_by_pk.user.name == loggedInUser?.value?.['https://recipedrawer.herokuapp.com/username'])
@@ -56,7 +35,7 @@ const recipeAsIngredient = computed(() => (result?.value.recipes_by_pk.ingredien
 const { mutate: createIngredient, onDone: IngredientCreateDone } = useMutation(CreateNewIngredient, () => ({   //todo reload on done
     variables: {
         name: parsedResult.value?.name,
-        diet: recipeDiet.value,
+        diet: parsedResult.value?.diet,
         recipe_id: props.id
     },
 }))
@@ -100,7 +79,7 @@ onDone(r => {
                             v-if="parsedResult.cookingTime"
                         >{{ parsedResult.cookingTime }} total time</span>
                     </p>
-                    <p>Diet: {{ recipeDiet }}</p>
+                    <p>Diet: {{ parsedResult.diet }}</p>
                     <p class="relative bottom-0 grow-0 text-slate-500 text-right">
                         written by
                         <router-link

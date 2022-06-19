@@ -42,6 +42,7 @@ export type EditableRecipe = {
   portions: number
   cookingTime: string | undefined
   prepTime: string | undefined
+  diet: string | undefined
 }
 
 export function getImageUrl(imageId: string, w: number, h: number): string {
@@ -64,6 +65,7 @@ const emptyRecipe:EditableRecipe = {
   portions: 2,
   cookingTime: undefined,
   prepTime: undefined,
+  diet: 'vegan'
 }
 
 export function getEmptyRecipe(): EditableRecipe {

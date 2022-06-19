@@ -19,6 +19,7 @@ export function parseGetRecipeByIdResult(recipe: Recipes): EditableRecipe {
     portions: recipe.portions,
     cookingTime: parseInterval(recipe.cook_time),
     prepTime: parseInterval(recipe.prep_time),
+    diet: recipe.diet ?? undefined,
     recipeIngredients: [...recipe.recipe_ingredients]
       .sort((a, b) => (a.index < b.index ? -1 : 1))
       .reduce((prev, current) => {
