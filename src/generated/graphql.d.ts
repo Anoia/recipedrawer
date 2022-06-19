@@ -2692,7 +2692,7 @@ export type CreateNewIngredientMutation = { __typename?: 'mutation_root', insert
 export type GetAllRecipesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllRecipesQuery = { __typename?: 'query_root', recipes: Array<{ __typename?: 'recipes', description?: string | null, id: number, name: string, image?: string | null }> };
+export type GetAllRecipesQuery = { __typename?: 'query_root', recipes: Array<{ __typename?: 'recipes', description?: string | null, id: number, name: string, image?: string | null, diet?: string | null }> };
 
 export type GetRecipeByIdQueryVariables = Exact<{
   id: Scalars['Int'];
@@ -2815,6 +2815,7 @@ export const GetAllRecipes = gql`
     id
     name
     image
+    diet
   }
 }
     `;

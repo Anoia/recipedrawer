@@ -4,6 +4,7 @@ query getAllRecipes {
     id
     name
     image
+    diet
   }
 }
 

@@ -24,6 +24,12 @@ const ingredientListFilter = ref('')
 const fuzzyIngredients: ComputedRef<any> = computed(() => fuzzysort.go(ingredientListFilter.value, result.value.ingredients, { key: 'name', all: true }))
 
 
+const dietStyle = new Map([
+    [ "vegan", "text-green-500" ],
+    [ "vegetarian", "text-emerald-500" ],
+    [ "fish", "text-blue-600" ],
+    [ "meat", "text-red-600" ]
+]);
 </script>
 
 <template>
@@ -51,7 +57,7 @@ const fuzzyIngredients: ComputedRef<any> = computed(() => fuzzysort.go(ingredien
                     <td
                         class="p-4 text-right"
                     >{{ i.obj.recipe_ingredients_aggregate.aggregate.count ? i.obj.recipe_ingredients_aggregate.aggregate.count : `-` }}</td>
-                    <td class="p-4 text-right">{{ i.obj.diet }}</td>
+                    <td class="p-4 text-right" :class="dietStyle.get(i.obj.diet)" >{{ i.obj.diet }}</td>
                 </tr>
             </tbody>
         </table>
