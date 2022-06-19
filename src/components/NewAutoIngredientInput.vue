@@ -39,6 +39,12 @@ function findPossibleUnits(unitName: string): Unit[] {
     return props.units.filter((u) => u.long_name.match(regexp) || u.short_name.match(regexp))
 }
 
+const ingredientExtraInfo = computed(() => {
+        if (matchResult.value && matchResult.value.extra_info) {
+        return matchResult.value.extra_info
+    }
+})
+
 const possibleUnit = computed(() => {
     if (matchResult.value && matchResult.value.unitName) {
         return findExactUnitMatch(matchResult.value.unitName)
@@ -134,11 +140,13 @@ function selectIngredient(i: Ingredient) {
         emit('selectItem', {
             amount: matchResult.value.amount,
             unit: (possibleUnit.value ?? defaultUnit),
+            extraInfo: ingredientExtraInfo.value,
             ingredient: {
                 id: i.id,
                 name: i.name,
                 diet:i.diet
             }
+            
         })
         clearData()
     }

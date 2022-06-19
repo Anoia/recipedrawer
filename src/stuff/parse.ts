@@ -4,12 +4,13 @@ export type Unit = { id: number; long_name: string; short_name: string }
 export type SourceIngredient = { id: number; name: string }
 
 export const regexStringIngredientInput =
-  /([0-9.,]{1,})([ ]*)([a-zA-ZäÄöÖüÜß]{0,})([ ]+)([a-zA-ZäÄöÖüÜß ]+)/
+  /([0-9.,]{1,})([ ]*)([a-zA-ZäÄöÖüÜß]{0,})([ ]+)([a-zA-ZäÄöÖüÜß ]+)(\(\(([a-zA-ZäÄöÖüÜß ,.]+)\)\))*/
 
 export type MatchResult = {
   amount: number
   unitName: Maybe<string>
   ingredientName: string
+  extra_info: Maybe<string>
 }
 
 export function extractRecipeMatchResult(input: string): Maybe<MatchResult> {
@@ -21,7 +22,8 @@ export function extractRecipeMatchResult(input: string): Maybe<MatchResult> {
     return {
       amount: +match[1],
       unitName: match[3] == '' ? undefined : match[3],
-      ingredientName: match[5],
+      ingredientName: match[5].trim(),
+      extra_info: match[7]
     }
   }
 }

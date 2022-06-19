@@ -38,7 +38,8 @@ export function parseGetRecipeByIdResult(recipe: Recipes): EditableRecipe {
           ingredient_id: current.ingredient.id,
           name: current.ingredient.name,
           unit: current.unitByUnit,
-          diet:current.ingredient.diet
+          diet:current.ingredient.diet,
+          extraInfo: current.extra_info
         })
 
         return prev

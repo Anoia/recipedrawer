@@ -1,6 +1,7 @@
 import { inject } from 'vue'
 import { Cloudinary } from '@cloudinary/url-gen'
 import { Resize } from '@cloudinary/url-gen/actions'
+import { Maybe } from 'graphql/jsutils/Maybe'
 
 export type Unit = {
   id: number
@@ -21,7 +22,8 @@ export type RecipeIngredient = {
   name: string
   amount: number
   unit: Unit
-  diet:string
+  diet:string,
+  extraInfo:Maybe<string>
 }
 export type RecipeIngredientSection = {
   type: 'section'

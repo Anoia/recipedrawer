@@ -27,6 +27,7 @@ query getRecipeById($id: Int!) {
       index
       amount
       section
+      extra_info
       ingredient {
         id
         name
@@ -80,6 +81,7 @@ mutation createRecipe(
     diet
     recipe_ingredients {
       amount
+      extra_info
       ingredient_id
       unit
       index
@@ -126,7 +128,7 @@ mutation editRecipe(
     objects: $update
     on_conflict: {
       constraint: recipe_ingredients_pkey
-      update_columns: [amount, unit, index, section]
+      update_columns: [amount, unit, index, section, extra_info]
     }
   ) {
     affected_rows

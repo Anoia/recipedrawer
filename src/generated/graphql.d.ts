@@ -1009,6 +1009,7 @@ export type Query_RootUsers_By_PkArgs = {
 export type Recipe_Ingredients = {
   __typename?: 'recipe_ingredients';
   amount: Scalars['Float'];
+  extra_info?: Maybe<Scalars['String']>;
   id: Scalars['Int'];
   index: Scalars['Int'];
   /** An object relationship */
@@ -1102,6 +1103,7 @@ export type Recipe_Ingredients_Bool_Exp = {
   _not?: InputMaybe<Recipe_Ingredients_Bool_Exp>;
   _or?: InputMaybe<Array<Recipe_Ingredients_Bool_Exp>>;
   amount?: InputMaybe<Float_Comparison_Exp>;
+  extra_info?: InputMaybe<String_Comparison_Exp>;
   id?: InputMaybe<Int_Comparison_Exp>;
   index?: InputMaybe<Int_Comparison_Exp>;
   ingredient?: InputMaybe<Ingredients_Bool_Exp>;
@@ -1134,6 +1136,7 @@ export type Recipe_Ingredients_Inc_Input = {
 /** input type for inserting data into table "recipe_ingredients" */
 export type Recipe_Ingredients_Insert_Input = {
   amount?: InputMaybe<Scalars['Float']>;
+  extra_info?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['Int']>;
   index?: InputMaybe<Scalars['Int']>;
   ingredient?: InputMaybe<Ingredients_Obj_Rel_Insert_Input>;
@@ -1149,6 +1152,7 @@ export type Recipe_Ingredients_Insert_Input = {
 export type Recipe_Ingredients_Max_Fields = {
   __typename?: 'recipe_ingredients_max_fields';
   amount?: Maybe<Scalars['Float']>;
+  extra_info?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['Int']>;
   index?: Maybe<Scalars['Int']>;
   ingredient_id?: Maybe<Scalars['Int']>;
@@ -1160,6 +1164,7 @@ export type Recipe_Ingredients_Max_Fields = {
 /** order by max() on columns of table "recipe_ingredients" */
 export type Recipe_Ingredients_Max_Order_By = {
   amount?: InputMaybe<Order_By>;
+  extra_info?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
   index?: InputMaybe<Order_By>;
   ingredient_id?: InputMaybe<Order_By>;
@@ -1172,6 +1177,7 @@ export type Recipe_Ingredients_Max_Order_By = {
 export type Recipe_Ingredients_Min_Fields = {
   __typename?: 'recipe_ingredients_min_fields';
   amount?: Maybe<Scalars['Float']>;
+  extra_info?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['Int']>;
   index?: Maybe<Scalars['Int']>;
   ingredient_id?: Maybe<Scalars['Int']>;
@@ -1183,6 +1189,7 @@ export type Recipe_Ingredients_Min_Fields = {
 /** order by min() on columns of table "recipe_ingredients" */
 export type Recipe_Ingredients_Min_Order_By = {
   amount?: InputMaybe<Order_By>;
+  extra_info?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
   index?: InputMaybe<Order_By>;
   ingredient_id?: InputMaybe<Order_By>;
@@ -1210,6 +1217,7 @@ export type Recipe_Ingredients_On_Conflict = {
 /** Ordering options when selecting data from "recipe_ingredients". */
 export type Recipe_Ingredients_Order_By = {
   amount?: InputMaybe<Order_By>;
+  extra_info?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
   index?: InputMaybe<Order_By>;
   ingredient?: InputMaybe<Ingredients_Order_By>;
@@ -1231,6 +1239,8 @@ export enum Recipe_Ingredients_Select_Column {
   /** column name */
   Amount = 'amount',
   /** column name */
+  ExtraInfo = 'extra_info',
+  /** column name */
   Id = 'id',
   /** column name */
   Index = 'index',
@@ -1247,6 +1257,7 @@ export enum Recipe_Ingredients_Select_Column {
 /** input type for updating data in table "recipe_ingredients" */
 export type Recipe_Ingredients_Set_Input = {
   amount?: InputMaybe<Scalars['Float']>;
+  extra_info?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['Int']>;
   index?: InputMaybe<Scalars['Int']>;
   ingredient_id?: InputMaybe<Scalars['Int']>;
@@ -1343,6 +1354,8 @@ export type Recipe_Ingredients_Sum_Order_By = {
 export enum Recipe_Ingredients_Update_Column {
   /** column name */
   Amount = 'amount',
+  /** column name */
+  ExtraInfo = 'extra_info',
   /** column name */
   Id = 'id',
   /** column name */
@@ -2699,7 +2712,7 @@ export type GetRecipeByIdQueryVariables = Exact<{
 }>;
 
 
-export type GetRecipeByIdQuery = { __typename?: 'query_root', recipes_by_pk?: { __typename?: 'recipes', id: number, name: string, description?: string | null, image?: string | null, steps: any, prep_time?: any | null, cook_time?: any | null, portions: number, diet?: string | null, user?: { __typename?: 'users', name: string } | null, recipe_ingredients: Array<{ __typename?: 'recipe_ingredients', id: number, index: number, amount: number, section?: string | null, ingredient: { __typename?: 'ingredients', id: number, name: string, diet: string }, unitByUnit: { __typename?: 'units', id: number, long_name: string, short_name: string } }>, ingredients: Array<{ __typename?: 'ingredients', id: number, name: string }> } | null };
+export type GetRecipeByIdQuery = { __typename?: 'query_root', recipes_by_pk?: { __typename?: 'recipes', id: number, name: string, description?: string | null, image?: string | null, steps: any, prep_time?: any | null, cook_time?: any | null, portions: number, diet?: string | null, user?: { __typename?: 'users', name: string } | null, recipe_ingredients: Array<{ __typename?: 'recipe_ingredients', id: number, index: number, amount: number, section?: string | null, extra_info?: string | null, ingredient: { __typename?: 'ingredients', id: number, name: string, diet: string }, unitByUnit: { __typename?: 'units', id: number, long_name: string, short_name: string } }>, ingredients: Array<{ __typename?: 'ingredients', id: number, name: string }> } | null };
 
 export type CreateRecipeMutationVariables = Exact<{
   description?: InputMaybe<Scalars['String']>;
@@ -2714,7 +2727,7 @@ export type CreateRecipeMutationVariables = Exact<{
 }>;
 
 
-export type CreateRecipeMutation = { __typename?: 'mutation_root', insert_recipes_one?: { __typename?: 'recipes', id: number, description?: string | null, name: string, steps: any, image?: string | null, prep_time?: any | null, cook_time?: any | null, portions: number, diet?: string | null, recipe_ingredients: Array<{ __typename?: 'recipe_ingredients', amount: number, ingredient_id: number, unit: number, index: number, section?: string | null }> } | null };
+export type CreateRecipeMutation = { __typename?: 'mutation_root', insert_recipes_one?: { __typename?: 'recipes', id: number, description?: string | null, name: string, steps: any, image?: string | null, prep_time?: any | null, cook_time?: any | null, portions: number, diet?: string | null, recipe_ingredients: Array<{ __typename?: 'recipe_ingredients', amount: number, extra_info?: string | null, ingredient_id: number, unit: number, index: number, section?: string | null }> } | null };
 
 export type EditRecipeMutationVariables = Exact<{
   recipe_id: Scalars['Int'];
@@ -2839,6 +2852,7 @@ export const GetRecipeById = gql`
       index
       amount
       section
+      extra_info
       ingredient {
         id
         name
@@ -2873,6 +2887,7 @@ export const CreateRecipe = gql`
     diet
     recipe_ingredients {
       amount
+      extra_info
       ingredient_id
       unit
       index
@@ -2896,7 +2911,7 @@ export const EditRecipe = gql`
   }
   update_ingredients: insert_recipe_ingredients(
     objects: $update
-    on_conflict: {constraint: recipe_ingredients_pkey, update_columns: [amount, unit, index, section]}
+    on_conflict: {constraint: recipe_ingredients_pkey, update_columns: [amount, unit, index, section, extra_info]}
   ) {
     affected_rows
   }

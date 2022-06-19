@@ -102,6 +102,7 @@ onDone(r => {
                             <span v-if="i.type === 'ingredient'">
                                 {{ i.amount }} {{ i.unit.short_name }}
                                 <router-link :to="'/ingredient/' + i.ingredient_id">{{ i.name }}</router-link>
+                                <span class="text-sm text-gray-600 ml-1"> {{i.extraInfo}}</span>
                             </span>
                             <span v-if="i.type === 'section'" class="font-semibold">{{ i.name }}</span>
                         </li>

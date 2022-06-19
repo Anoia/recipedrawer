@@ -97,12 +97,13 @@ const { mutate: newMutatename, onDone: onDoneMutate } = useMutation(EditRecipe, 
         ingredients = recipeToEdit.value.recipeIngredients.reduce((prev, current, index) => {
             if (current.type === "ingredient") {
 
-                let newIngredient = {
+                let newIngredient:Recipe_Ingredients_Insert_Input = {
                     id: current.id,
                     ingredient_id: current.ingredient_id,
                     recipe_id: parseInt(props.id),
                     unit: current.unit.id,
                     amount: current.amount,
+                    extra_info:current.extraInfo,
                     index: index,
                     section: currentSectionName
                 }
@@ -153,12 +154,13 @@ const { mutate: mutateCreate, onDone: onDoneCreate } = useMutation(CreateRecipe,
         ingredients = recipeToEdit.value.recipeIngredients.reduce((prev, current, index) => {
             if (current.type === "ingredient") {
 
-                let newIngredient = {
+                let newIngredient:Recipe_Ingredients_Insert_Input = {
                     ingredient_id: current.ingredient_id,
                     unit: current.unit.id,
                     amount: current.amount,
+                    extra_info:current.extraInfo,
                     index: index,
-                    section: currentSectionName
+                    section: currentSectionName,
                 }
                 prev.push(newIngredient)
                 return prev
@@ -300,6 +302,7 @@ function doSelect(i: any) {
         amount: i.amount,
         unit: i.unit,
         diet: i.ingredient.diet,
+        extraInfo: i.extraInfo
     })
     refetchIngredientsAndUnits()
 }
@@ -315,7 +318,8 @@ function editIngredient(i: any) {
                 ingredient_id: i.ingredient.id,
                 amount: i.amount,
                 unit: i.unit,
-                diet:i.diet
+                diet: i.diet,
+                extraInfo: i.extraInfo
             }
             recipeToEdit.value.recipeIngredients[editingIngredientIndex.value] = newIng
             resetEditingIngredientIndex()
@@ -396,8 +400,8 @@ const recipeDiet = computed(() => {
                     />
                     <div class="grow"></div>
                     <span v-if="recipeDiet">
-                        <label>Diet: </label>
-                        <span>{{recipeDiet}}</span>
+                        <label>Diet:</label>
+                        <span>{{ recipeDiet }}</span>
                     </span>
                     <span>
                         <label>Portions:</label>
@@ -435,7 +439,7 @@ const recipeDiet = computed(() => {
                                     <span
                                         class="grow"
                                         @click.stop="setEditingIngredientIndex(index)"
-                                    >{{ element.amount }} {{ element.unit.short_name }} {{ element.name }}</span>
+                                    >{{ element.amount }} {{ element.unit.short_name }} {{ element.name }}<span class="text-sm text-gray-600 ml-1"> {{element.extraInfo}}</span></span>
                                     <button
                                         class="grow-0 pr-1 hidden group-hover:inline"
                                         @click="removeIngredient(element)"
@@ -450,7 +454,7 @@ const recipeDiet = computed(() => {
                                         :element-id="`new-auto-input-ingredient-${index}`"
                                         :ingredients="allIngredients"
                                         :units="allUnits"
-                                        :input="`${element.amount} ${element.unit.short_name} ${element.name}`"
+                                        :input="`${element.amount} ${element.unit.short_name} ${element.name}${element.extraInfo ? ' ((' + element.extraInfo + '))' : ''}`"
                                         @cancel="resetEditingIngredientIndex"
                                         @select-item="editIngredient"
                                     ></NewAutoIngredientInputVue>
