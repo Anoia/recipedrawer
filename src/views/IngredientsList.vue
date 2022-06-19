@@ -51,7 +51,7 @@ const fuzzyIngredients: ComputedRef<any> = computed(() => fuzzysort.go(ingredien
                     <td
                         class="p-4 text-right"
                     >{{ i.obj.recipe_ingredients_aggregate.aggregate.count ? i.obj.recipe_ingredients_aggregate.aggregate.count : `-` }}</td>
-                    <td class="p-4 text-right">{{ i.diet }}</td>
+                    <td class="p-4 text-right">{{ i.obj.diet }}</td>
                 </tr>
             </tbody>
         </table>
