@@ -1426,6 +1426,7 @@ export type Recipes = {
   cook_time?: Maybe<Scalars['interval']>;
   created_at: Scalars['timestamptz'];
   description?: Maybe<Scalars['String']>;
+  diet?: Maybe<Scalars['String']>;
   id: Scalars['Int'];
   image?: Maybe<Scalars['String']>;
   /** An array relationship */
@@ -1570,6 +1571,7 @@ export type Recipes_Bool_Exp = {
   cook_time?: InputMaybe<Interval_Comparison_Exp>;
   created_at?: InputMaybe<Timestamptz_Comparison_Exp>;
   description?: InputMaybe<String_Comparison_Exp>;
+  diet?: InputMaybe<String_Comparison_Exp>;
   id?: InputMaybe<Int_Comparison_Exp>;
   image?: InputMaybe<String_Comparison_Exp>;
   ingredients?: InputMaybe<Ingredients_Bool_Exp>;
@@ -1615,6 +1617,7 @@ export type Recipes_Insert_Input = {
   cook_time?: InputMaybe<Scalars['interval']>;
   created_at?: InputMaybe<Scalars['timestamptz']>;
   description?: InputMaybe<Scalars['String']>;
+  diet?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['Int']>;
   image?: InputMaybe<Scalars['String']>;
   ingredients?: InputMaybe<Ingredients_Arr_Rel_Insert_Input>;
@@ -1633,6 +1636,7 @@ export type Recipes_Max_Fields = {
   __typename?: 'recipes_max_fields';
   created_at?: Maybe<Scalars['timestamptz']>;
   description?: Maybe<Scalars['String']>;
+  diet?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['Int']>;
   image?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
@@ -1645,6 +1649,7 @@ export type Recipes_Max_Fields = {
 export type Recipes_Max_Order_By = {
   created_at?: InputMaybe<Order_By>;
   description?: InputMaybe<Order_By>;
+  diet?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
   image?: InputMaybe<Order_By>;
   name?: InputMaybe<Order_By>;
@@ -1658,6 +1663,7 @@ export type Recipes_Min_Fields = {
   __typename?: 'recipes_min_fields';
   created_at?: Maybe<Scalars['timestamptz']>;
   description?: Maybe<Scalars['String']>;
+  diet?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['Int']>;
   image?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
@@ -1670,6 +1676,7 @@ export type Recipes_Min_Fields = {
 export type Recipes_Min_Order_By = {
   created_at?: InputMaybe<Order_By>;
   description?: InputMaybe<Order_By>;
+  diet?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
   image?: InputMaybe<Order_By>;
   name?: InputMaybe<Order_By>;
@@ -1706,6 +1713,7 @@ export type Recipes_Order_By = {
   cook_time?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
   description?: InputMaybe<Order_By>;
+  diet?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
   image?: InputMaybe<Order_By>;
   ingredients_aggregate?: InputMaybe<Ingredients_Aggregate_Order_By>;
@@ -1738,6 +1746,8 @@ export enum Recipes_Select_Column {
   /** column name */
   Description = 'description',
   /** column name */
+  Diet = 'diet',
+  /** column name */
   Id = 'id',
   /** column name */
   Image = 'image',
@@ -1760,6 +1770,7 @@ export type Recipes_Set_Input = {
   cook_time?: InputMaybe<Scalars['interval']>;
   created_at?: InputMaybe<Scalars['timestamptz']>;
   description?: InputMaybe<Scalars['String']>;
+  diet?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['Int']>;
   image?: InputMaybe<Scalars['String']>;
   name?: InputMaybe<Scalars['String']>;
@@ -1830,6 +1841,8 @@ export enum Recipes_Update_Column {
   CreatedAt = 'created_at',
   /** column name */
   Description = 'description',
+  /** column name */
+  Diet = 'diet',
   /** column name */
   Id = 'id',
   /** column name */
@@ -2686,7 +2699,7 @@ export type GetRecipeByIdQueryVariables = Exact<{
 }>;
 
 
-export type GetRecipeByIdQuery = { __typename?: 'query_root', recipes_by_pk?: { __typename?: 'recipes', id: number, name: string, description?: string | null, image?: string | null, steps: any, prep_time?: any | null, cook_time?: any | null, portions: number, user?: { __typename?: 'users', name: string } | null, recipe_ingredients: Array<{ __typename?: 'recipe_ingredients', id: number, index: number, amount: number, section?: string | null, ingredient: { __typename?: 'ingredients', id: number, name: string, diet: string }, unitByUnit: { __typename?: 'units', id: number, long_name: string, short_name: string } }>, ingredients: Array<{ __typename?: 'ingredients', id: number, name: string }> } | null };
+export type GetRecipeByIdQuery = { __typename?: 'query_root', recipes_by_pk?: { __typename?: 'recipes', id: number, name: string, description?: string | null, image?: string | null, steps: any, prep_time?: any | null, cook_time?: any | null, portions: number, diet?: string | null, user?: { __typename?: 'users', name: string } | null, recipe_ingredients: Array<{ __typename?: 'recipe_ingredients', id: number, index: number, amount: number, section?: string | null, ingredient: { __typename?: 'ingredients', id: number, name: string, diet: string }, unitByUnit: { __typename?: 'units', id: number, long_name: string, short_name: string } }>, ingredients: Array<{ __typename?: 'ingredients', id: number, name: string }> } | null };
 
 export type CreateRecipeMutationVariables = Exact<{
   description?: InputMaybe<Scalars['String']>;
@@ -2697,10 +2710,11 @@ export type CreateRecipeMutationVariables = Exact<{
   prep_time?: InputMaybe<Scalars['interval']>;
   cook_time?: InputMaybe<Scalars['interval']>;
   portions: Scalars['Int'];
+  diet?: InputMaybe<Scalars['String']>;
 }>;
 
 
-export type CreateRecipeMutation = { __typename?: 'mutation_root', insert_recipes_one?: { __typename?: 'recipes', id: number, description?: string | null, name: string, steps: any, image?: string | null, prep_time?: any | null, cook_time?: any | null, portions: number, recipe_ingredients: Array<{ __typename?: 'recipe_ingredients', amount: number, ingredient_id: number, unit: number, index: number, section?: string | null }> } | null };
+export type CreateRecipeMutation = { __typename?: 'mutation_root', insert_recipes_one?: { __typename?: 'recipes', id: number, description?: string | null, name: string, steps: any, image?: string | null, prep_time?: any | null, cook_time?: any | null, portions: number, diet?: string | null, recipe_ingredients: Array<{ __typename?: 'recipe_ingredients', amount: number, ingredient_id: number, unit: number, index: number, section?: string | null }> } | null };
 
 export type EditRecipeMutationVariables = Exact<{
   recipe_id: Scalars['Int'];
@@ -2714,6 +2728,7 @@ export type EditRecipeMutationVariables = Exact<{
   prep_time?: InputMaybe<Scalars['interval']>;
   cook_time?: InputMaybe<Scalars['interval']>;
   portions: Scalars['Int'];
+  diet?: InputMaybe<Scalars['String']>;
 }>;
 
 
@@ -2814,6 +2829,7 @@ export const GetRecipeById = gql`
     prep_time
     cook_time
     portions
+    diet
     user {
       name
     }
@@ -2841,9 +2857,9 @@ export const GetRecipeById = gql`
 }
     `;
 export const CreateRecipe = gql`
-    mutation createRecipe($description: String, $name: String, $steps: jsonb, $data: [recipe_ingredients_insert_input!]!, $image: String, $prep_time: interval, $cook_time: interval, $portions: Int!) {
+    mutation createRecipe($description: String, $name: String, $steps: jsonb, $data: [recipe_ingredients_insert_input!]!, $image: String, $prep_time: interval, $cook_time: interval, $portions: Int!, $diet: String) {
   insert_recipes_one(
-    object: {description: $description, name: $name, steps: $steps, recipe_ingredients: {data: $data}, image: $image, prep_time: $prep_time, cook_time: $cook_time, portions: $portions}
+    object: {description: $description, name: $name, steps: $steps, recipe_ingredients: {data: $data}, image: $image, prep_time: $prep_time, cook_time: $cook_time, portions: $portions, diet: $diet}
   ) {
     id
     description
@@ -2853,6 +2869,7 @@ export const CreateRecipe = gql`
     prep_time
     cook_time
     portions
+    diet
     recipe_ingredients {
       amount
       ingredient_id
@@ -2864,7 +2881,7 @@ export const CreateRecipe = gql`
 }
     `;
 export const EditRecipe = gql`
-    mutation editRecipe($recipe_id: Int!, $delete_not_in: [Int!]!, $insert: [recipe_ingredients_insert_input!]!, $update: [recipe_ingredients_insert_input!]!, $description: String, $name: String, $steps: jsonb, $image: String = "", $prep_time: interval, $cook_time: interval, $portions: Int!) {
+    mutation editRecipe($recipe_id: Int!, $delete_not_in: [Int!]!, $insert: [recipe_ingredients_insert_input!]!, $update: [recipe_ingredients_insert_input!]!, $description: String, $name: String, $steps: jsonb, $image: String = "", $prep_time: interval, $cook_time: interval, $portions: Int!, $diet: String) {
   delete_recipe_ingredients(
     where: {recipe_id: {_eq: $recipe_id}, id: {_nin: $delete_not_in}}
   ) {
@@ -2872,7 +2889,7 @@ export const EditRecipe = gql`
   }
   update_recipes_by_pk(
     pk_columns: {id: $recipe_id}
-    _set: {image: $image, name: $name, description: $description, steps: $steps, prep_time: $prep_time, cook_time: $cook_time, portions: $portions}
+    _set: {image: $image, name: $name, description: $description, steps: $steps, prep_time: $prep_time, cook_time: $cook_time, portions: $portions, diet: $diet}
   ) {
     id
   }

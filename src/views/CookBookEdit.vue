@@ -134,7 +134,8 @@ const { mutate: newMutatename, onDone: onDoneMutate } = useMutation(EditRecipe, 
         image: recipeToEdit.value?.image,
         portions: recipeToEdit.value?.portions ?? 2,
         prep_time: inputStringToInterval(recipeToEdit.value?.prepTime),
-        cook_time: inputStringToInterval(recipeToEdit.value?.cookingTime)
+        cook_time: inputStringToInterval(recipeToEdit.value?.cookingTime),
+        diet: recipeDiet.value
     }
 
     return ({
@@ -177,7 +178,8 @@ const { mutate: mutateCreate, onDone: onDoneCreate } = useMutation(CreateRecipe,
         image: recipeToEdit.value?.image,
         portions: recipeToEdit.value?.portions ?? 2,
         prep_time: inputStringToInterval(recipeToEdit.value?.prepTime),
-        cook_time: inputStringToInterval(recipeToEdit.value?.cookingTime)
+        cook_time: inputStringToInterval(recipeToEdit.value?.cookingTime),
+        diet: recipeDiet.value
     }
 
     return ({
@@ -297,7 +299,7 @@ function doSelect(i: any) {
         ingredient_id: i.ingredient.id,
         amount: i.amount,
         unit: i.unit,
-        diet: i.diet,
+        diet: i.ingredient.diet,
     })
     refetchIngredientsAndUnits()
 }
@@ -343,6 +345,27 @@ function addSection() {
     }
 }
 
+const dietOrder = ['vegan', 'vegetarian', 'fish', 'meat']
+
+const recipeDiet = computed(() => {
+    if (recipeToEdit.value) {
+        let dietIndex = recipeToEdit.value.recipeIngredients.reduce((prev, current) => {
+
+            if (current.type === 'ingredient') {
+
+                let currentDiet = dietOrder.indexOf(current.diet)
+
+                return Math.max(currentDiet, prev)
+            } else {
+                return prev
+            }
+
+        }, 0)
+        return dietOrder[dietIndex]
+
+    } else return 'vegan'
+})
+
 </script>
 
 <template>
@@ -372,6 +395,10 @@ function addSection() {
                         v-model="recipeToEdit.description"
                     />
                     <div class="grow"></div>
+                    <span v-if="recipeDiet">
+                        <label>Diet: </label>
+                        <span>{{recipeDiet}}</span>
+                    </span>
                     <span>
                         <label>Portions:</label>
                         <input type="number" v-model="recipeToEdit.portions" />

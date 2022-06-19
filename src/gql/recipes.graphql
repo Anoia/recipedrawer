@@ -17,6 +17,7 @@ query getRecipeById($id: Int!) {
     prep_time
     cook_time
     portions
+    diet
     user {
       name
     }
@@ -52,6 +53,7 @@ mutation createRecipe(
   $prep_time: interval
   $cook_time: interval
   $portions: Int!
+  $diet: String
 ) {
   insert_recipes_one(
     object: {
@@ -63,6 +65,7 @@ mutation createRecipe(
       prep_time: $prep_time
       cook_time: $cook_time
       portions: $portions
+      diet: $diet
     }
   ) {
     id
@@ -73,6 +76,7 @@ mutation createRecipe(
     prep_time
     cook_time
     portions
+    diet
     recipe_ingredients {
       amount
       ingredient_id
@@ -95,6 +99,7 @@ mutation editRecipe(
   $prep_time: interval
   $cook_time: interval
   $portions: Int!
+  $diet: String
 ) {
   delete_recipe_ingredients(
     where: { recipe_id: { _eq: $recipe_id }, id: { _nin: $delete_not_in } }
@@ -111,6 +116,7 @@ mutation editRecipe(
       prep_time: $prep_time
       cook_time: $cook_time
       portions: $portions
+      diet: $diet
     }
   ) {
     id

@@ -136,7 +136,8 @@ function selectIngredient(i: Ingredient) {
             unit: (possibleUnit.value ?? defaultUnit),
             ingredient: {
                 id: i.id,
-                name: i.name
+                name: i.name,
+                diet:i.diet
             }
         })
         clearData()
